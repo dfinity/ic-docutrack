@@ -1,0 +1,126 @@
+name: CI Checks
+
+env:
+  RUST_VERSION: 1.67.0
+  DFX_VERSION: 0.12.1
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+
+  cargo-build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-22.04 ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
+
+      - name: Install Rust
+        run: |
+          rustup update $RUST_VERSION --no-self-update
+          rustup default $RUST_VERSION
+          rustup target add wasm32-unknown-unknown
+
+      - name: Build
+        shell: bash
+        run: |
+          cargo build --release --all-targets
+        env:
+          RUST_BACKTRACE: 1
+
+  cargo-tests:
+    runs-on: ${{ matrix.os }}
+    needs: cargo-build
+    strategy:
+      matrix:
+        os: [ ubuntu-22.04 ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
+
+      - name: Install Rust
+        run: |
+          rustup update $RUST_VERSION --no-self-update
+          rustup default $RUST_VERSION
+          rustup target add wasm32-unknown-unknown
+
+      - name: Run Tests
+        shell: bash
+        run: |
+          cargo test --release --all-targets
+        env:
+          RUST_BACKTRACE: 1
+
+  cargo-clippy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-1
+
+      - name: Install Rust + Clippy
+        run: |
+          rustup update $RUST_VERSION --no-self-update
+          rustup default $RUST_VERSION
+          rustup target add wasm32-unknown-unknown
+          rustup component add clippy
+
+      - uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all-targets -- -D warnings
+
+  rustfmt:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Rust + Clippy
+        run: |
+          rustup update $RUST_VERSION --no-self-update
+          rustup default $RUST_VERSION
+
+      - name: Install Rust + Rustfmt
+        run: |
+          rustup update $RUST_VERSION --no-self-update
+          rustup default $RUST_VERSION
+          rustup component add rustfmt
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+  shell-checks:
+    name: ShellCheck
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run ShellCheck
+      uses: ludeeus/action-shellcheck@master
+      env:
+        SHELLCHECK_OPTS: -e SC1090 -e SC2119 -e SC1091
