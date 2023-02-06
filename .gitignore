@@ -10,3 +10,9 @@ Cargo.lock
 **/*.rs.bk
 dist
 node_modules
+
+# dfx
+.dfx/*
+
+# IDE
+.idea/*
