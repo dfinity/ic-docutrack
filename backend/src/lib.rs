@@ -27,6 +27,11 @@ pub enum WhoamiResponse {
 /// File metadata.
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FileMetadata {
+    pub file_name: String,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct RequestInfo {
     pub file_id: u64,
     pub file_name: String,
 }

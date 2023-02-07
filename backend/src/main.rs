@@ -41,10 +41,13 @@ fn get_files() -> Vec<FileMetadata> {
 }
 
 #[query]
-fn get_request_info(alias: String) -> FileMetadata {
+fn get_request_info(alias: String) -> RequestInfo {
     with_state(|s| match s.file_alias_index.get(&alias) {
-        Some(file_id) => s.file_data.get(file_id).unwrap().metadata.clone(),
-        None => FileMetadata {
+        Some(file_id) => RequestInfo {
+            file_id: *file_id,
+            file_name: s.file_data.get(file_id).unwrap().metadata.file_name.clone(),
+        },
+        None => RequestInfo {
             file_id: 0,
             file_name: "non-existing file".to_string(),
         },

@@ -1,5 +1,7 @@
+type file_id = nat64;
+
 type file_metadata = record {
-  file_id : nat64;
+  file_id;
   file_name : text;
 };
 
@@ -22,7 +24,7 @@ type who_am_i_response = variant {
 };
 
 type request_info = record {
-    file_id: nat64;
+    file_id;
     file_name: text;
 };
 
@@ -53,9 +55,9 @@ service docutrack : {
   // it returns the name and id of the file to be uploaded.
   get_request_info: (alias: text) -> (request_info);
 
-  upload_file: (nat64, blob) -> (upload_file_response) ;
+  upload_file: (file_id, blob) -> (upload_file_response) ;
 
-  download_file: (nat64) -> (download_file_response) ;
+  download_file: (file_id) -> (download_file_response) ;
 
   get_files: () -> (vec file_metadata);
 }
