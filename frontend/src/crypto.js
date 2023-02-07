@@ -47,7 +47,6 @@ async function generateDocumentKey() {
 }
 
 async function encryptDocument(data, key) {  
-    const data_encoded = Uint8Array.from([...data].map(ch => ch.charCodeAt(0))).buffer
     // The iv must never be reused with a given key.
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const ciphertext = await subtle.encrypt(
@@ -56,33 +55,44 @@ async function encryptDocument(data, key) {
                         iv: iv
                     },
                     key,
-                    data_encoded
+                    data
                     );
-
-    const iv_decoded = String.fromCharCode(...new Uint8Array(iv));
-    const cipher_decoded = String.fromCharCode(...new Uint8Array(ciphertext));
-    return iv_decoded + cipher_decoded;
+    console.log("iv", iv);
+    console.log("iv buffer", iv.buffer);
+    console.log("ciphertext", ciphertext);
+    const length = ciphertext.byteLength + iv.byteLength;
+    console.log("lemght", length);
+    const cipherBuffer = new ArrayBuffer(length);
+    console.log("c0", cipherBuffer);
+    const uint8view = new Uint8Array(cipherBuffer);
+    uint8view.set(iv, 0);
+    uint8view.set(new Uint8Array(ciphertext), iv.byteLength);
+    console.log("c1", cipherBuffer);
+    return cipherBuffer;
 }
 
 async function decryptDocument(data, key) {
+    console.log("data",data);
+    const data_encoded = new Uint8Array(data);
+    console.log("data_encoded",data_encoded);
     if (data.length < 13) {
         throw new Error('wrong encoding, too short to contain iv');
     }
-    const iv_decoded = data.slice(0,12);
+    const iv_decoded = new Uint8Array(data.slice(0,12));
     const cipher_decoded = data.slice(12);
-    const iv_encoded = Uint8Array.from([...iv_decoded].map(ch => ch.charCodeAt(0))).buffer;
-    const ciphertext_encoded = Uint8Array.from([...cipher_decoded].map(ch => ch.charCodeAt(0))).buffer;
+
+    console.log("iv_decoded", iv_decoded);
+    console.log("cipher_decoded", cipher_decoded);
 
     let decrypted_data_encoded = await subtle.decrypt(
                     {
                       name: "AES-GCM",
-                      iv: iv_encoded
+                      iv: iv_decoded
                     },
                     key,
-                    ciphertext_encoded
+                    cipher_decoded
                   );
-    const decrypted_data_decoded = String.fromCharCode(...new Uint8Array(decrypted_data_encoded));
-    return decrypted_data_decoded;
+    return decrypted_data_encoded;
 }
 
 module.exports = {generateUserKeypair, encryptForUser, decryptForUser,

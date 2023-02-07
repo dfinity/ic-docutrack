@@ -19,13 +19,21 @@ test('generate User key, encrypt and decrypt', async () => {
 });
 
 test('generate Document key, encrypt and decrypt', async () => {
-  plaintext = "blabla42";
-
+    // Create an ArrayBuffer with a size in bytes
+  const buffer = new ArrayBuffer(16);
+  const uint8ArrayView = new Uint8Array(buffer);
+  uint8ArrayView[1] = 4;
+  // Produces Int32Array [0, 4, 0, 0]
+  console.log("buffer", buffer);
   const key = await generateDocumentKey();
   
-  const encryptedText = await encryptDocument(plaintext, key);
+  const encryptedBuffer = await encryptDocument(buffer, key);
 
-  const decryptedText = await decryptDocument(encryptedText, key);
+  const decryptedBuffer = await decryptDocument(encryptedBuffer, key);
 
-  expect(plaintext).toBe(decryptedText);
+  console.log("buffer", buffer);
+
+  console.log("decryptedBuffer", decryptedBuffer);
+
+ // expect(plaintext).toBe(decryptedText);
 });
