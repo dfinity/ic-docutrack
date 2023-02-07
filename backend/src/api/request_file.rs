@@ -25,7 +25,7 @@ pub fn request_file(caller: Principal, request_name: String, state: &mut State) 
     state
         .file_owners
         .entry(caller)
-        .or_insert_with(|| Vec::new())
+        .or_insert_with(Vec::new)
         .push(file_id);
 
     alias
