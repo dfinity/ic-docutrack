@@ -27,7 +27,6 @@ async function encryptForUser(plaintext, publicKey) {
 
 async function decryptForUser(encryptedText, privateKey) {
     const dec = new TextDecoder();
-    console.log(typeof encryptedText);
     const decryptedText = await subtle.decrypt({
         name: "RSA-OAEP"
       },
@@ -57,32 +56,20 @@ async function encryptDocument(data, key) {
                     key,
                     data
                     );
-    console.log("iv", iv);
-    console.log("iv buffer", iv.buffer);
-    console.log("ciphertext", ciphertext);
     const length = ciphertext.byteLength + iv.byteLength;
-    console.log("lemght", length);
     const cipherBuffer = new ArrayBuffer(length);
-    console.log("c0", cipherBuffer);
     const uint8view = new Uint8Array(cipherBuffer);
     uint8view.set(iv, 0);
     uint8view.set(new Uint8Array(ciphertext), iv.byteLength);
-    console.log("c1", cipherBuffer);
     return cipherBuffer;
 }
 
 async function decryptDocument(data, key) {
-    console.log("data",data);
-    const data_encoded = new Uint8Array(data);
-    console.log("data_encoded",data_encoded);
     if (data.length < 13) {
         throw new Error('wrong encoding, too short to contain iv');
     }
     const iv_decoded = new Uint8Array(data.slice(0,12));
     const cipher_decoded = data.slice(12);
-
-    console.log("iv_decoded", iv_decoded);
-    console.log("cipher_decoded", cipher_decoded);
 
     let decrypted_data_encoded = await subtle.decrypt(
                     {

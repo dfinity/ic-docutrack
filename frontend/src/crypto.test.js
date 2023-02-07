@@ -31,5 +31,5 @@ test('generate Document key, encrypt and decrypt', async () => {
 
   const decryptedBuffer = await decryptDocument(encryptedBuffer, key);
 
-  expect(buffer).toBe(decryptedBuffer);
+  expect(new Uint8Array(decryptedBuffer)).toStrictEqual(uint8ArrayView);
 });
