@@ -45,9 +45,9 @@ service docutrack : {
 
   who_am_i: () -> (who_am_i_response); 
 
-  // Creates a request for a file to be uploaded.
-  // An upload link is returned where the file can be uploaded.
-  create_file_request: (request_name: text) -> (alias: text);
+  // Requests a file to be uploaded.
+  // An alias is returned that can be used to create an upload link.
+  request_file: (request_name: text) -> (alias: text);
 
   // Based on the alias (or download link) of the file,
   // it returns the name and id of the file to be uploaded.
