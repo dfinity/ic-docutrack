@@ -6,4 +6,9 @@
 **/*.rs.bk
 dist
 node_modules
-.dfx
+
+# dfx
+.dfx/*
+
+# IDE
+.idea/*
