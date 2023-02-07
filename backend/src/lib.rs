@@ -27,6 +27,19 @@ pub enum WhoamiResponse {
 /// File metadata.
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FileMetadata {
+    pub file_name: String,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub enum GetAliasInfoResponse {
+    #[serde(rename = "not_found")]
+    NotFound,
+    #[serde(rename = "found")]
+    Found(AliasInfo),
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct AliasInfo {
     pub file_id: u64,
     pub file_name: String,
 }
