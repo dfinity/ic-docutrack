@@ -1,18 +1,18 @@
-const {generateKeypair, encrypt, decrypt } = require('./crypto');
+const {generateUserKeypair, encryptForUser, decryptForUser } = require('./crypto');
 
 test('generate key, encrypt and decrypt', async () => {
   plaintext = "blabla42";
 
-  const key = await generateKeypair();
+  const key = await generateUserKeypair();
   const {
     privateKey,
     publicKey
   } = await key;
 
   
-  const encryptedText = await encrypt(plaintext, publicKey);
+  const encryptedText = await encryptForUser(plaintext, publicKey);
 
-  const decryptedText = await decrypt(encryptedText, privateKey);
+  const decryptedText = await decryptForUser(encryptedText, privateKey);
 
   expect(plaintext).toBe(decryptedText);
 });

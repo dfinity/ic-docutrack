@@ -1,6 +1,6 @@
 const { subtle } = globalThis.crypto;
 
-async function generateKeypair() {
+async function generateUserKeypair() {
     const key = await subtle.generateKey({
         name: "RSA-OAEP",
         modulusLength: 4096,
@@ -12,7 +12,7 @@ async function generateKeypair() {
 }
 
 
-async function encrypt(plaintext, publicKey) {
+async function encryptForUser(plaintext, publicKey) {
     const enc = new TextEncoder();
     const encodedMessage = enc.encode(plaintext);
     const encryptedText = await subtle.encrypt({
@@ -25,7 +25,7 @@ async function encrypt(plaintext, publicKey) {
 }
 
 
-async function decrypt(encryptedText, privateKey) {
+async function decryptForUser(encryptedText, privateKey) {
     const dec = new TextDecoder();
     console.log(typeof encryptedText);
     const decryptedText = await subtle.decrypt({
@@ -39,4 +39,4 @@ async function decrypt(encryptedText, privateKey) {
 
 
 
-module.exports = {generateKeypair, encrypt, decrypt }
+module.exports = {generateUserKeypair, encryptForUser, decryptForUser }
