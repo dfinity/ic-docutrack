@@ -45,7 +45,6 @@ mod test {
             btreemap! {
                 0 => File {
                     metadata: FileMetadata {
-                        file_id: 0,
                         file_name: "request".to_string(),
                     },
                     contents: None

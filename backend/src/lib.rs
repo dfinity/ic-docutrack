@@ -31,7 +31,15 @@ pub struct FileMetadata {
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-pub struct RequestInfo {
+pub enum GetAliasInfoResponse {
+    #[serde(rename = "not_found")]
+    NotFound,
+    #[serde(rename = "found")]
+    Found(AliasInfo)
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct AliasInfo {
     pub file_id: u64,
     pub file_name: String,
 }
