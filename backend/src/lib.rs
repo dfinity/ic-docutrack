@@ -35,7 +35,7 @@ pub enum GetAliasInfoResponse {
     #[serde(rename = "not_found")]
     NotFound,
     #[serde(rename = "found")]
-    Found(AliasInfo)
+    Found(AliasInfo),
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
