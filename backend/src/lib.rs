@@ -45,6 +45,8 @@ pub enum FileData {
     NotFoundFile,
     #[serde(rename = "not_uploaded_file")]
     NotUploadedFile,
+    #[serde(rename = "permission_error")]
+    PermissionError,
     #[serde(rename = "found_file")]
     FoundFile(Vec<u8>),
 }

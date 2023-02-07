@@ -73,8 +73,7 @@ fn request_file(request_name: String) -> String {
     with_state_mut(|s| backend::api::request_file(caller(), request_name, s))
 }
 
-#[query]
-fn download_file(file_id: u64) -> FileData {
+fn get_file_data(file_id: u64) -> FileData {
     with_state(|s| match s.file_data.get(&file_id) {
         None => FileData::NotFoundFile,
         Some(file) => {
@@ -84,6 +83,17 @@ fn download_file(file_id: u64) -> FileData {
                 Some(vec) => FileData::FoundFile(vec.clone()),
             }
         }
+    })
+}
+
+#[query]
+fn download_file(file_id: u64) -> FileData {
+    with_state(|s| match s.file_owners.get(&caller()) {
+        None => FileData::PermissionError,
+        Some(files) => match files.contains(&file_id) {
+            true => get_file_data(file_id),
+            false => FileData::PermissionError,
+        },
     })
 }
 
