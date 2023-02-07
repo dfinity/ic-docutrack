@@ -1,4 +1,5 @@
 use backend::*;
+use ic_cdk::api::caller;
 use ic_cdk_macros::query;
 use ic_cdk_macros::update;
 
@@ -29,9 +30,20 @@ fn who_am_i() -> WhoamiResponse {
 }
 
 #[query]
+fn get_files() -> Vec<FileMetadata> {
+    with_state(|s| match s.file_owners.get(&caller()) {
+        None => vec![],
+        Some(file_ids) => file_ids
+            .iter()
+            .map(|file_id| s.file_data.get(file_id).unwrap().metadata.clone())
+            .collect(),
+    })
+}
+
+#[query]
 fn get_request_info(alias: String) -> FileMetadata {
     with_state(|s| match s.file_alias_index.get(&alias) {
-        Some(file_metadata) => file_metadata.clone(),
+        Some(file_id) => s.file_data.get(file_id).unwrap().metadata.clone(),
         None => FileMetadata {
             file_id: 0,
             file_name: "non-existing file".to_string(),
@@ -57,29 +69,8 @@ fn upload_file(file_id: u64, file_content: Vec<u8>) -> UploadFileResponse {
 }
 
 #[update]
-fn create_file_request(request_name: String) -> String {
-    let crnt_file = with_state_mut(|s| {
-        s.file_count += 1;
-        s.file_count
-    });
-    let file_metadata = FileMetadata {
-        file_id: crnt_file,
-        file_name: request_name,
-    };
-    let file = File {
-        metadata: file_metadata.clone(),
-        contents: None,
-    };
-    with_state_mut(|s| {
-        s.file_data.insert(crnt_file, file);
-    });
-    let alias = generate_alias();
-    // TODO: verify that file alias has not been used before.
-    with_state_mut(|s| {
-        s.file_alias_index.insert(alias.clone(), file_metadata);
-    });
-
-    alias
+fn request_file(request_name: String) -> String {
+    with_state_mut(|s| backend::api::request_file(caller(), request_name, s))
 }
 
 #[query]
