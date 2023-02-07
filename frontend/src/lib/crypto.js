@@ -56,6 +56,7 @@ async function encryptDocument(data, key) {
                     key,
                     data
                     );
+    // create array buffer with IV
     const length = ciphertext.byteLength + iv.byteLength;
     const cipherBuffer = new ArrayBuffer(length);
     const uint8view = new Uint8Array(cipherBuffer);
@@ -64,12 +65,14 @@ async function encryptDocument(data, key) {
     return cipherBuffer;
 }
 
-async function decryptDocument(data, key) {
-    if (data.length < 13) {
+async function decryptDocument(cipherBuffer, key) {
+    if (cipherBuffer.length < 13) {
         throw new Error('wrong encoding, too short to contain iv');
     }
-    const iv_decoded = new Uint8Array(data.slice(0,12));
-    const cipher_decoded = data.slice(12);
+
+    // separate IV from ciphertext
+    const iv_decoded = new Uint8Array(cipherBuffer.slice(0,12));
+    const cipher_decoded = cipherBuffer.slice(12);
 
     let decrypted_data_encoded = await subtle.decrypt(
                     {
