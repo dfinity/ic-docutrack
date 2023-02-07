@@ -7,7 +7,7 @@ test('generate key, encrypt and decrypt', async () => {
   const {
     privateKey,
     publicKey
-  } = await key;
+  } = key;
 
   
   const encryptedText = await encryptForUser(plaintext, publicKey);
