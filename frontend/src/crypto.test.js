@@ -23,17 +23,13 @@ test('generate Document key, encrypt and decrypt', async () => {
   const buffer = new ArrayBuffer(16);
   const uint8ArrayView = new Uint8Array(buffer);
   uint8ArrayView[1] = 4;
-  // Produces Int32Array [0, 4, 0, 0]
-  console.log("buffer", buffer);
+  // Produces ArrayBuffer [0, 4, 0, 0, ....]
+
   const key = await generateDocumentKey();
   
   const encryptedBuffer = await encryptDocument(buffer, key);
 
   const decryptedBuffer = await decryptDocument(encryptedBuffer, key);
 
-  console.log("buffer", buffer);
-
-  console.log("decryptedBuffer", decryptedBuffer);
-
- // expect(plaintext).toBe(decryptedText);
+  expect(buffer).toBe(decryptedBuffer);
 });
