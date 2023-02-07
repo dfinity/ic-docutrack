@@ -1,14 +1,6 @@
 const { subtle } = globalThis.crypto;
 
-function subtract(a, b) {
-    return a - b;
-}
-
-function add(a, b) {
-    return a + b;
-}
-
-async function generateKey() {
+async function generateKeypair() {
     const key = await subtle.generateKey({
         name: "RSA-OAEP",
         modulusLength: 4096,
@@ -47,4 +39,4 @@ async function decrypt(encryptedText, privateKey) {
 
 
 
-module.exports = { subtract, add, generateKey, encrypt, decrypt }
+module.exports = {generateKeypair, encrypt, decrypt }
