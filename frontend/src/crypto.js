@@ -8,13 +8,44 @@ function add(a, b) {
     return a + b;
 }
 
-async function generateAesKey(length = 256) {
+async function generateKey() {
     const key = await subtle.generateKey({
-      name: 'AES-CBC',
-      length,
+        name: "RSA-OAEP",
+        modulusLength: 4096,
+        publicExponent: new Uint8Array([1, 0, 1]),
+        hash: "SHA-256"
     }, true, ['encrypt', 'decrypt']);
   
     return key;
 }
 
-module.exports = { subtract, add, generateAesKey }
+
+async function encrypt(plaintext, publicKey) {
+    const enc = new TextEncoder();
+    const encodedMessage = enc.encode(plaintext);
+    const encryptedText = await subtle.encrypt({
+        name: "RSA-OAEP"
+        },
+        publicKey,
+        encodedMessage
+    )
+    console.log(encryptedText);
+    return encryptedText;
+}
+
+
+async function decrypt(encryptedText, privateKey) {
+    const dec = new TextDecoder();
+    const decryptedText = await subtle.decrypt({
+        name: "RSA-OAEP"
+      },
+      privateKey,
+      encryptedText
+    )
+    console.log(decryptedText);
+    return dec.decode(decryptedText);
+}
+
+
+
+module.exports = { subtract, add, generateKey, encrypt, decrypt }
