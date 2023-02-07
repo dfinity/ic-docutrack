@@ -56,5 +56,7 @@ service docutrack : {
   upload_file: (nat64, blob) -> (upload_file_response) ;
 
   download_file: (nat64) -> (download_file_response) ;
+
+  get_files: () -> (vec file_metadata);
 }
 

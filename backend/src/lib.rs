@@ -1,6 +1,6 @@
 mod aliases;
 use crate::aliases::{AliasGenerator, Randomness};
-use ic_cdk::export::candid::CandidType;
+use ic_cdk::export::{candid::CandidType, Principal};
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
@@ -61,12 +61,18 @@ pub struct State {
     /// Keeps track of how many files have been requested so far
     /// and is used to assign IDs to newly requested files.
     pub file_count: u64,
+
     /// Keeps track of usernames vs. their principals.
-    pub users: BTreeMap<ic_cdk::export::Principal, User>,
+    pub users: BTreeMap<Principal, User>,
+
     /// Mapping between file IDs and file information.
     pub file_data: BTreeMap<u64, File>,
-    /// Mapping between file aliases (randomly generated links) and file metadata.
-    pub file_alias_index: BTreeMap<String, FileMetadata>,
+
+    /// Mapping between file aliases (randomly generated links) and file ID.
+    pub file_alias_index: BTreeMap<String, u64>,
+
+    /// Mapping between a user's principal and the list of files that are owned by the user.
+    pub file_owners: BTreeMap<Principal, Vec<u64>>,
 
     // Generates aliases for file requests.
     alias_generator: AliasGenerator,
@@ -79,6 +85,7 @@ impl Default for State {
             users: BTreeMap::new(),
             file_data: BTreeMap::new(),
             file_alias_index: BTreeMap::new(),
+            file_owners: BTreeMap::new(),
             alias_generator: AliasGenerator::new(
                 Randomness::try_from(vec![0; 32].as_slice()).unwrap(),
             ),
