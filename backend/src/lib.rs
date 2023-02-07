@@ -1,4 +1,5 @@
 mod aliases;
+pub mod api;
 use crate::aliases::{AliasGenerator, Randomness};
 use ic_cdk::export::{candid::CandidType, Principal};
 use serde::{Deserialize, Serialize};
@@ -24,13 +25,14 @@ pub enum WhoamiResponse {
 }
 
 /// File metadata.
-#[derive(CandidType, Serialize, Deserialize, Clone)]
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FileMetadata {
     pub file_id: u64,
     pub file_name: String,
 }
 
 // A file is composed of its metadata and its content, which is a blob.
+#[derive(Debug, PartialEq, Eq)]
 pub struct File {
     #[allow(dead_code)]
     pub metadata: FileMetadata,

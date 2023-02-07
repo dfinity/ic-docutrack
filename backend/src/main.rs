@@ -69,34 +69,8 @@ fn upload_file(file_id: u64, file_content: Vec<u8>) -> UploadFileResponse {
 }
 
 #[update]
-fn create_file_request(request_name: String) -> String {
-    let file_id = with_state_mut(|s| {
-        s.file_count += 1;
-        s.file_count
-    });
-    let file_metadata = FileMetadata {
-        file_id,
-        file_name: request_name,
-    };
-    let file = File {
-        metadata: file_metadata,
-        contents: None,
-    };
-
-    let alias = generate_alias();
-    with_state_mut(|s| {
-        s.file_data.insert(file_id, file);
-
-        // TODO: verify that file alias has not been used before.
-        s.file_alias_index.insert(alias.clone(), file_id);
-
-        s.file_owners
-            .entry(caller())
-            .or_insert_with(Vec::new)
-            .push(file_id);
-    });
-
-    alias
+fn request_file(request_name: String) -> String {
+    with_state_mut(|s| backend::api::request_file(caller(), request_name, s))
 }
 
 #[query]
