@@ -19,7 +19,7 @@
     firstName.subscribe( value => firstNameValue = value);
   
     let isOpen = false;
-  
+    
     function handleUpdate(event) {
       isOpen = event.detail.isOpen;
     }
@@ -28,12 +28,14 @@
     <NavbarBrand href="/">DocuTrack</NavbarBrand>
     <NavbarToggler on:click={() => (isOpen = !isOpen)} />
     <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
+      {#if firstNameValue}
+        <Nav class="ms-md-3">
+          <NavItem>
+              Hi, {firstNameValue}
+          </NavItem>
+        </Nav>
+      {/if}
       <Nav class="ms-auto" navbar>
-        {#if principalValue}
-            <NavItem>
-                <p>Hi, {firstNameValue}</p>
-            </NavItem>
-        {/if}
         <NavItem>
           <NavLink href="/">My Files</NavLink>
         </NavItem>
