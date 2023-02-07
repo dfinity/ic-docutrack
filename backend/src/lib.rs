@@ -100,11 +100,6 @@ pub fn with_state_mut<R>(f: impl FnOnce(&mut State) -> R) -> R {
     STATE.with(|cell| f(&mut cell.borrow_mut()))
 }
 
-thread_local! {
-    // NOTE: This will be moved into the `State` struct when that's created.
-    // TODO: Persist the generator state across upgrades.
-}
-
 /// Returns an unused file alias.
 pub fn generate_alias() -> String {
     with_state_mut(|s| s.alias_generator.next())
