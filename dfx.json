@@ -8,18 +8,6 @@
       "wasm": ""
     },
 
-    "frontend": {
-      "type": "assets",
-
-      "__1": "NOTE: dfx will run 'npm run build' when the canister is to be built (dfx build or dfx deploy)",
-      "__2": "(which in this case populates 'dist/', see package.json).",
-      "__3": "source must be a directory, otherwise we get a cryptic error.",
-      "source": ["dist/"],
-
-      "__4": "NOTE: the 'frontend' signals dfx that it is useful to print out the front-end URL of this canister when deploying. It is not strictly required.",
-      "frontend": {}
-    },
-
     "internet_identity": {
        "type": "custom",
        "candid": "https://github.com/dfinity/internet-identity/releases/download/release-2023-01-31/internet_identity.did",
