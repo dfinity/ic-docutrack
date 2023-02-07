@@ -1,3 +1,16 @@
+type file_metadata = record {
+  file_id : nat64;
+  file_name : text;
+};
+
+// A file's contents + its metadata.
+type file = record {
+  metadata : file_metadata;
+
+  // The contents of the file are available if it has been uploaded.
+  contents : opt blob;
+};
+
 type user = record {
   first_name: text;
   last_name: text;
@@ -8,10 +21,40 @@ type who_am_i_response = variant {
   unknown_user;
 };
 
+type request_info = record {
+    file_id: nat64;
+    file_name: text;
+};
+
+type download_file_response = variant {
+  not_found_file;
+  not_uploaded_file;
+  found_file: blob;
+};
+
+type upload_file_response = variant {
+  not_requested_file;
+  already_uploaded_file;
+  upload_ok;
+};
+
 service docutrack : {
   hello_world : () -> (text);
 
   set_user: (first_name: text, last_name: text) -> ();
 
   who_am_i: () -> (who_am_i_response); 
+
+  // Creates a request for a file to be uploaded.
+  // An upload link is returned where the file can be uploaded.
+  create_file_request: (request_name: text) -> (alias: text);
+
+  // Based on the alias (or download link) of the file,
+  // it returns the name and id of the file to be uploaded.
+  get_request_info: (alias: text) -> (request_info);
+
+  upload_file: (nat64, blob) -> (upload_file_response) ;
+
+  download_file: (nat64) -> (download_file_response) ;
 }
+
