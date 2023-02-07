@@ -8,22 +8,19 @@ test('subtracts 3 and 2 to equal 1', () => {
   expect(subtract(3, 2)).toBe(1);
 });
 
-test('generate key', async () => {
-  const key = await generateKey();
-  
-  // do something with the key.
-  console.log(key);
+test('generate key, encrypt and decrypt', async () => {
+  plaintext = "blabla42";
 
+  const key = await generateKey();
   const {
     privateKey,
     publicKey
   } = await key;
 
-  const encryptedText = await encrypt("blabla", publicKey);
+  
+  const encryptedText = await encrypt(plaintext, publicKey);
 
-  const decryptedText = await decrypt(encrypt, privateKey)
+  const decryptedText = await decrypt(encryptedText, privateKey);
 
-  console.log(decryptedText);
-
-
+  expect(plaintext).toBe(decryptedText);
 });

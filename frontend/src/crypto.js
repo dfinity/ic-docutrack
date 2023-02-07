@@ -29,20 +29,19 @@ async function encrypt(plaintext, publicKey) {
         publicKey,
         encodedMessage
     )
-    console.log(encryptedText);
     return encryptedText;
 }
 
 
 async function decrypt(encryptedText, privateKey) {
     const dec = new TextDecoder();
+    console.log(typeof encryptedText);
     const decryptedText = await subtle.decrypt({
         name: "RSA-OAEP"
       },
       privateKey,
       encryptedText
     )
-    console.log(decryptedText);
     return dec.decode(decryptedText);
 }
 
