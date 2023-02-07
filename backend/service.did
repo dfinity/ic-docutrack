@@ -1,3 +1,17 @@
+type user = record {
+  first_name: text;
+  last_name: text;
+};
+
+type who_am_i_response = variant {
+  known_user: record { first_name: text; last_name: text };
+  unknown_user;
+};
+
 service docutrack : {
   hello_world : () -> (text);
+
+  set_user: (first_name: text, last_name: text) -> ();
+
+  who_am_i: () -> (who_am_i_response); 
 }

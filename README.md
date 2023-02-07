@@ -4,7 +4,7 @@ ic-docutrack is a proof a dapp to share documents in encrypted form with other p
 
 ## Documentation
 
-The [doc](doc/) directory will contains a description of the high-level design of the dapp as well as user instructions.
+The [doc](doc/) directory will contain a description of the high-level design of the dapp as well as user instructions.
 
 ## Implementation
 
