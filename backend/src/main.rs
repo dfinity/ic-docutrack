@@ -34,7 +34,7 @@ fn get_files() -> Vec<FileMetadata> {
     with_state(|s| match s.file_owners.get(&caller()) {
         None => vec![],
         Some(file_ids) => file_ids
-            .into_iter()
+            .iter()
             .map(|file_id| s.file_data.get(file_id).unwrap().metadata.clone())
             .collect(),
     })
@@ -79,7 +79,7 @@ fn create_file_request(request_name: String) -> String {
         file_name: request_name,
     };
     let file = File {
-        metadata: file_metadata.clone(),
+        metadata: file_metadata,
         contents: None,
     };
 
@@ -92,7 +92,7 @@ fn create_file_request(request_name: String) -> String {
 
         s.file_owners
             .entry(caller())
-            .or_insert_with(|| Vec::new())
+            .or_insert_with(Vec::new)
             .push(file_id);
     });
 
