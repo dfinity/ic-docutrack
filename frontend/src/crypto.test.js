@@ -1,16 +1,18 @@
-const { subtract, add, generateAesKey } = require('./crypto');
+const {generateUserKeypair, encryptForUser, decryptForUser } = require('./crypto');
 
-test('adds 1 and 2 to equal 3', () => {
-  expect(add(1, 2)).toBe(3);
-});
+test('generate key, encrypt and decrypt', async () => {
+  plaintext = "blabla42";
 
-test('subtracts 3 and 2 to equal 1', () => {
-  expect(subtract(3, 2)).toBe(1);
-});
+  const key = await generateUserKeypair();
+  const {
+    privateKey,
+    publicKey
+  } = key;
 
-test('generate key', async () => {
-  const key = await generateAesKey();
   
-  // do something with the key.
-  console.log(key);
+  const encryptedText = await encryptForUser(plaintext, publicKey);
+
+  const decryptedText = await decryptForUser(encryptedText, privateKey);
+
+  expect(plaintext).toBe(decryptedText);
 });
