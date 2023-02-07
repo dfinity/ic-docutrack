@@ -12,3 +12,6 @@ candid = "0.8.4"
 rand = "0.7.3"
 rand_chacha = "0.2.2"
 serde = "1.0.152"
+
+[dev-dependencies]
+maplit = "1.0.2"
