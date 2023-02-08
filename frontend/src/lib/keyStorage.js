@@ -13,12 +13,16 @@ const db = openDB<KeyStorage>('crypto-store', 1, {
   },
 });
 
-export async function loadKey(key) {
+async function loadKey(key) {
   return (await db).get('keys', key);
 }
-export async function storeKey(key, val) {
+
+async function storeKey(key, val) {
   return (await db).put('keys', val, key);
 }
-export async function clearKeys() {
+
+async function clearKeys() {
   return (await db).clear('keys');
 }
+
+module.exports = {loadKey, storeKey, clearKeys }
