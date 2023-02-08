@@ -68,13 +68,11 @@ pub enum FileData {
 }
 
 #[derive(CandidType, Serialize, Deserialize)]
-pub enum UploadFileResponse {
+pub enum UploadFileError {
     #[serde(rename = "not_requested")]
     NotRequested,
     #[serde(rename = "already_uploaded")]
     AlreadyUploaded,
-    #[serde(rename = "ok")]
-    Ok,
 }
 
 pub struct State {

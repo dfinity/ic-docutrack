@@ -1,18 +1,14 @@
-use crate::{FileContent, State, UploadFileResponse};
-use ic_cdk::export::Principal;
+use crate::{FileContent, State, UploadFileError};
 
 pub fn upload_file(
-    _caller: Principal,
     file_id: u64,
     contents: Vec<u8>,
     state: &mut State,
-) -> UploadFileResponse {
-    // TODO: check if the user has permission.
-
+) -> Result<(), UploadFileError> {
     // Fetch the file.
     let file = match state.file_data.get_mut(&file_id) {
         Some(file) => file,
-        None => return UploadFileResponse::NotRequested,
+        None => return Err(UploadFileError::NotRequested),
     };
 
     // Retrieve the alias associated with the file.
@@ -22,7 +18,7 @@ pub fn upload_file(
             file.content = FileContent::Uploaded { contents };
             alias
         }
-        FileContent::Uploaded { .. } => return UploadFileResponse::AlreadyUploaded,
+        FileContent::Uploaded { .. } => return Err(UploadFileError::AlreadyUploaded),
     };
 
     // The file is now uploaded. Delete the alias from the state.
@@ -31,13 +27,14 @@ pub fn upload_file(
         .remove(&alias)
         .expect("alias must exist");
 
-    UploadFileResponse::Ok
+    Ok(())
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
     use crate::{api::request_file, File, FileMetadata};
+    use ic_cdk::export::Principal;
     use maplit::btreemap;
 
     #[test]
@@ -52,7 +49,7 @@ mod test {
 
         // Upload the file, which we assume to have a file ID of zero.
         let file_id = 0;
-        upload_file(Principal::anonymous(), file_id, vec![1, 2, 3], &mut state);
+        let _alias = upload_file(file_id, vec![1, 2, 3], &mut state);
 
         // The file is stored in the state.
         assert_eq!(
