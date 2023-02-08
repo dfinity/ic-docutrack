@@ -1,6 +1,7 @@
 mod aliases;
+pub mod api;
 use crate::aliases::{AliasGenerator, Randomness};
-use ic_cdk::export::candid::CandidType;
+use ic_cdk::export::{candid::CandidType, Principal};
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
@@ -24,52 +25,84 @@ pub enum WhoamiResponse {
 }
 
 /// File metadata.
-#[derive(CandidType, Serialize, Deserialize, Clone)]
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FileMetadata {
+    pub file_name: String,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub enum GetAliasInfoError {
+    #[serde(rename = "not_found")]
+    NotFound,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct AliasInfo {
     pub file_id: u64,
     pub file_name: String,
 }
 
 // A file is composed of its metadata and its content, which is a blob.
+#[derive(Debug, PartialEq, Eq)]
 pub struct File {
-    #[allow(dead_code)]
     pub metadata: FileMetadata,
-    pub contents: Option<Vec<u8>>,
+    pub content: FileContent,
 }
 
-#[derive(CandidType, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq)]
+pub enum FileContent {
+    Pending { alias: String },
+    Uploaded { contents: Vec<u8> },
+}
+
+#[derive(CandidType, Serialize, Deserialize, PartialEq, Debug)]
 pub enum FileData {
     #[serde(rename = "not_found_file")]
     NotFoundFile,
     #[serde(rename = "not_uploaded_file")]
     NotUploadedFile,
+    #[serde(rename = "permission_error")]
+    PermissionError,
     #[serde(rename = "found_file")]
     FoundFile(Vec<u8>),
 }
 
 #[derive(CandidType, Serialize, Deserialize)]
-pub enum UploadFileResponse {
-    #[serde(rename = "not_requested_file")]
-    NotRequestedFile,
-    #[serde(rename = "already_uploaded_file")]
-    AlreadyUploadedFile,
-    #[serde(rename = "upload_ok")]
-    UploadOk,
+pub enum UploadFileError {
+    #[serde(rename = "not_requested")]
+    NotRequested,
+    #[serde(rename = "already_uploaded")]
+    AlreadyUploaded,
 }
 
 pub struct State {
-    /// Keeps track of how many files have been requested so far
-    /// and is used to assign IDs to newly requested files.
-    pub file_count: u64,
+    // Keeps track of how many files have been requested so far
+    // and is used to assign IDs to newly requested files.
+    file_count: u64,
+
     /// Keeps track of usernames vs. their principals.
-    pub users: BTreeMap<ic_cdk::export::Principal, User>,
+    pub users: BTreeMap<Principal, User>,
+
     /// Mapping between file IDs and file information.
     pub file_data: BTreeMap<u64, File>,
-    /// Mapping between file aliases (randomly generated links) and file metadata.
-    pub file_alias_index: BTreeMap<String, FileMetadata>,
+
+    /// Mapping between file aliases (randomly generated links) and file ID.
+    pub file_alias_index: BTreeMap<String, u64>,
+
+    /// Mapping between a user's principal and the list of files that are owned by the user.
+    pub file_owners: BTreeMap<Principal, Vec<u64>>,
 
     // Generates aliases for file requests.
     alias_generator: AliasGenerator,
+}
+
+impl State {
+    pub(crate) fn generate_file_id(&mut self) -> u64 {
+        // The file ID is an auto-incrementing integer.
+        let file_id = self.file_count;
+        self.file_count += 1;
+        file_id
+    }
 }
 
 impl Default for State {
@@ -79,6 +112,7 @@ impl Default for State {
             users: BTreeMap::new(),
             file_data: BTreeMap::new(),
             file_alias_index: BTreeMap::new(),
+            file_owners: BTreeMap::new(),
             alias_generator: AliasGenerator::new(
                 Randomness::try_from(vec![0; 32].as_slice()).unwrap(),
             ),
