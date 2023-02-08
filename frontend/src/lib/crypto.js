@@ -26,7 +26,6 @@ async function encryptForUser(plaintext, publicKey) {
     );
 }
 
-
 /**
  * @param {ArrayBuffer} ciphertext 
  * @param {CryptoKey} privateKey 
@@ -51,7 +50,6 @@ async function generateFileKey() {
     return key;
 }
 
-
 // Return an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer, including the initialization vector
 async function encryptFile(data, key) {  
     // The iv must never be reused with a given key.
@@ -71,7 +69,6 @@ async function encryptFile(data, key) {
     uint8view.set(new Uint8Array(ciphertext), iv.byteLength);
     return cipherBuffer;
 }
-
 
 /**
  * @param {ArrayBuffer} data 

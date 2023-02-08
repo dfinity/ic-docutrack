@@ -3,5 +3,6 @@ module.exports = {
   testMatch: [
      "**/crypto.test.js",
      "**/file.test.js",
+     "**/keyStorage.test.js",
   ],
 };

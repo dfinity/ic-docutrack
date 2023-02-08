@@ -12,8 +12,12 @@ thread_local! {
 
 #[derive(CandidType, Serialize, Deserialize, Clone)]
 pub struct User {
+    #[serde(rename = "first_name")]
     pub first_name: String,
+    #[serde(rename = "last_name")]
     pub last_name: String,
+    #[serde(rename = "public_key")]
+    pub public_key: Vec<u8>,
 }
 
 #[derive(CandidType, Serialize, Deserialize)]
@@ -28,6 +32,15 @@ pub enum WhoamiResponse {
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FileMetadata {
     pub file_name: String,
+    pub user_public_key: Vec<u8>,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct PublicFileMetadata {
+    #[serde(rename = "file_id")]
+    pub file_id: u64,
+    #[serde(rename = "file_name")]
+    pub file_name: String,
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -38,8 +51,12 @@ pub enum GetAliasInfoError {
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct AliasInfo {
+    #[serde(rename = "file_id")]
     pub file_id: u64,
+    #[serde(rename = "file_name")]
     pub file_name: String,
+    #[serde(rename = "user_public_key")]
+    pub user_public_key: Vec<u8>,
 }
 
 // A file is composed of its metadata and its content, which is a blob.
@@ -89,6 +106,9 @@ pub struct State {
     /// Mapping between file aliases (randomly generated links) and file ID.
     pub file_alias_index: BTreeMap<String, u64>,
 
+    /// Mapping between file aliases (randomly generated links) and file ID.
+    pub file_alias_user_key_index: BTreeMap<String, Vec<u8>>,
+
     /// Mapping between a user's principal and the list of files that are owned by the user.
     pub file_owners: BTreeMap<Principal, Vec<u64>>,
 
@@ -112,6 +132,7 @@ impl Default for State {
             users: BTreeMap::new(),
             file_data: BTreeMap::new(),
             file_alias_index: BTreeMap::new(),
+            file_alias_user_key_index: BTreeMap::new(),
             file_owners: BTreeMap::new(),
             alias_generator: AliasGenerator::new(
                 Randomness::try_from(vec![0; 32].as_slice()).unwrap(),
