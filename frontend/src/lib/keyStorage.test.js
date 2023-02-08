@@ -1,5 +1,5 @@
-const {loadKey, storeKey, clearKeys } = require('./keyStorage');
-const {generateUserKeypair } = require('./crypto');
+import { clearKeys } from './keyStorage';
+import { generateUserKeypair } from './crypto';
 
 test('create, store, load and clear keys', async () => {
 
@@ -10,7 +10,7 @@ test('create, store, load and clear keys', async () => {
   } = key;
   
   
-  const load_empty = await loadKey('public');
+  const load_empty = await clearKeys();
 
-  console.log(loadKey);
+  console.log( load_empty);
 });
