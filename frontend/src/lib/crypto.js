@@ -1,6 +1,5 @@
 const { subtle } = globalThis.crypto;
 
-
 // Return RSA key pair for user
 async function generateUserKeypair() {
     const key = await subtle.generateKey({
@@ -24,7 +23,6 @@ async function encryptForUser(plaintext, publicKey) {
     return ciphertext;
 }
 
-
 // Return an ArrayBuffer containing the decrypted version of the ciphertext ArrayBuffer
 async function decryptForUser(ciphertext, privateKey) {
     const decrypted = await subtle.decrypt({
@@ -46,7 +44,6 @@ async function generateFileKey() {
     return key;
 }
 
-
 // Return an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer, including the initialization vector
 async function encryptFile(data, key) {  
     // The iv must never be reused with a given key.
@@ -66,7 +63,6 @@ async function encryptFile(data, key) {
     uint8view.set(new Uint8Array(ciphertext), iv.byteLength);
     return cipherBuffer;
 }
-
 
 // Return an ArrayBuffer containing the decrypted version of the ciphertext ArrayBuffer (which must include the initialization vector in the first 12 bytes)
 async function decryptFile(data, key) {
