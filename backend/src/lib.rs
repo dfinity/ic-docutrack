@@ -47,9 +47,14 @@ pub struct AliasInfo {
 // A file is composed of its metadata and its content, which is a blob.
 #[derive(Debug, PartialEq, Eq)]
 pub struct File {
-    #[allow(dead_code)]
     pub metadata: FileMetadata,
-    pub contents: Option<Vec<u8>>,
+    pub content: FileContent,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum FileContent {
+    Pending { alias: String },
+    Uploaded { contents: Vec<u8> },
 }
 
 #[derive(CandidType, Serialize, Deserialize)]
@@ -64,12 +69,12 @@ pub enum FileData {
 
 #[derive(CandidType, Serialize, Deserialize)]
 pub enum UploadFileResponse {
-    #[serde(rename = "not_requested_file")]
-    NotRequestedFile,
-    #[serde(rename = "already_uploaded_file")]
-    AlreadyUploadedFile,
-    #[serde(rename = "upload_ok")]
-    UploadOk,
+    #[serde(rename = "not_requested")]
+    NotRequested,
+    #[serde(rename = "already_uploaded")]
+    AlreadyUploaded,
+    #[serde(rename = "ok")]
+    Ok,
 }
 
 pub struct State {

@@ -52,20 +52,8 @@ fn get_alias_info(alias: String) -> GetAliasInfoResponse {
 }
 
 #[update]
-fn upload_file(file_id: u64, file_content: Vec<u8>) -> UploadFileResponse {
-    with_state_mut(|s| match s.file_data.get_mut(&file_id) {
-        None => UploadFileResponse::NotRequestedFile,
-        Some(file) => {
-            let file_contents = &file.contents;
-            match file_contents {
-                None => {
-                    file.contents = Some(file_content.clone());
-                    UploadFileResponse::UploadOk
-                }
-                Some(_vec) => UploadFileResponse::AlreadyUploadedFile,
-            }
-        }
-    })
+fn upload_file(file_id: u64, contents: Vec<u8>) -> UploadFileResponse {
+    with_state_mut(|s| backend::api::upload_file(caller(), file_id, contents, s))
 }
 
 #[update]
@@ -77,13 +65,10 @@ fn request_file(request_name: String) -> String {
 fn download_file(file_id: u64) -> FileData {
     with_state(|s| match s.file_data.get(&file_id) {
         None => FileData::NotFoundFile,
-        Some(file) => {
-            let file_contents = &file.contents;
-            match file_contents {
-                None => FileData::NotUploadedFile,
-                Some(vec) => FileData::FoundFile(vec.clone()),
-            }
-        }
+        Some(file) => match &file.content {
+            FileContent::Pending { .. } => FileData::NotUploadedFile,
+            FileContent::Uploaded { contents } => FileData::FoundFile(contents.clone()),
+        },
     })
 }
 

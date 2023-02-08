@@ -1,23 +1,30 @@
-use crate::{File, FileMetadata, State};
+use crate::{File, FileContent, FileMetadata, State};
 use ic_cdk::export::Principal;
 
 /// Requests a file,
-pub fn request_file(caller: Principal, request_name: String, state: &mut State) -> String {
+pub fn request_file<S: Into<String>>(
+    caller: Principal,
+    request_name: S,
+    state: &mut State,
+) -> String {
     // Get the file ID and increment the one in the state.
     let file_id = state.file_count;
     state.file_count += 1;
 
+    // TODO: verify that file alias has not been used before.
+    let alias = state.alias_generator.next();
+
     let file = File {
         metadata: FileMetadata {
-            file_name: request_name,
+            file_name: request_name.into(),
         },
-        contents: None,
+        content: FileContent::Pending {
+            alias: alias.clone(),
+        },
     };
 
     state.file_data.insert(file_id, file);
 
-    // TODO: verify that file alias has not been used before.
-    let alias = state.alias_generator.next();
     state.file_alias_index.insert(alias.clone(), file_id);
 
     // The caller is the owner of this file.
@@ -47,7 +54,7 @@ mod test {
                     metadata: FileMetadata {
                         file_name: "request".to_string(),
                     },
-                    contents: None
+                    content: FileContent::Pending { alias: "puzzling-mountain".to_string() }
                 }
             }
         );

@@ -38,9 +38,9 @@ type download_file_response = variant {
 };
 
 type upload_file_response = variant {
-  not_requested_file;
-  already_uploaded_file;
-  upload_ok;
+  not_requested;
+  already_uploaded;
+  ok;
 };
 
 service docutrack : {
