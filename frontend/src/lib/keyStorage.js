@@ -1,6 +1,7 @@
+const { openDB } = require('idb');
 
- /* 
-  const db = openDB('crypto-store', 1, {
+ 
+const db = openDB('crypto-store', 1, {
     upgrade(db) {
       db.createObjectStore('keys');
     },
@@ -21,7 +22,7 @@ async function storeKey(key, val) {
   }
 */
 async function clearKeys() {
-   // return (await db).clear('keys');
+   return (await db).clear('keys');
 }
 
 //module.exports = {loadKey, storeKey, clearKeys }

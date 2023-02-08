@@ -1,3 +1,4 @@
+require("fake-indexeddb/auto");
 const { clearKeys } = require('./keyStorage');
 const { generateUserKeypair } = require('./crypto');
 
