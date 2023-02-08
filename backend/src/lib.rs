@@ -55,7 +55,7 @@ pub enum FileContent {
     Uploaded { contents: Vec<u8> },
 }
 
-#[derive(CandidType, Serialize, Deserialize, PartialEq)]
+#[derive(CandidType, Serialize, Deserialize, PartialEq, Debug)]
 pub enum FileData {
     #[serde(rename = "not_found_file")]
     NotFoundFile,
