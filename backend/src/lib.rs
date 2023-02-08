@@ -33,6 +33,14 @@ pub struct FileMetadata {
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct PublicFileMetadata {
+    #[serde(rename = "file_id")]
+    pub file_id: u64,
+    #[serde(rename = "file_name")]
+    pub file_name: String,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum GetAliasInfoError {
     #[serde(rename = "not_found")]
     NotFound,

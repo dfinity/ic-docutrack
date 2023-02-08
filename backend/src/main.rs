@@ -23,14 +23,8 @@ fn who_am_i() -> WhoamiResponse {
 }
 
 #[query]
-fn get_files() -> Vec<FileMetadata> {
-    with_state(|s| match s.file_owners.get(&caller()) {
-        None => vec![],
-        Some(file_ids) => file_ids
-            .iter()
-            .map(|file_id| s.file_data.get(file_id).unwrap().metadata.clone())
-            .collect(),
-    })
+fn get_files() -> Vec<PublicFileMetadata> {
+    with_state(|s| backend::api::get_files(s, caller()))
 }
 
 #[query]
