@@ -23,12 +23,25 @@ pub fn download_file(s: &State, file_id: u64, caller: Principal) -> FileData {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{api::request_file, api::upload_file};
+    use crate::{
+        api::request_file,
+        api::{set_user_info, upload_file},
+        User,
+    };
     use ic_cdk::export::Principal;
 
     #[test]
     fn test_user_not_allowed() {
         let mut state = State::default();
+        set_user_info(
+            &mut state,
+            Principal::anonymous(),
+            User {
+                first_name: "John".to_string(),
+                last_name: "Doe".to_string(),
+                public_key: vec![1, 2, 3],
+            },
+        );
         // Request a file.
         request_file(Principal::anonymous(), "request", &mut state);
 
@@ -41,6 +54,26 @@ mod test {
     #[test]
     fn test_user_does_not_have_file() {
         let mut state = State::default();
+        set_user_info(
+            &mut state,
+            Principal::anonymous(),
+            User {
+                first_name: "John".to_string(),
+                last_name: "Doe".to_string(),
+                public_key: vec![1, 2, 3],
+            },
+        );
+
+        set_user_info(
+            &mut state,
+            Principal::from_slice(&[0, 1, 2]),
+            User {
+                first_name: "John".to_string(),
+                last_name: "Test".to_string(),
+                public_key: vec![1, 2, 4],
+            },
+        );
+
         // Request a file.
         request_file(Principal::anonymous(), "request", &mut state);
         // Request a file.
@@ -59,6 +92,15 @@ mod test {
     #[test]
     fn test_file_not_uploaded() {
         let mut state = State::default();
+        set_user_info(
+            &mut state,
+            Principal::anonymous(),
+            User {
+                first_name: "John".to_string(),
+                last_name: "Doe".to_string(),
+                public_key: vec![1, 2, 3],
+            },
+        );
         // Request a file.
         request_file(Principal::anonymous(), "request", &mut state);
 
@@ -71,6 +113,16 @@ mod test {
     #[test]
     fn test_file_downloads_correctly() {
         let mut state = State::default();
+
+        set_user_info(
+            &mut state,
+            Principal::anonymous(),
+            User {
+                first_name: "John".to_string(),
+                last_name: "Doe".to_string(),
+                public_key: vec![1, 2, 3],
+            },
+        );
 
         // Request a file.
         request_file(Principal::anonymous(), "request", &mut state);

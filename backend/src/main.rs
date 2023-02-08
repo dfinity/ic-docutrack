@@ -10,16 +10,8 @@ fn hello_world() -> String {
 }
 
 #[update]
-fn set_user(first_name: String, last_name: String) {
-    with_state_mut(|s| {
-        s.users.insert(
-            ic_cdk::api::caller(),
-            User {
-                first_name,
-                last_name,
-            },
-        );
-    });
+fn set_user(user: User) {
+    with_state_mut(|s| backend::api::set_user_info(s, caller(), user))
 }
 
 #[query]
@@ -31,14 +23,8 @@ fn who_am_i() -> WhoamiResponse {
 }
 
 #[query]
-fn get_files() -> Vec<FileMetadata> {
-    with_state(|s| match s.file_owners.get(&caller()) {
-        None => vec![],
-        Some(file_ids) => file_ids
-            .iter()
-            .map(|file_id| s.file_data.get(file_id).unwrap().metadata.clone())
-            .collect(),
-    })
+fn get_files() -> Vec<PublicFileMetadata> {
+    with_state(|s| backend::api::get_files(s, caller()))
 }
 
 #[query]
@@ -50,6 +36,13 @@ fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
             .map(|file_id| AliasInfo {
                 file_id: *file_id,
                 file_name: s.file_data.get(file_id).unwrap().metadata.file_name.clone(),
+                user_public_key: s
+                    .file_data
+                    .get(file_id)
+                    .unwrap()
+                    .metadata
+                    .user_public_key
+                    .clone(),
             })
     })
 }
