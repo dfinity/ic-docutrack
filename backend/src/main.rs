@@ -1,3 +1,4 @@
+use backend::api::UploadFileAtomicRequest;
 use backend::*;
 use ic_cdk::api::caller;
 use ic_cdk_macros::query;
@@ -41,31 +42,26 @@ fn get_files() -> Vec<FileMetadata> {
 }
 
 #[query]
-fn get_alias_info(alias: String) -> GetAliasInfoResponse {
-    with_state(|s| match s.file_alias_index.get(&alias) {
-        Some(file_id) => GetAliasInfoResponse::Found(AliasInfo {
-            file_id: *file_id,
-            file_name: s.file_data.get(file_id).unwrap().metadata.file_name.clone(),
-        }),
-        None => GetAliasInfoResponse::NotFound,
+fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
+    with_state(|s| {
+        s.file_alias_index
+            .get(&alias)
+            .ok_or(GetAliasInfoError::NotFound)
+            .map(|file_id| AliasInfo {
+                file_id: *file_id,
+                file_name: s.file_data.get(file_id).unwrap().metadata.file_name.clone(),
+            })
     })
 }
 
 #[update]
-fn upload_file(file_id: u64, file_content: Vec<u8>) -> UploadFileResponse {
-    with_state_mut(|s| match s.file_data.get_mut(&file_id) {
-        None => UploadFileResponse::NotRequestedFile,
-        Some(file) => {
-            let file_contents = &file.contents;
-            match file_contents {
-                None => {
-                    file.contents = Some(file_content.clone());
-                    UploadFileResponse::UploadOk
-                }
-                Some(_vec) => UploadFileResponse::AlreadyUploadedFile,
-            }
-        }
-    })
+fn upload_file(file_id: u64, contents: Vec<u8>) -> Result<(), UploadFileError> {
+    with_state_mut(|s| backend::api::upload_file(file_id, contents, s))
+}
+
+#[update]
+fn upload_file_atomic(request: UploadFileAtomicRequest) {
+    with_state_mut(|s| backend::api::upload_file_atomic(caller(), request, s))
 }
 
 #[update]
@@ -75,16 +71,7 @@ fn request_file(request_name: String) -> String {
 
 #[query]
 fn download_file(file_id: u64) -> FileData {
-    with_state(|s| match s.file_data.get(&file_id) {
-        None => FileData::NotFoundFile,
-        Some(file) => {
-            let file_contents = &file.contents;
-            match file_contents {
-                None => FileData::NotUploadedFile,
-                Some(vec) => FileData::FoundFile(vec.clone()),
-            }
-        }
-    })
+    with_state(|s| backend::api::download_file(s, file_id, caller()))
 }
 
 fn main() {}

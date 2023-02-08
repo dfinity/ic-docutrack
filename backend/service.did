@@ -24,8 +24,8 @@ type who_am_i_response = variant {
 };
 
 type get_alias_info_response = variant {
-  not_found;
-  found: record {
+  Err: variant { not_found };
+  Ok: record {
     file_id: file_id;
     file_name: text;
   }
@@ -34,13 +34,26 @@ type get_alias_info_response = variant {
 type download_file_response = variant {
   not_found_file;
   not_uploaded_file;
+  permission_error;
   found_file: blob;
 };
 
 type upload_file_response = variant {
-  not_requested_file;
-  already_uploaded_file;
-  upload_ok;
+  Ok;
+  Err: upload_file_error;
+};
+
+type upload_file_error = variant {
+  // File was already uploaded.
+  already_uploaded;
+
+  // No such file is requested.
+  not_requested;
+};
+
+type upload_file_atomic_request = record {
+  name: text;
+  content: blob;
 };
 
 service docutrack : {
@@ -63,5 +76,7 @@ service docutrack : {
   download_file: (file_id) -> (download_file_response) ;
 
   get_files: () -> (vec file_metadata);
+
+  upload_file_atomic: (upload_file_atomic_request) -> ();
 }
 
