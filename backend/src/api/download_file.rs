@@ -79,10 +79,9 @@ mod test {
         let file_id = 0;
         let _alias = upload_file(file_id, vec![1, 2, 3], &mut state);
 
-        let file_contents: FileData = download_file(&state, file_id, Principal::anonymous());
-        match file_contents {
-            FileData::FoundFile(data) => assert_eq!(data, vec![1, 2, 3]),
-            _ => assert!(false),
-        }
+        assert_eq!(
+            download_file(&state, file_id, Principal::anonymous()),
+            FileData::FoundFile(vec![1, 2, 3])
+        );
     }
 }

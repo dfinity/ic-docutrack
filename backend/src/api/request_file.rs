@@ -7,10 +7,6 @@ pub fn request_file<S: Into<String>>(
     request_name: S,
     state: &mut State,
 ) -> String {
-    // Get the file ID and increment the one in the state.
-    let file_id = state.file_count;
-    state.file_count += 1;
-
     // TODO: verify that file alias has not been used before.
     let alias = state.alias_generator.next();
 
@@ -22,6 +18,8 @@ pub fn request_file<S: Into<String>>(
             alias: alias.clone(),
         },
     };
+
+    let file_id = state.generate_file_id();
 
     state.file_data.insert(file_id, file);
 

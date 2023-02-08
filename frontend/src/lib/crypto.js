@@ -1,5 +1,6 @@
 const { subtle } = globalThis.crypto;
 
+// Return RSA key pair for user
 async function generateUserKeypair() {
     const key = await subtle.generateKey({
         name: "RSA-OAEP",
@@ -11,7 +12,7 @@ async function generateUserKeypair() {
     return key;
 }
 
-
+// Return an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer
 async function encryptForUser(plaintext, publicKey) {
     const ciphertext = await subtle.encrypt({
         name: "RSA-OAEP"
@@ -22,7 +23,7 @@ async function encryptForUser(plaintext, publicKey) {
     return ciphertext;
 }
 
-
+// Return an ArrayBuffer containing the decrypted version of the ciphertext ArrayBuffer
 async function decryptForUser(ciphertext, privateKey) {
     const decrypted = await subtle.decrypt({
         name: "RSA-OAEP"
@@ -33,6 +34,7 @@ async function decryptForUser(ciphertext, privateKey) {
     return decrypted;
 }
 
+// Return AES-GCM key
 async function generateFileKey() {
     const key = await subtle.generateKey({
             name: 'AES-GCM',
@@ -42,6 +44,7 @@ async function generateFileKey() {
     return key;
 }
 
+// Return an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer, including the initialization vector
 async function encryptFile(data, key) {  
     // The iv must never be reused with a given key.
     const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -61,6 +64,7 @@ async function encryptFile(data, key) {
     return cipherBuffer;
 }
 
+// Return an ArrayBuffer containing the decrypted version of the ciphertext ArrayBuffer (which must include the initialization vector in the first 12 bytes)
 async function decryptFile(data, key) {
     if (data.length < 13) {
         throw new Error('wrong encoding, too short to contain iv');

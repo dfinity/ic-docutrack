@@ -1,3 +1,4 @@
+use backend::api::UploadFileAtomicRequest;
 use backend::*;
 use ic_cdk::api::caller;
 use ic_cdk_macros::query;
@@ -56,6 +57,11 @@ fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
 #[update]
 fn upload_file(file_id: u64, contents: Vec<u8>) -> Result<(), UploadFileError> {
     with_state_mut(|s| backend::api::upload_file(file_id, contents, s))
+}
+
+#[update]
+fn upload_file_atomic(request: UploadFileAtomicRequest) {
+    with_state_mut(|s| backend::api::upload_file_atomic(caller(), request, s))
 }
 
 #[update]
