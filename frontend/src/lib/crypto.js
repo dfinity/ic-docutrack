@@ -1,39 +1,44 @@
 const { subtle } = globalThis.crypto;
 
-
-// Return RSA key pair for user
+/**
+ * @returns {Promise<CryptoKeyPair>} RSA key pair for user.
+ */
 async function generateUserKeypair() {
-    const key = await subtle.generateKey({
+    return await subtle.generateKey({
         name: "RSA-OAEP",
         modulusLength: 4096,
         publicExponent: new Uint8Array([1, 0, 1]),
         hash: "SHA-256"
     }, true, ['encrypt', 'decrypt']);
-  
-    return key;
 }
 
-// Return an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer
+/**
+ * @param {ArrayBuffer} plaintext 
+ * @param {CryptoKey} publicKey 
+ * @returns an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer.
+ */
 async function encryptForUser(plaintext, publicKey) {
-    const ciphertext = await subtle.encrypt({
-        name: "RSA-OAEP"
+    return await subtle.encrypt({
+            name: "RSA-OAEP"
         },
         publicKey,
         plaintext
-    )
-    return ciphertext;
+    );
 }
 
 
-// Return an ArrayBuffer containing the decrypted version of the ciphertext ArrayBuffer
+/**
+ * @param {ArrayBuffer} ciphertext 
+ * @param {CryptoKey} privateKey 
+ * @returns {Promise<ArrayBuffer>} containing the decrypted version of the ciphertext ArrayBuffer
+ */
 async function decryptForUser(ciphertext, privateKey) {
-    const decrypted = await subtle.decrypt({
+    return await subtle.decrypt({
         name: "RSA-OAEP"
       },
       privateKey,
       ciphertext
-    )
-    return decrypted;
+    );
 }
 
 // Return AES-GCM key
@@ -68,7 +73,11 @@ async function encryptFile(data, key) {
 }
 
 
-// Return an ArrayBuffer containing the decrypted version of the ciphertext ArrayBuffer (which must include the initialization vector in the first 12 bytes)
+/**
+ * @param {ArrayBuffer} data 
+ * @param {CryptoKey} key 
+ * @returns {Promise<ArrayBuffer>} containing the decrypted version of the ciphertext ArrayBuffer (which must include the initialization vector in the first 12 bytes) 
+ */
 async function decryptFile(data, key) {
     if (data.length < 13) {
         throw new Error('wrong encoding, too short to contain iv');
@@ -76,7 +85,7 @@ async function decryptFile(data, key) {
     const iv_decoded = new Uint8Array(data.slice(0,12));
     const cipher_decoded = data.slice(12);
 
-    let decrypted_data_encoded = await subtle.decrypt(
+    return await subtle.decrypt(
                     {
                       name: "AES-GCM",
                       iv: iv_decoded
@@ -84,7 +93,6 @@ async function decryptFile(data, key) {
                     key,
                     cipher_decoded
                   );
-    return decrypted_data_encoded;
 }
 
 module.exports = {generateUserKeypair, encryptForUser, decryptForUser,
