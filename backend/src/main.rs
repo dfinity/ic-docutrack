@@ -10,16 +10,8 @@ fn hello_world() -> String {
 }
 
 #[update]
-fn set_user(first_name: String, last_name: String) {
-    with_state_mut(|s| {
-        s.users.insert(
-            ic_cdk::api::caller(),
-            User {
-                first_name,
-                last_name,
-            },
-        );
-    });
+fn set_user(first_name: String, last_name: String, public_key: Vec<u8>) {
+    with_state_mut(|s| backend::api::set_user_info(s, caller(), first_name, last_name, public_key))
 }
 
 #[query]
@@ -50,6 +42,13 @@ fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
             .map(|file_id| AliasInfo {
                 file_id: *file_id,
                 file_name: s.file_data.get(file_id).unwrap().metadata.file_name.clone(),
+                user_public_key: s
+                    .file_data
+                    .get(file_id)
+                    .unwrap()
+                    .metadata
+                    .user_public_key
+                    .clone(),
             })
     })
 }

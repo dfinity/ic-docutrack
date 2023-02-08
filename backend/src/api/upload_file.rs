@@ -33,13 +33,24 @@ pub fn upload_file(
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{api::request_file, File, FileMetadata};
+    use crate::{
+        api::{request_file, set_user_info, user_info::get_user_key},
+        File, FileMetadata,
+    };
     use ic_cdk::export::Principal;
     use maplit::btreemap;
 
     #[test]
     fn stored_file_in_state() {
         let mut state = State::default();
+
+        set_user_info(
+            &mut state,
+            Principal::anonymous(),
+            "John".to_string(),
+            "Doe".to_string(),
+            vec![1, 2, 3],
+        );
 
         // Request a file.
         request_file(Principal::anonymous(), "request", &mut state);
@@ -58,6 +69,7 @@ mod test {
                 file_id => File {
                     metadata: FileMetadata {
                         file_name: "request".to_string(),
+                        user_public_key: get_user_key(&state, Principal::anonymous())
                     },
                     content: FileContent::Uploaded {
                         contents: vec![1,2,3]
