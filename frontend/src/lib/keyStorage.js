@@ -1,4 +1,3 @@
-import { DBSchema, openDB } from 'idb';
 
  /* 
   const db = openDB('crypto-store', 1, {
