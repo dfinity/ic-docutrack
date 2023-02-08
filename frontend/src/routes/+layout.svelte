@@ -1,6 +1,5 @@
 <script>
 	import Navbar from '$lib/components/Navbar.svelte';
-	import Table from '$lib/components/ContentTable.svelte';
 </script>
 
 <div class="app">
