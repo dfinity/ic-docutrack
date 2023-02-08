@@ -34,6 +34,7 @@ type get_alias_info_response = variant {
 type download_file_response = variant {
   not_found_file;
   not_uploaded_file;
+  permission_error;
   found_file: blob;
 };
 

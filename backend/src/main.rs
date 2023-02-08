@@ -65,13 +65,7 @@ fn request_file(request_name: String) -> String {
 
 #[query]
 fn download_file(file_id: u64) -> FileData {
-    with_state(|s| match s.file_data.get(&file_id) {
-        None => FileData::NotFoundFile,
-        Some(file) => match &file.content {
-            FileContent::Pending { .. } => FileData::NotUploadedFile,
-            FileContent::Uploaded { contents } => FileData::FoundFile(contents.clone()),
-        },
-    })
+    with_state(|s| backend::api::download_file(s, file_id, caller()))
 }
 
 fn main() {}

@@ -55,12 +55,14 @@ pub enum FileContent {
     Uploaded { contents: Vec<u8> },
 }
 
-#[derive(CandidType, Serialize, Deserialize)]
+#[derive(CandidType, Serialize, Deserialize, PartialEq)]
 pub enum FileData {
     #[serde(rename = "not_found_file")]
     NotFoundFile,
     #[serde(rename = "not_uploaded_file")]
     NotUploadedFile,
+    #[serde(rename = "permission_error")]
+    PermissionError,
     #[serde(rename = "found_file")]
     FoundFile(Vec<u8>),
 }
