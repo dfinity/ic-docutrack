@@ -9,7 +9,6 @@ pub fn request_file(caller: Principal, request_name: String, state: &mut State) 
 
     let file = File {
         metadata: FileMetadata {
-            file_id,
             file_name: request_name,
         },
         contents: None,
@@ -46,7 +45,6 @@ mod test {
             btreemap! {
                 0 => File {
                     metadata: FileMetadata {
-                        file_id: 0,
                         file_name: "request".to_string(),
                     },
                     contents: None
