@@ -1,36 +1,34 @@
 <script lang="ts">
   import { Table } from 'sveltestrap';
-  export let firstName;
+  import Submenu from '$lib/components/Submenu.svelte';
+  export let columns;  // list of objects with key and label properties
+  export let data;  // list of objects where the properties match the keys in columns
 </script>
 
 <Table hover>
   <thead>
 
     <tr>
-      <th>#</th>
-      <th>{firstName}</th>
-      <th>Last Name</th>
-      <th>Username</th>
+      {#each columns as col}
+        <th>{col.label}</th>
+      {/each}
+      {#if data && "items" in data[0]}
+        <th></th>
+      {/if}
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-    </tr>
+    {#each data as row}
+      <tr>
+        {#each columns as col}
+          <td>{row[col.key]}</td>
+        {/each}
+        <td>
+          {#if "items" in row}
+            <Submenu items={row.items}/>
+          {/if}
+        </td>
+      </tr>
+    {/each}
   </tbody>
 </Table>
