@@ -1,7 +1,7 @@
 type file_id = nat64;
 
 type file_metadata = record {
-  file_id;
+  file_id: file_id;
   file_name : text;
 };
 
@@ -16,6 +16,7 @@ type file = record {
 type user = record {
   first_name: text;
   last_name: text;
+  public_key: blob;
 };
 
 type who_am_i_response = variant {
@@ -28,6 +29,7 @@ type get_alias_info_response = variant {
   Ok: record {
     file_id: file_id;
     file_name: text;
+    user_public_key: blob;
   }
 };
 
@@ -59,7 +61,7 @@ type upload_file_atomic_request = record {
 service docutrack : {
   hello_world : () -> (text);
 
-  set_user: (first_name: text, last_name: text) -> ();
+  set_user: (user) -> ();
 
   who_am_i: () -> (who_am_i_response); 
 
