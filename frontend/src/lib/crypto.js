@@ -9,7 +9,7 @@ let publicKey = null;
 let privateKey = null;
 
 /**
-   * Fetch this browser's public key. 
+   * Fetch this browser's public key (ArrayBuffer). 
    * If no keypair exists, one will be generated and stored in localStorage.
    */
 async function init() {
@@ -18,14 +18,19 @@ async function init() {
     this.privateKey = await loadKey('private');
 
     if (!publicKey || !privateKey) {
-        const keypair = await generateUserKeypair();
+        const keypair = await subtle.generateKey({
+            name: "RSA-OAEP",
+            modulusLength: 4096,
+            publicExponent: new Uint8Array([1, 0, 1]),
+            hash: "SHA-256"
+        }, true, ['encrypt', 'decrypt']);
         await storeKey('public', keypair.publicKey);
         await storeKey('private', keypair.privateKey);
         this.publicKey = keypair.publicKey;
         this.privateKey = keypair.privateKey;
     }
     const exportedPublicKey = await subtle.exportKey(
-      'raw',
+      'spki',
       this.publicKey
     );
 
@@ -33,35 +38,35 @@ async function init() {
 
 }
 
-// Return RSA key pair for user
-async function generateUserKeypair() {
-    const key = await subtle.generateKey({
-        name: "RSA-OAEP",
-        modulusLength: 4096,
-        publicExponent: new Uint8Array([1, 0, 1]),
-        hash: "SHA-256"
-    }, true, ['encrypt', 'decrypt']);
-  
-    return key;
-}
-
 // Return an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer
-async function encryptForUser(plaintext, publicKey) {
+async function encryptForUser(plaintext, exportedPublicKey) {
+
+    const importedKey = await subtle.importKey(
+        'spki',
+        exportedPublicKey,
+        {
+          name: 'RSA-OAEP',
+          hash: { name: 'SHA-256' },
+        },
+        true,
+        ['encrypt']
+      );
+
     const ciphertext = await subtle.encrypt({
         name: "RSA-OAEP"
         },
-        publicKey,
+        importedKey,
         plaintext
     )
     return ciphertext;
 }
 
 // Return an ArrayBuffer containing the decrypted version of the ciphertext ArrayBuffer
-async function decryptForUser(ciphertext, privateKey) {
+async function decryptForUser(ciphertext) {
     const decrypted = await subtle.decrypt({
         name: "RSA-OAEP"
       },
-      privateKey,
+      this.privateKey,
       ciphertext
     )
     return decrypted;
@@ -116,5 +121,5 @@ async function decryptFile(data, key) {
     return decrypted_data_encoded;
 }
 
-module.exports = {generateUserKeypair, encryptForUser, decryptForUser,
+module.exports = {init, encryptForUser, decryptForUser,
     generateFileKey, encryptFile, decryptFile }
