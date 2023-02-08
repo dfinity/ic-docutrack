@@ -1,7 +1,7 @@
 type file_id = nat64;
 
 type file_metadata = record {
-  file_id;
+  file_id: file_id;
   file_name : text;
 };
 
