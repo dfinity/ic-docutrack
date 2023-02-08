@@ -76,9 +76,9 @@ pub enum UploadFileError {
 }
 
 pub struct State {
-    /// Keeps track of how many files have been requested so far
-    /// and is used to assign IDs to newly requested files.
-    pub file_count: u64,
+    // Keeps track of how many files have been requested so far
+    // and is used to assign IDs to newly requested files.
+    file_count: u64,
 
     /// Keeps track of usernames vs. their principals.
     pub users: BTreeMap<Principal, User>,
@@ -94,6 +94,15 @@ pub struct State {
 
     // Generates aliases for file requests.
     alias_generator: AliasGenerator,
+}
+
+impl State {
+    pub(crate) fn generate_file_id(&mut self) -> u64 {
+        // The file ID is an auto-incrementing integer.
+        let file_id = self.file_count;
+        self.file_count += 1;
+        file_id
+    }
 }
 
 impl Default for State {

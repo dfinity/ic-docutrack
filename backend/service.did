@@ -49,7 +49,12 @@ type upload_file_error = variant {
 
   // No such file is requested.
   not_requested;
-}
+};
+
+type upload_file_atomic_request = record {
+  name: text;
+  content: blob;
+};
 
 service docutrack : {
   hello_world : () -> (text);
@@ -71,5 +76,7 @@ service docutrack : {
   download_file: (file_id) -> (download_file_response) ;
 
   get_files: () -> (vec file_metadata);
+
+  upload_file_atomic: (upload_file_atomic_request) -> ();
 }
 
