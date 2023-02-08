@@ -41,13 +41,15 @@ fn get_files() -> Vec<FileMetadata> {
 }
 
 #[query]
-fn get_alias_info(alias: String) -> GetAliasInfoResponse {
-    with_state(|s| match s.file_alias_index.get(&alias) {
-        Some(file_id) => GetAliasInfoResponse::Found(AliasInfo {
-            file_id: *file_id,
-            file_name: s.file_data.get(file_id).unwrap().metadata.file_name.clone(),
-        }),
-        None => GetAliasInfoResponse::NotFound,
+fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
+    with_state(|s| {
+        s.file_alias_index
+            .get(&alias)
+            .ok_or(GetAliasInfoError::NotFound)
+            .map(|file_id| AliasInfo {
+                file_id: *file_id,
+                file_name: s.file_data.get(file_id).unwrap().metadata.file_name.clone(),
+            })
     })
 }
 

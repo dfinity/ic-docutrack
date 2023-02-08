@@ -24,8 +24,8 @@ type who_am_i_response = variant {
 };
 
 type get_alias_info_response = variant {
-  not_found;
-  found: record {
+  Err: variant { not_found };
+  Ok: record {
     file_id: file_id;
     file_name: text;
   }

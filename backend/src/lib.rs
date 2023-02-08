@@ -31,11 +31,9 @@ pub struct FileMetadata {
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-pub enum GetAliasInfoResponse {
+pub enum GetAliasInfoError {
     #[serde(rename = "not_found")]
     NotFound,
-    #[serde(rename = "found")]
-    Found(AliasInfo),
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
