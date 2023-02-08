@@ -11,7 +11,7 @@ pub fn get_files(state: &State, caller: Principal) -> Vec<PublicFileMetadata> {
                 file_name: state
                     .file_data
                     .get(file_id)
-                    .unwrap()
+                    .expect("file must exist")
                     .metadata
                     .file_name
                     .clone(),
