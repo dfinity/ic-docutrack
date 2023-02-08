@@ -40,7 +40,7 @@ pub fn request_file<S: Into<String>>(
 
 #[cfg(test)]
 mod test {
-    use crate::api::set_user_info;
+    use crate::{api::set_user_info, User};
 
     use super::*;
     use maplit::btreemap;
@@ -51,9 +51,11 @@ mod test {
         set_user_info(
             &mut state,
             Principal::anonymous(),
-            "John".to_string(),
-            "Doe".to_string(),
-            vec![1, 2, 3],
+            User {
+                first_name: "John".to_string(),
+                last_name: "Doe".to_string(),
+                public_key: vec![1, 2, 3],
+            },
         );
         request_file(Principal::anonymous(), "request".to_string(), &mut state);
 
@@ -84,9 +86,11 @@ mod test {
         set_user_info(
             &mut state,
             Principal::anonymous(),
-            "John".to_string(),
-            "Doe".to_string(),
-            vec![1, 2, 3],
+            User {
+                first_name: "John".to_string(),
+                last_name: "Doe".to_string(),
+                public_key: vec![1, 2, 3],
+            },
         );
         request_file(Principal::anonymous(), "request".to_string(), &mut state);
         assert_eq!(state.file_count, 1);

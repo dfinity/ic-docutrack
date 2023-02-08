@@ -23,19 +23,23 @@ pub fn get_files(state: &State, caller: Principal) -> Vec<PublicFileMetadata> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::api::{request_file, set_user_info};
+    use crate::{
+        api::{request_file, set_user_info},
+        User,
+    };
     use ic_cdk::export::Principal;
 
     #[test]
     fn get_files_test() {
         let mut state = State::default();
-
         set_user_info(
             &mut state,
             Principal::anonymous(),
-            "John".to_string(),
-            "Doe".to_string(),
-            vec![1, 2, 3],
+            User {
+                first_name: "John".to_string(),
+                last_name: "Doe".to_string(),
+                public_key: vec![1, 2, 3],
+            },
         );
 
         // Request a file.

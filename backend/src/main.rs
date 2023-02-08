@@ -10,8 +10,8 @@ fn hello_world() -> String {
 }
 
 #[update]
-fn set_user(first_name: String, last_name: String, public_key: Vec<u8>) {
-    with_state_mut(|s| backend::api::set_user_info(s, caller(), first_name, last_name, public_key))
+fn set_user(user: User) {
+    with_state_mut(|s| backend::api::set_user_info(s, caller(), user))
 }
 
 #[query]

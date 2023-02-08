@@ -35,7 +35,7 @@ mod test {
     use super::*;
     use crate::{
         api::{request_file, set_user_info, user_info::get_user_key},
-        File, FileMetadata,
+        File, FileMetadata, User,
     };
     use ic_cdk::export::Principal;
     use maplit::btreemap;
@@ -47,9 +47,11 @@ mod test {
         set_user_info(
             &mut state,
             Principal::anonymous(),
-            "John".to_string(),
-            "Doe".to_string(),
-            vec![1, 2, 3],
+            User {
+                first_name: "John".to_string(),
+                last_name: "Doe".to_string(),
+                public_key: vec![1, 2, 3],
+            },
         );
 
         // Request a file.

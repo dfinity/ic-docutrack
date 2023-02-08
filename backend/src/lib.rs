@@ -12,8 +12,11 @@ thread_local! {
 
 #[derive(CandidType, Serialize, Deserialize, Clone)]
 pub struct User {
+    #[serde(rename = "first_name")]
     pub first_name: String,
+    #[serde(rename = "last_name")]
     pub last_name: String,
+    #[serde(rename = "public_key")]
     pub public_key: Vec<u8>,
 }
 
