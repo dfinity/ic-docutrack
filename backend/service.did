@@ -38,10 +38,17 @@ type download_file_response = variant {
 };
 
 type upload_file_response = variant {
-  not_requested_file;
-  already_uploaded_file;
-  upload_ok;
+  Ok;
+  Err: upload_file_error;
 };
+
+type upload_file_error = variant {
+  // File was already uploaded.
+  already_uploaded;
+
+  // No such file is requested.
+  not_requested;
+}
 
 service docutrack : {
   hello_world : () -> (text);
