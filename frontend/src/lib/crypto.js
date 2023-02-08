@@ -1,4 +1,37 @@
 const { subtle } = globalThis.crypto;
+const { clearKeys, storeKey, loadKey } = require('./keyStorage');
+
+// Public key associated with logged in device. Used to decrypt the symmetric secretKey,
+// which is stored by the dapp encrypted with the the publicKey
+let publicKey = null;
+// Private key associated with logged in device. Used to encrypt the symmetric secretKey 
+// for each device associated with the current principal, to be stored by the dapp in encrypted form
+let privateKey = null;
+
+/**
+   * Fetch this browser's public key. 
+   * If no keypair exists, one will be generated and stored in localStorage.
+   */
+async function init() {
+
+    this.publicKey = await loadKey('public');
+    this.privateKey = await loadKey('private');
+
+    if (!publicKey || !privateKey) {
+        const keypair = await generateUserKeypair();
+        await storeKey('public', keypair.publicKey);
+        await storeKey('private', keypair.privateKey);
+        this.publicKey = keypair.publicKey;
+        this.privateKey = keypair.privateKey;
+    }
+    const exportedPublicKey = await subtle.exportKey(
+      'raw',
+      this.publicKey
+    );
+
+    return exportedPublicKey;
+
+}
 
 // Return RSA key pair for user
 async function generateUserKeypair() {

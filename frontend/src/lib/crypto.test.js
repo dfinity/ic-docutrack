@@ -1,5 +1,7 @@
+require("fake-indexeddb/auto");
 const {generateUserKeypair, encryptForUser, decryptForUser,
   generateFileKey, encryptFile, decryptFile } = require('./crypto');
+  
 
 test('generate User key, encrypt and decrypt', async () => {
    // Create an ArrayBuffer with a size in bytes
