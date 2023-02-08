@@ -1,94 +1,100 @@
-const { subtle } = require("crypto");
-const { generateFileKey, encryptForUser, decryptForUser, decryptFile, encryptFile } = require("./crypto");
+const { subtle } = require('crypto');
+const {
+	generateFileKey,
+	encryptForUser,
+	decryptForUser,
+	decryptFile,
+	encryptFile
+} = require('./crypto');
 
 /**
  * A file that is backed by the docutrack backend service.
  */
 class File {
-    /**
-     * Initializes a file from unencrypted data.
-     * 
-     * @param {String} name 
-     * @param {ArrayBuffer} contents 
-     * 
-     * @returns {File}
-     */
-    static fromUnencrypted(name, contents) {
-        return new File(name, contents);
-    }
+	/**
+	 * Initializes a file from unencrypted data.
+	 *
+	 * @param {String} name
+	 * @param {ArrayBuffer} contents
+	 *
+	 * @returns {File}
+	 */
+	static fromUnencrypted(name, contents) {
+		return new File(name, contents);
+	}
 
-    /**
-     * Initializes a file from encrypted data.
-     *
-     * @param {String} name 
-     * @param {ArrayBuffer} encryptedBytes 
-     * @param {ArrayBuffer} encryptedDocumentKey 
-     * @param {CryptoKey} userPrivateKey 
-     * 
-     * @returns {Promise<File>}
-     */
-    static async fromEncrypted(name, encryptedBytes, encryptedDocumentKey, userPrivateKey) {
-        const rawDocumentKey = await decryptForUser(encryptedDocumentKey, userPrivateKey);
+	/**
+	 * Initializes a file from encrypted data.
+	 *
+	 * @param {String} name
+	 * @param {ArrayBuffer} encryptedBytes
+	 * @param {ArrayBuffer} encryptedDocumentKey
+	 * @param {CryptoKey} userPrivateKey
+	 *
+	 * @returns {Promise<File>}
+	 */
+	static async fromEncrypted(name, encryptedBytes, encryptedDocumentKey, userPrivateKey) {
+		const rawDocumentKey = await decryptForUser(encryptedDocumentKey, userPrivateKey);
 
-        // Decrypt the file's key using the user's key. 
-        const documentKey =  await subtle.importKey(
-            "raw",
-        rawDocumentKey,
-        {
-            name: "AES-GCM",
-          },true,
-            ["encrypt", "decrypt"]
-        );
+		// Decrypt the file's key using the user's key.
+		const documentKey = await subtle.importKey(
+			'raw',
+			rawDocumentKey,
+			{
+				name: 'AES-GCM'
+			},
+			true,
+			['encrypt', 'decrypt']
+		);
 
-        // Decrypt the document.
-        const contents = await decryptFile(encryptedBytes, documentKey);
+		// Decrypt the document.
+		const contents = await decryptFile(encryptedBytes, documentKey);
 
-        return new File(name, contents);
-    }
+		return new File(name, contents);
+	}
 
-    /**
-     * @param {String} name
-     * @param {ArrayBuffer} contents
-     */
-    constructor(name, contents) {
-        this.name = name;
-        this.contents = contents;
-        this.documentKey = null;
-    }
+	/**
+	 * @param {String} name
+	 * @param {ArrayBuffer} contents
+	 */
+	constructor(name, contents) {
+		this.name = name;
+		this.contents = contents;
+		this.documentKey = null;
+	}
 
+	/**
+	 * @returns {Promise<ArrayBuffer>} the encrypted bytes corresponding to this file.
+	 */
+	async encrypt() {
+		const documentKey = await this._getFileKey();
+		return encryptFile(this.contents, documentKey);
+	}
 
-    /**
-     * @returns {Promise<ArrayBuffer>} the encrypted bytes corresponding to this file.
-     */
-    async encrypt() {
-        const documentKey = await this._getFileKey();
-        return encryptFile(this.contents, documentKey);
-    }
+	/**
+	 * @param {CryptoKey} userPublicKey
+	 * @returns {Promise<ArrayBuffer>} the file's key encryped with the user's public key.
+	 */
+	async getEncryptedFileKey(userPublicKey) {
+		const key = await this._getFileKey();
 
-    /**
-     * @param {CryptoKey} userPublicKey
-     * @returns {Promise<ArrayBuffer>} the file's key encryped with the user's public key.
-     */
-    async getEncryptedFileKey(userPublicKey) {
-        const key = await this._getFileKey();
+		// Export they key into a binary format.
+		const exportedKey = await subtle.exportKey('raw', key);
 
-        // Export they key into a binary format.
-        const exportedKey = await subtle.exportKey("raw", key);
+		// Encrypt the exported key with the user's public key.
+		return await encryptForUser(exportedKey, userPublicKey);
+	}
 
-        // Encrypt the exported key with the user's public key.
-        return await encryptForUser(exportedKey, userPublicKey);
-    }
+	/**
+	 * @returns {Promise<CryptoKey>} the file's key. A key is generated if it doesn't exist.
+	 */
+	async _getFileKey() {
+		if (this.documentKey == null) {
+			this.documentKey = await generateFileKey();
+		}
 
-    /**
-     * @returns {Promise<CryptoKey>} the file's key. A key is generated if it doesn't exist.
-     */
-    async _getFileKey() {
-        if (this.documentKey == null) {
-                this.documentKey = await generateFileKey();
-        }
-    
-        return this.documentKey;
-    }
+		return this.documentKey;
+	}
 }
 
-module.exports = File
+module.exports = File;
