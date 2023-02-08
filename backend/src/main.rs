@@ -41,31 +41,21 @@ fn get_files() -> Vec<FileMetadata> {
 }
 
 #[query]
-fn get_request_info(alias: String) -> FileMetadata {
-    with_state(|s| match s.file_alias_index.get(&alias) {
-        Some(file_id) => s.file_data.get(file_id).unwrap().metadata.clone(),
-        None => FileMetadata {
-            file_id: 0,
-            file_name: "non-existing file".to_string(),
-        },
+fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
+    with_state(|s| {
+        s.file_alias_index
+            .get(&alias)
+            .ok_or(GetAliasInfoError::NotFound)
+            .map(|file_id| AliasInfo {
+                file_id: *file_id,
+                file_name: s.file_data.get(file_id).unwrap().metadata.file_name.clone(),
+            })
     })
 }
 
 #[update]
-fn upload_file(file_id: u64, file_content: Vec<u8>) -> UploadFileResponse {
-    with_state_mut(|s| match s.file_data.get_mut(&file_id) {
-        None => UploadFileResponse::NotRequestedFile,
-        Some(file) => {
-            let file_contents = &file.contents;
-            match file_contents {
-                None => {
-                    file.contents = Some(file_content.clone());
-                    UploadFileResponse::UploadOk
-                }
-                Some(_vec) => UploadFileResponse::AlreadyUploadedFile,
-            }
-        }
-    })
+fn upload_file(file_id: u64, contents: Vec<u8>) -> Result<(), UploadFileError> {
+    with_state_mut(|s| backend::api::upload_file(file_id, contents, s))
 }
 
 #[update]
