@@ -11,11 +11,20 @@ fn get_file_data(s: &State, file_id: u64) -> FileData {
 }
 
 pub fn download_file(s: &State, file_id: u64, caller: Principal) -> FileData {
+    ic_cdk::api::print(&format!("downloading {}", file_id));
+    ic_cdk::api::print(&format!("caller {}", caller));
+    ic_cdk::api::print(&format!("file owners {:?}", s.file_owners));
     match s.file_owners.get(&caller) {
-        None => FileData::PermissionError,
+        None => {
+            ic_cdk::api::print("permission denied 1");
+            FileData::PermissionError
+        }
         Some(files) => match files.contains(&file_id) {
             true => get_file_data(s, file_id),
-            false => FileData::PermissionError,
+            false => {
+                ic_cdk::api::print("permission denied 1");
+                FileData::PermissionError
+            }
         },
     }
 }

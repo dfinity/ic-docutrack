@@ -25,24 +25,56 @@
     </style>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Internet Identity Demo Webapp</title>
+    <title>Docutrack</title>
     <base href="/" />
 
     <link type="text/css" rel="stylesheet" href="main.css" />
   </head>
   <body>
     <main>
-      <h1>Internet Identity Demo Webapp</h1>
+      <h1>Docutrack</h1>
       <section>
-        <label for="iiUrl">Internet Identity URL:</label>
-        <input size="50" id="iiUrl" type="text" />
-      </section>
-      <section>
-        <button id="loginBtn">Login with Internet Identity</button>
+        <button id="loginBtn">Login</button>
       </section>
       <section id="loginStatus">
         <p>Not logged in</p>
       </section>
+
+      <br>
+
+      <h1>My Files</h1>
+      <div id="filesList">
+      </div>
+
+      <br>
+
+      <h1>Request File</h1>
+      <section>
+        <label for="file_name">File Name:</label>
+        <input size="50" id="file_name" type="text" />
+      </section>
+      <section>
+        <button id="createRequestBtn">Request</button>
+      </section>
+      <span id="createRequestResult"></span>
+
+      <br>
+
+      <h1>Upload File</h1>
+      <section>
+        <label for="alias">Alias:</label>
+        <input size="50" id="alias" type="text" />
+      </section>
+      <input type="file" id="file-selector">
+      <section>
+        <button id="uploadBtn">Upload Button</button>
+      </section>
+
+      <h1>Download File</h1>
+      <section>
+        <button id="downloadBtn">Download</button>
+      </section>
+      <a id="downloadLink">Download</a>
     </main>
   </body>
 </html>
