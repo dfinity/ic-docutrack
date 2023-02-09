@@ -8,6 +8,15 @@
       "wasm": ""
     },
 
+    "frontend": {
+      "dependencies": ["backend"],
+      "frontend": {
+        "entrypoint": "frontend_new/build/index.html"
+      },
+      "source": ["frontend_new/build/"],
+      "type": "assets"
+    },
+
     "internet_identity": {
        "type": "custom",
        "candid": "https://github.com/dfinity/internet-identity/releases/download/release-2023-01-31/internet_identity.did",
@@ -23,6 +32,13 @@
     "build": {
       "packtool": ""
     }
+
   },
+  "networks": {
+		"local": {
+			"bind": "127.0.0.1:8000",
+			"type": "ephemeral"
+		}
+	},
   "version": 1
 }

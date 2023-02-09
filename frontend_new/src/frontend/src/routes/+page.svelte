@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createActor } from '../../../declarations/backend';
-	import { HttpAgent } from "@dfinity/agent";
-	import { AuthClient } from "@dfinity/auth-client";
+	import { HttpAgent } from '@dfinity/agent';
+	import { AuthClient } from '@dfinity/auth-client';
 
 	let input = '';
 	let disabled = false;
@@ -18,33 +18,33 @@
 			const host = import.meta.env.VITE_HOST;
 
 			// When the user clicks, we start the login process.
-  		// First we have to create and AuthClient.
-	  	const authClient = await AuthClient.create();
+			// First we have to create and AuthClient.
+			const authClient = await AuthClient.create();
 
-// Find out which URL should be used for login.
-			const iiUrl = "http://127.0.0.1:8000/?canisterId=r7inp-6aaaa-aaaaa-aaabq-cai";
+			// Find out which URL should be used for login.
+			const iiUrl = 'http://127.0.0.1:8000/?canisterId=r7inp-6aaaa-aaaaa-aaabq-cai';
 
-// Call authClient.login(...) to login with Internet Identity. This will open a new tab
-// with the login prompt. The code has to wait for the login process to complete.
-// We can either use the callback functions directly or wrap in a promise.
-await new Promise((resolve, reject) => {
-  authClient.login({
-	identityProvider: iiUrl,
-	onSuccess: resolve,
-	onError: reject,
-  });
-});
+			// Call authClient.login(...) to login with Internet Identity. This will open a new tab
+			// with the login prompt. The code has to wait for the login process to complete.
+			// We can either use the callback functions directly or wrap in a promise.
+			await new Promise((resolve, reject) => {
+				authClient.login({
+					identityProvider: iiUrl,
+					onSuccess: resolve,
+					onError: reject
+				});
+			});
 
-// At this point we're authenticated, and we can get the identity from the auth client:
-const identity = authClient.getIdentity();
-console.log(identity);
-console.log(identity.getPrincipal());
+			// At this point we're authenticated, and we can get the identity from the auth client:
+			const identity = authClient.getIdentity();
+			console.log(identity);
+			console.log(identity.getPrincipal());
 
 			// Create an actor to interact with the IC for a particular canister ID
 			const actor = createActor(canisterId, { agentOptions: { host } });
 
 			// Call the IC
-			greeting = await actor.greet(input);
+			greeting = await actor.hello_world();
 		} catch (err: unknown) {
 			console.error(err);
 		}

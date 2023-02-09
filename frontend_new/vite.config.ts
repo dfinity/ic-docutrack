@@ -15,8 +15,8 @@ const host = network === 'local' ? 'http://localhost:8000' : 'https://ic0.app';
 const readCanisterIds = ({ prefix }: { prefix?: string }): Record<string, string> => {
 	const canisterIdsJsonFile =
 		network === 'ic'
-			? join(process.cwd(), 'canister_ids.json')
-			: join(process.cwd(), '.dfx', 'local', 'canister_ids.json');
+			? join(process.cwd(), '..', 'canister_ids.json')
+			: join(process.cwd(), '..', '.dfx', 'local', 'canister_ids.json');
 
 	try {
 		type Details = {
