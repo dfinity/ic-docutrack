@@ -1,12 +1,12 @@
 <script>
   import {Alert} from 'sveltestrap';
 
-  import principal from '$lib/shared/stores/auth.js';
+  import {principal} from '$lib/shared/stores/auth.js';
   import ContentTable from '$lib/components/ContentTable.svelte';
 
   let principalValue;
   let requestedFiles = [];
-  $: tableColumns = [];
+  $: tableColumns = [0];
   $: tableData = [];
   // Polling
   let progress = {};
@@ -16,13 +16,16 @@
 
   function getRequestedFiles() {
     // Backend call to get all the files requested by the principal
-    return newNumber;
+    return null;
   }
 
   function formatTableData(requestedFiles) {
     // TODO: based on the different possible outputs from the backend, move this function to lib/utils
     // Transform the output from the backend in columns and rows
     // in order to render the Table
+    let row;
+    tableData.push(row);
+    return tableColumns;
   }
 
 	const setupPoller = () => {
@@ -33,7 +36,7 @@
 	}
 
 	const doPoll = () => async () => {
-		await new Promise(resolve => setTimeout(() => {
+		tableData = await new Promise(resolve => setTimeout(() => {
 			resolve(formatTableData(getRequestedFiles()))
 		}, 500));
 	}
@@ -42,9 +45,9 @@
 </script>
 
 {#if principalValue}
-  <Table columns={tableColumns} data={tableData}/>
+  <ContentTable columns={tableColumns} data={tableData}/>
 {:else}
-  <Alert>
+  <Alert color="warning">
     <h4 class="alert-heading text-capitalize">warning</h4>
     User must be authenticated.
   </Alert>
