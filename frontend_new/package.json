@@ -24,7 +24,7 @@
 	"devDependencies": {
 		"@rollup/plugin-inject": "^5.0.2",
 		"@sveltejs/adapter-static": "^1.0.0-next.48",
-		"@sveltejs/kit": "next",
+		"@sveltejs/kit": "^1.0.0-next.144",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
 		"autoprefixer": "^10.4.13",
