@@ -77,12 +77,25 @@ pub struct File {
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum FileContent {
-    Pending { alias: String },
-    Uploaded { contents: Vec<u8> },
+    Pending {
+        alias: String,
+    },
+    Uploaded {
+        contents: Vec<u8>,
+        file_key: Vec<u8>,
+    },
+}
+
+#[derive(CandidType, Serialize, Deserialize, Debug, PartialEq)]
+pub struct FileData {
+    #[serde(rename = "contents")]
+    contents: Vec<u8>,
+    #[serde(rename = "file_key")]
+    file_key: Vec<u8>,
 }
 
 #[derive(CandidType, Serialize, Deserialize, PartialEq, Debug)]
-pub enum FileData {
+pub enum FileDownloadResponse {
     #[serde(rename = "not_found_file")]
     NotFoundFile,
     #[serde(rename = "not_uploaded_file")]
@@ -90,7 +103,7 @@ pub enum FileData {
     #[serde(rename = "permission_error")]
     PermissionError,
     #[serde(rename = "found_file")]
-    FoundFile(Vec<u8>),
+    FoundFile(FileData),
 }
 
 #[derive(CandidType, Serialize, Deserialize)]

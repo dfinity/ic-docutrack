@@ -3,6 +3,7 @@ use crate::{FileContent, State, UploadFileError};
 pub fn upload_file(
     file_id: u64,
     contents: Vec<u8>,
+    file_key: Vec<u8>,
     state: &mut State,
 ) -> Result<(), UploadFileError> {
     // Fetch the file.
@@ -15,7 +16,7 @@ pub fn upload_file(
     let alias = match file.content {
         FileContent::Pending { ref alias } => {
             let alias = alias.clone();
-            file.content = FileContent::Uploaded { contents };
+            file.content = FileContent::Uploaded { contents, file_key };
             alias
         }
         FileContent::Uploaded { .. } => return Err(UploadFileError::AlreadyUploaded),
@@ -62,7 +63,7 @@ mod test {
 
         // Upload the file, which we assume to have a file ID of zero.
         let file_id = 0;
-        let _alias = upload_file(file_id, vec![1, 2, 3], &mut state);
+        let _alias = upload_file(file_id, vec![1, 2, 3], vec![1, 2, 3], &mut state);
 
         // The file is stored in the state.
         assert_eq!(
@@ -74,7 +75,8 @@ mod test {
                         user_public_key: get_user_key(&state, Principal::anonymous())
                     },
                     content: FileContent::Uploaded {
-                        contents: vec![1,2,3]
+                        contents: vec![1,2,3],
+                        file_key: vec![1,2,3]
                     }
                 }
             }

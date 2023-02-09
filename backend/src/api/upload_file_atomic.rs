@@ -8,6 +8,7 @@ use super::user_info::get_user_key;
 pub struct UploadFileAtomicRequest {
     name: String,
     content: Vec<u8>,
+    file_key: Vec<u8>,
 }
 
 pub fn upload_file_atomic(caller: Principal, request: UploadFileAtomicRequest, state: &mut State) {
@@ -22,6 +23,7 @@ pub fn upload_file_atomic(caller: Principal, request: UploadFileAtomicRequest, s
             },
             content: FileContent::Uploaded {
                 contents: request.content,
+                file_key: request.file_key,
             },
         },
     );
@@ -64,6 +66,7 @@ mod test {
             UploadFileAtomicRequest {
                 name: "file_name".to_string(),
                 content: vec![1, 2, 3],
+                file_key: vec![1, 2, 3],
             },
             &mut state,
         );
@@ -78,7 +81,8 @@ mod test {
                         user_public_key: get_user_key(&state, Principal::anonymous())
                     },
                     content: FileContent::Uploaded {
-                        contents: vec![1,2,3]
+                        contents: vec![1,2,3],
+                        file_key: vec![1,2,3]
                     }
                 }
             }

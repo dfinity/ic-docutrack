@@ -49,8 +49,8 @@ fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
 }
 
 #[update]
-fn upload_file(file_id: u64, contents: Vec<u8>) -> Result<(), UploadFileError> {
-    with_state_mut(|s| backend::api::upload_file(file_id, contents, s))
+fn upload_file(file_id: u64, contents: Vec<u8>, file_key: Vec<u8>) -> Result<(), UploadFileError> {
+    with_state_mut(|s| backend::api::upload_file(file_id, contents, file_key, s))
 }
 
 #[update]
@@ -64,7 +64,7 @@ fn request_file(request_name: String) -> String {
 }
 
 #[query]
-fn download_file(file_id: u64) -> FileData {
+fn download_file(file_id: u64) -> FileDownloadResponse {
     with_state(|s| backend::api::download_file(s, file_id, caller()))
 }
 
