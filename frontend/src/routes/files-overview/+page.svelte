@@ -1,10 +1,12 @@
 <script>
+  import { Alert } from 'sveltestrap';
+
   import { principal } from '$lib/shared/stores/auth.js';
   import ContentTable from '$lib/components/ContentTable.svelte';
 
   let principalValue;
-  $: tableColumns = [{key: "name", label: "Name"}, {key: "access", label: "Access"}];
-  $: tableData = [{name: "escrow_hotel_zurich.docx", access: "Only you", items: [{url: "#", text: "Open"}]}];
+  $: tableColumns = [];
+  $: tableData = [];
 
   principal.subscribe( value => principalValue = value);
 
@@ -21,13 +23,14 @@
     let row;
     tableData.push(row);
   }
+
 </script>
 
-<svelte:head>
-	<title>Home</title>
-	<meta name="description" content="DokuTrack" />
-</svelte:head>
-
-<section>
-    <ContentTable columns={tableColumns} data={tableData}/>
-</section>
+{#if principalValue}
+  <ContentTable columns={tableColumns} data={tableData}/>
+{:else}
+  <Alert color="warning">
+    <h4 class="alert-heading text-capitalize">warning</h4>
+    User must be authenticated.
+  </Alert>
+{/if}

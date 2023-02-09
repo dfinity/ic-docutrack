@@ -9,7 +9,6 @@
       NavLink,
     } from 'sveltestrap';
 
-
     import { principal, firstName } from '$lib/shared/stores/auth.js';
     
     let principalValue;

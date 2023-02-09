@@ -11,7 +11,7 @@ $: previewClass = file.dataType === 'application/pdf' ? 'ratio' : '';
 
 <div class="d-flex justify-content-center mb-3 {previewClass}" style="{previewStyle}">
 {#if supportedDataTypes.includes(file.dataType)}
-<embed width="100%" height="100%" name="plugin" src="data:{file.dataType};base64,{file.data}" />
+    <embed width="100%" height="100%" name="plugin" src="data:{file.dataType};base64,{file.data}" />
 {:else}
     <p>No preview available.</p>
 {/if}
