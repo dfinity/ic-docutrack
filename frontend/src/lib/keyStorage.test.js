@@ -1,6 +1,5 @@
 require("fake-indexeddb/auto");
 const { clearKeys, storeKey, loadKey } = require('./keyStorage');
-const { generateUserKeypair } = require('./crypto');
 
 test('create, store, load and clear keys', async () => {
 
@@ -9,11 +8,12 @@ test('create, store, load and clear keys', async () => {
   expect(load_empty).toBeFalsy();
   
   // loading a key which has been stored succeeds
-  const key = await generateUserKeypair();
-  const {
-    privateKey,
-    publicKey
-  } = key;
+ const privateKey = (await globalThis.crypto.subtle.generateKey({
+    name: "RSA-OAEP",
+    modulusLength: 4096,
+    publicExponent: new Uint8Array([1, 0, 1]),
+    hash: "SHA-256"
+  }, true, ['encrypt', 'decrypt'])).privateKey;
   storeKey('private', privateKey);
   const load_private = await loadKey('private');
   expect(load_private).toStrictEqual(privateKey);

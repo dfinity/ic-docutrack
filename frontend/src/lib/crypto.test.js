@@ -1,5 +1,7 @@
-const {generateUserKeypair, encryptForUser, decryptForUser,
+require("fake-indexeddb/auto");
+const {getLocalUserPublicKey, encryptForUser, decryptForUser,
   generateFileKey, encryptFile, decryptFile } = require('./crypto');
+  
 
 test('generate User key, encrypt and decrypt', async () => {
    // Create an ArrayBuffer with a size in bytes
@@ -8,15 +10,12 @@ test('generate User key, encrypt and decrypt', async () => {
    uint8ArrayView[2] = 3;
    // Produces ArrayBuffer [0, 0, 3, 0, 0, ....]
 
-  const key = await generateUserKeypair();
-  const {
-    privateKey,
-    publicKey
-  } = key;
   
-  const encryptedBuffer = await encryptForUser(buffer, publicKey);
+  const key = await getLocalUserPublicKey();
+  
+  const encryptedBuffer = await encryptForUser(buffer, key);
 
-  const decryptedBuffer = await decryptForUser(encryptedBuffer, privateKey);
+  const decryptedBuffer = await decryptForUser(encryptedBuffer);
 
   expect(new Uint8Array(decryptedBuffer)).toStrictEqual(uint8ArrayView);
 });
