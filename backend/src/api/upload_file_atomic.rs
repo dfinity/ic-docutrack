@@ -2,6 +2,8 @@ use crate::{File, FileContent, FileMetadata, State};
 use ic_cdk::export::{candid::CandidType, Principal};
 use serde::{Deserialize, Serialize};
 
+use super::user_info::get_user_key;
+
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct UploadFileAtomicRequest {
     name: String,
@@ -16,6 +18,7 @@ pub fn upload_file_atomic(caller: Principal, request: UploadFileAtomicRequest, s
         File {
             metadata: FileMetadata {
                 file_name: request.name,
+                user_public_key: get_user_key(state, caller),
             },
             content: FileContent::Uploaded {
                 contents: request.content,
@@ -38,12 +41,22 @@ pub fn upload_file_atomic(caller: Principal, request: UploadFileAtomicRequest, s
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{File, FileMetadata};
+    use crate::{api::set_user_info, File, FileMetadata, User};
     use maplit::btreemap;
 
     #[test]
     fn stores_file_in_state() {
         let mut state = State::default();
+
+        set_user_info(
+            &mut state,
+            Principal::anonymous(),
+            User {
+                first_name: "John".to_string(),
+                last_name: "Doe".to_string(),
+                public_key: vec![1, 2, 3],
+            },
+        );
 
         // Request a file.
         upload_file_atomic(
@@ -62,6 +75,7 @@ mod test {
                 0 => File {
                     metadata: FileMetadata {
                         file_name: "file_name".to_string(),
+                        user_public_key: get_user_key(&state, Principal::anonymous())
                     },
                     content: FileContent::Uploaded {
                         contents: vec![1,2,3]
