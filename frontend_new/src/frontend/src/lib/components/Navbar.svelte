@@ -71,7 +71,7 @@
     <NavbarBrand href="/">DocuTrack</NavbarBrand>
     <NavbarToggler on:click={() => (isOpen = !isOpen)} />
     <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
-      {#if firstNameValue}
+      {#if principalValue}
         <Nav class="ms-md-3">
           <NavItem>
               {greeting}
@@ -95,7 +95,7 @@
             <NavLink href="/upload">Upload File</NavLink>
         </NavItem>
         <NavItem>
-            {#if principal}
+            {#if principalValue}
             <!-- Add link to the II login -->
             <NavLink on:click={handleLogin}>Login</NavLink>
             {:else}
