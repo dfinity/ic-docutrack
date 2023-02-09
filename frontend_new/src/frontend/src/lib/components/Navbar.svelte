@@ -65,7 +65,6 @@
       }
       disabled = false;
     };
-    }
   </script>
 <Navbar color="light" light expand="md">
     <NavbarBrand href="/">DocuTrack</NavbarBrand>
