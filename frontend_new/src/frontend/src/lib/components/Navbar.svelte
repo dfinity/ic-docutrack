@@ -9,7 +9,7 @@
       NavLink,
     } from 'sveltestrap';
 
-    import { createActor } from '../../../declarations/backend';
+    import { createActor } from '../../../../declarations/backend';
     import { HttpAgent } from '@dfinity/agent';
 	  import { AuthClient } from '@dfinity/auth-client';
 
@@ -97,7 +97,7 @@
         <NavItem>
             {#if principal}
             <!-- Add link to the II login -->
-            <NavLink href="#">Login</NavLink>
+            <NavLink on:click={handleLogin}>Login</NavLink>
             {:else}
             <NavLink href="#">Logout</NavLink>
             {/if}
