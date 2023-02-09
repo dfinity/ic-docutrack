@@ -99,7 +99,7 @@
             <!-- Add link to the II login -->
             <NavLink on:click={handleLogin}>Login</NavLink>
             {:else}
-            <NavLink href="#">{greeting}</NavLink>
+            <NavLink href="#">{principalValue}</NavLink>
             {/if}
         </NavItem>
       </Nav>
