@@ -1,6 +1,5 @@
 <script>
   import { Alert } from 'sveltestrap';
-  import { Button } from 'sveltestrap';
 
   import { principal } from '$lib/shared/stores/auth.js';
   import ContentTable from '$lib/components/ContentTable.svelte';
@@ -46,9 +45,9 @@
 	$: setupPoller();
 </script>
 
-<RequestModal isOpen={false}/>
-
 {#if principalValue}
+  <RequestModal isOpen={false}/>
+  <br>
   <ContentTable columns={tableColumns} data={tableData}/>
 {:else}
   <Alert color="warning">
