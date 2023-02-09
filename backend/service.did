@@ -58,7 +58,7 @@ type upload_file_atomic_request = record {
   content: blob;
 };
 
-type file_sharing_response = variant {
+type share_file_response = variant {
   permission_error;
   ok;
 };
@@ -86,6 +86,6 @@ service docutrack : {
 
   upload_file_atomic: (upload_file_atomic_request) -> ();
 
-  share_file: (user_id: principal, file_id: file_id) -> (file_sharing_response);
+  share_file: (user_id: principal, file_id: file_id) -> (share_file_response);
 }
 

@@ -1,13 +1,6 @@
 use crate::{FileSharingResponse, PublicFileMetadata, State};
 use ic_cdk::export::candid::Principal;
 
-fn can_share(state: &State, user: Principal, file_id: u64) -> bool {
-    match state.file_owners.get(&user) {
-        None => false,
-        Some(arr) => arr.contains(&file_id),
-    }
-}
-
 pub fn share_file(
     state: &mut State,
     caller: Principal,
@@ -23,6 +16,13 @@ pub fn share_file(
             .or_insert_with(Vec::new)
             .push(file_id);
         FileSharingResponse::Ok
+    }
+}
+
+fn can_share(state: &State, user: Principal, file_id: u64) -> bool {
+    match state.file_owners.get(&user) {
+        None => false,
+        Some(arr) => arr.contains(&file_id),
     }
 }
 
