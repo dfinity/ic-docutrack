@@ -1,18 +1,11 @@
 <script>
 	import Navbar from '$lib/components/Navbar.svelte';
-	import Table from '$lib/components/ContentTable.svelte';
-	let columns = [{label: "Name", key: "name"}, {label: "Last Modified", key: "lastModified"}, {label: "Access", key: "access"}];
-	let data = [
-	  {name: "Nelson", lastModified: "Today", access: "3 users", items: [{url: "#", text: "open"}]},
-	  {name: "Michel", lastModified: "Yesterday", access: "only you", items: [{url: "#", text: "open"}]}
-	 ]
 </script>
 
 <div class="app">
 	<Navbar />
-
+  <a href="/requestFile">About my site</a>
 	<main>
-	    <Table columns={columns} data={data}/>
 		<slot />
 	</main>
 

@@ -40,6 +40,9 @@
           <NavLink href="/">My Files</NavLink>
         </NavItem>
         <NavItem>
+            <NavLink href="/requestFile">Request File</NavLink>
+        </NavItem>
+        <NavItem>
             <NavLink href="/activity">Activity</NavLink>
         </NavItem>
         <NavItem>
