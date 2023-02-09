@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import {
       Collapse,
       Navbar,
@@ -9,18 +9,62 @@
       NavLink,
     } from 'sveltestrap';
 
-    import { principal, firstName } from '$lib/shared/stores/auth.js';
+    import { createActor } from '../../../declarations/backend';
+	  import { AuthClient } from '@dfinity/auth-client';
+
+    import { principal, firstName, identity, actor } from '$lib/shared/stores/auth.js';
     
     let principalValue;
+    let identityValue;
+    let actorValue;
     let firstNameValue;
 
     principal.subscribe( value => principalValue = value);
+    identity.subscribe( value => identityValue = value);
+    actor.subscribe( value => actorValue = value);
     firstName.subscribe( value => firstNameValue = value);
   
     let isOpen = false;
     
     function handleUpdate(event) {
       isOpen = event.detail.isOpen;
+    }
+    let disabled = false;
+	  let greeting = '';
+    const handleLogin = async () => {
+      disabled = true;
+      try {
+        // Canister IDs are automatically expanded to .env config - see vite.config.ts
+        const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
+        // We pass the host instead of using a proxy to support NodeJS >= v17 (ViteJS issue: https://github.com/vitejs/vite/issues/4794)
+        const host = import.meta.env.VITE_HOST;
+        // When the user clicks, we start the login process.
+        // First we have to create and AuthClient.
+        const authClient = await AuthClient.create();
+        // Find out which URL should be used for login.
+        const iiUrl = 'http://127.0.0.1:8000/?canisterId=r7inp-6aaaa-aaaaa-aaabq-cai';
+        // Call authClient.login(...) to login with Internet Identity. This will open a new tab
+        // with the login prompt. The code has to wait for the login process to complete.
+        // We can either use the callback functions directly or wrap in a promise.
+        await new Promise((resolve, reject) => {
+          authClient.login({
+            identityProvider: iiUrl,
+            onSuccess: resolve,
+            onError: reject
+          });
+        });
+        // At this point we're authenticated, and we can get the identity from the auth client:
+        identity.set(authClient.getIdentity());
+        principal.set(identity.getPrincipal());
+        // Create an actor to interact with the IC for a particular canister ID
+        actor.set(createActor(canisterId, { agentOptions: { host } }));
+        // Call the IC
+        greeting = await actorValue.hello_world();
+      } catch (err: unknown) {
+        console.error(err);
+      }
+      disabled = false;
+    };
     }
   </script>
 <Navbar color="light" light expand="md">
@@ -30,7 +74,7 @@
       {#if firstNameValue}
         <Nav class="ms-md-3">
           <NavItem>
-              Hi, {firstNameValue}
+              {greeting}
           </NavItem>
         </Nav>
       {/if}
