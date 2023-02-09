@@ -1,6 +1,6 @@
 require("fake-indexeddb/auto");
-const {generateUserKeypair, encryptForUser, decryptForUser,
-  generateFileKey, encryptFile, decryptFile, init, encryptForUserImport, decryptForThisUser } = require('./crypto');
+const {getLocalUserPublicKey, encryptForUser, decryptForUser,
+  generateFileKey, encryptFile, decryptFile } = require('./crypto');
   
 
 test('generate User key, encrypt and decrypt', async () => {
@@ -11,7 +11,7 @@ test('generate User key, encrypt and decrypt', async () => {
    // Produces ArrayBuffer [0, 0, 3, 0, 0, ....]
 
   
-  const key = await init();
+  const key = await getLocalUserPublicKey();
   
   const encryptedBuffer = await encryptForUser(buffer, key);
 

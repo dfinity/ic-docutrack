@@ -15,12 +15,12 @@ let publicKey = null;
 let privateKey = null;
 
 /**
-   * Fetch this browser's public key (ArrayBuffer). 
+   * Fetch this browser's public key in 'spki' format. 
    * If no keypair exists, one will be generated and stored in localStorage.
    *
    * @returns {Promise<ArrayBuffer>}
    */
-async function init() {
+async function getLocalUserPublicKey() {
 
     this.publicKey = await loadKey('public');
     this.privateKey = await loadKey('private');
@@ -164,5 +164,5 @@ async function decryptFile(encryptedFile, rawKey) {
                   );
     }
 
-module.exports = {init, encryptForUser, decryptForUser,
+module.exports = {getLocalUserPublicKey, encryptForUser, decryptForUser,
     generateFileKey, encryptFile, decryptFile }
