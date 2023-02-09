@@ -4,7 +4,6 @@
 
 <div class="app">
 	<Navbar />
-  <a href="/requestFile">About my site</a>
 	<main>
 		<slot />
 	</main>
