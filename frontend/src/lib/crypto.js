@@ -1,16 +1,24 @@
 const { subtle } = globalThis.crypto;
 const { clearKeys, storeKey, loadKey } = require('./keyStorage');
 
-// Public key associated with logged in device. Used to decrypt the symmetric secretKey,
-// which is stored by the dapp encrypted with the the publicKey
+/**
+ * @type {CryptoKey || null}
+ * Public key associated with logged in device. Used to decrypt the symmetric secretKey,
+ *  which is stored by the dapp encrypted with the the publicKey
+ */
 let publicKey = null;
-// Private key associated with logged in device. Used to encrypt the symmetric secretKey 
-// for each device associated with the current principal, to be stored by the dapp in encrypted form
+/**
+ * @type {CryptoKey || null}
+ * private key associated with logged in device. Used to decrypt the symmetric secretKey,
+ *  which is stored by the dapp encrypted with the the publicKey
+ */
 let privateKey = null;
 
 /**
    * Fetch this browser's public key (ArrayBuffer). 
    * If no keypair exists, one will be generated and stored in localStorage.
+   *
+   * @returns {Promise<ArrayBuffer>}
    */
 async function init() {
 
@@ -29,21 +37,22 @@ async function init() {
         this.publicKey = keypair.publicKey;
         this.privateKey = keypair.privateKey;
     }
-    const exportedPublicKey = await subtle.exportKey(
+    return await subtle.exportKey(
       'spki',
       this.publicKey
     );
-
-    return exportedPublicKey;
-
 }
 
-// Return an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer
-async function encryptForUser(plaintext, exportedPublicKey) {
+/**
+ * @param {ArrayBuffer} plaintext 
+ * @param {ArrayBuffer} publicKey in 'spki' format
+ * @returns {Promise<ArrayBuffer>} containing the encrypted version of the plaintext ArrayBuffer.
+ */
+async function encryptForUser(plaintext, publicKey) {
 
     const importedKey = await subtle.importKey(
         'spki',
-        exportedPublicKey,
+        publicKey,
         {
           name: 'RSA-OAEP',
           hash: { name: 'SHA-256' },
@@ -52,38 +61,60 @@ async function encryptForUser(plaintext, exportedPublicKey) {
         ['encrypt']
       );
 
-    const ciphertext = await subtle.encrypt({
+    return await subtle.encrypt({
         name: "RSA-OAEP"
         },
         importedKey,
         plaintext
-    )
-    return ciphertext;
+    );
 }
 
-// Return an ArrayBuffer containing the decrypted version of the ciphertext ArrayBuffer
+/**
+ * @param {ArrayBuffer} ciphertext 
+ * @returns {Promise<ArrayBuffer>} containing the decrypted version of the ciphertext ArrayBuffer
+ */
 async function decryptForUser(ciphertext) {
-    const decrypted = await subtle.decrypt({
+    return await subtle.decrypt({
         name: "RSA-OAEP"
       },
       this.privateKey,
       ciphertext
-    )
-    return decrypted;
+    );
 }
 
-// Return AES-GCM key
+
+/**
+   * Create a symmetric key for a file in 'raw' format
+   *
+   * @returns {Promise<ArrayBuffer>}
+   */
 async function generateFileKey() {
     const key = await subtle.generateKey({
             name: 'AES-GCM',
             length: 256,
     }, true, ['encrypt', 'decrypt']);
   
-    return key;
+    return  await subtle.exportKey(
+        'raw',
+        key
+      );
 }
 
-// Return an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer, including the initialization vector
-async function encryptFile(data, key) {  
+/**
+ * @param {ArrayBuffer} file to encrypt 
+ * @param {ArrayBuffer} rawKey in 'raw' format
+ * @returns {Promise<ArrayBuffer>} containing the encrypted version of the ciphertext ArrayBuffer (which must include the initialization vector in the first 12 bytes) 
+ */
+async function encryptFile(file, rawKey) {  
+    const key = await subtle.importKey(
+        'raw',
+        rawKey,
+        {
+            name: 'AES-GCM'
+        },
+        true,
+        ['encrypt']
+    );
     // The iv must never be reused with a given key.
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const ciphertext = await subtle.encrypt(
@@ -92,7 +123,7 @@ async function encryptFile(data, key) {
                         iv: iv
                     },
                     key,
-                    data
+                    file
                     );
     const length = ciphertext.byteLength + iv.byteLength;
     const cipherBuffer = new ArrayBuffer(length);
@@ -102,15 +133,28 @@ async function encryptFile(data, key) {
     return cipherBuffer;
 }
 
-// Return an ArrayBuffer containing the decrypted version of the ciphertext ArrayBuffer (which must include the initialization vector in the first 12 bytes)
-async function decryptFile(data, key) {
-    if (data.length < 13) {
+/**
+* @param {ArrayBuffer} encryptedFile to decrypt 
+* @param {ArrayBuffer} rawKey in 'raw' format
+* @returns {Promise<ArrayBuffer>} containing the encrypted version of the ciphertext ArrayBuffer (which must include the initialization vector in the first 12 bytes) 
+*/
+async function decryptFile(encryptedFile, rawKey) {
+    const key = await subtle.importKey(
+        'raw',
+        rawKey,
+        {
+            name: 'AES-GCM'
+        },
+        true,
+        ['decrypt']
+    );
+    if (encryptedFile.length < 13) {
         throw new Error('wrong encoding, too short to contain iv');
     }
-    const iv_decoded = new Uint8Array(data.slice(0,12));
-    const cipher_decoded = data.slice(12);
+    const iv_decoded = new Uint8Array(encryptedFile.slice(0,12));
+    const cipher_decoded = encryptedFile.slice(12);
 
-    let decrypted_data_encoded = await subtle.decrypt(
+    return await subtle.decrypt(
                     {
                       name: "AES-GCM",
                       iv: iv_decoded
@@ -118,8 +162,7 @@ async function decryptFile(data, key) {
                     key,
                     cipher_decoded
                   );
-    return decrypted_data_encoded;
-}
+    }
 
 module.exports = {init, encryptForUser, decryptForUser,
     generateFileKey, encryptFile, decryptFile }
