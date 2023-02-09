@@ -5,7 +5,6 @@
 
 <div class="app">
 	<Navbar />
-
 	<Container class="pt-4">
 		<slot />
 	</Container>

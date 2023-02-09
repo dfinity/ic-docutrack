@@ -9,7 +9,6 @@
       NavLink,
     } from 'sveltestrap';
 
-
     import { principal, firstName } from '$lib/shared/stores/auth.js';
     
     let principalValue;
@@ -38,6 +37,9 @@
       <Nav class="ms-auto" navbar>
         <NavItem>
           <NavLink href="/">My Files</NavLink>
+        </NavItem>
+        <NavItem>
+            <NavLink href="/requestFile">Request File</NavLink>
         </NavItem>
         <NavItem>
             <NavLink href="/activity">Activity</NavLink>

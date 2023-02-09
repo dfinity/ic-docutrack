@@ -58,6 +58,11 @@ type upload_file_atomic_request = record {
   content: blob;
 };
 
+type share_file_response = variant {
+  permission_error;
+  ok;
+};
+
 service docutrack : {
   hello_world : () -> (text);
 
@@ -80,5 +85,7 @@ service docutrack : {
   get_files: () -> (vec file_metadata);
 
   upload_file_atomic: (upload_file_atomic_request) -> ();
+
+  share_file: (user_id: principal, file_id: file_id) -> (share_file_response);
 }
 
