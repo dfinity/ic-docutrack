@@ -4,6 +4,7 @@
 
   import { principal } from '$lib/shared/stores/auth.js';
   import ContentTable from '$lib/components/ContentTable.svelte';
+  import RequestModal from '$lib/components/RequestModal.svelte';
 
   let principalValue;
   let requestedFiles = [];
@@ -12,10 +13,6 @@
   // Polling
   let progress = {};
 	let poller;
-
-	let open = false;
-
-  const toggle = () => (open = !open);
 
   principal.subscribe( value => principalValue = value);
 
@@ -49,7 +46,7 @@
 	$: setupPoller();
 </script>
 
-<Button color="default" on:click={toggle}>Create new request</Button>
+<RequestModal isOpen={false}/>
 
 {#if principalValue}
   <ContentTable columns={tableColumns} data={tableData}/>
