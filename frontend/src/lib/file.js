@@ -29,23 +29,12 @@ class File {
 	 * @param {String} name
 	 * @param {ArrayBuffer} encryptedBytes
 	 * @param {ArrayBuffer} encryptedDocumentKey
-	 * @param {CryptoKey} userPrivateKey
 	 *
 	 * @returns {Promise<File>}
 	 */
-	static async fromEncrypted(name, encryptedBytes, encryptedDocumentKey, userPrivateKey) {
-		const rawDocumentKey = await decryptForUser(encryptedDocumentKey, userPrivateKey);
-
+	static async fromEncrypted(name, encryptedBytes, encryptedDocumentKey) {
 		// Decrypt the file's key using the user's key.
-		const documentKey = await subtle.importKey(
-			'raw',
-			rawDocumentKey,
-			{
-				name: 'AES-GCM'
-			},
-			true,
-			['encrypt', 'decrypt']
-		);
+		const documentKey = await decryptForUser(encryptedDocumentKey);
 
 		// Decrypt the document.
 		const contents = await decryptFile(encryptedBytes, documentKey);
@@ -78,11 +67,8 @@ class File {
 	async getEncryptedFileKey(userPublicKey) {
 		const key = await this._getFileKey();
 
-		// Export they key into a binary format.
-		const exportedKey = await subtle.exportKey('raw', key);
-
 		// Encrypt the exported key with the user's public key.
-		return await encryptForUser(exportedKey, userPublicKey);
+		return await encryptForUser(key, userPublicKey);
 	}
 
 	/**
