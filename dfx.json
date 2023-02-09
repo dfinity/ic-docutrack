@@ -11,9 +11,8 @@
     "frontend": {
       "dependencies": ["backend"],
       "frontend": {
-        "entrypoint": "frontend_new/build/index.html"
       },
-      "source": ["frontend_new/build/"],
+      "source": ["dist"],
       "type": "assets"
     },
 
@@ -34,11 +33,5 @@
     }
 
   },
-  "networks": {
-		"local": {
-			"bind": "127.0.0.1:8000",
-			"type": "ephemeral"
-		}
-	},
   "version": 1
 }
