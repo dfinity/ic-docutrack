@@ -7,7 +7,7 @@
 
   let principalValue;
   let requestedFiles = [];
-  $: tableColumns = [0];
+  $: tableColumns = [];
   $: tableData = [];
   // Polling
   let progress = {};
