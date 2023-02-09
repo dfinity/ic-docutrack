@@ -101,6 +101,14 @@ pub enum UploadFileError {
     AlreadyUploaded,
 }
 
+#[derive(CandidType, Serialize, Deserialize, Debug, PartialEq)]
+pub enum FileSharingResponse {
+    #[serde(rename = "permission_error")]
+    PermissionError,
+    #[serde(rename = "ok")]
+    Ok,
+}
+
 pub struct State {
     // Keeps track of how many files have been requested so far
     // and is used to assign IDs to newly requested files.
@@ -120,6 +128,9 @@ pub struct State {
 
     /// Mapping between a user's principal and the list of files that are owned by the user.
     pub file_owners: BTreeMap<Principal, Vec<u64>>,
+
+    /// Mapping between a user's principal and the list of files that are shared with them.
+    pub file_shares: BTreeMap<Principal, Vec<u64>>,
 
     // Generates aliases for file requests.
     alias_generator: AliasGenerator,
@@ -142,6 +153,7 @@ impl State {
             file_alias_index: BTreeMap::new(),
             file_alias_user_key_index: BTreeMap::new(),
             file_owners: BTreeMap::new(),
+            file_shares: BTreeMap::new(),
             alias_generator: AliasGenerator::new(Randomness::try_from(rand_seed).unwrap()),
         }
     }

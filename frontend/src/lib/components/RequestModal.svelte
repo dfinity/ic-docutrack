@@ -27,6 +27,7 @@
   </script>
   
   <div>
+    <Button color="default" on:click={toggle}>Create new request</Button>
     <Modal isOpen={isOpen} {toggle}>
       <ModalHeader {toggle}>Create Request</ModalHeader>
       <ModalBody>
