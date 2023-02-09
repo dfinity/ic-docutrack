@@ -10,6 +10,7 @@
     } from 'sveltestrap';
 
     import { createActor } from '../../../declarations/backend';
+    import { HttpAgent } from '@dfinity/agent';
 	  import { AuthClient } from '@dfinity/auth-client';
 
     import { principal, firstName, identity, actor } from '$lib/shared/stores/auth.js';
