@@ -1,57 +1,120 @@
 const { subtle } = globalThis.crypto;
+const { clearKeys, storeKey, loadKey } = require('./keyStorage');
 
 /**
- * @returns {Promise<CryptoKeyPair>} RSA key pair for user.
+ * @type {CryptoKey || null}
+ * Public key associated with logged in device. Used to decrypt the symmetric secretKey,
+ *  which is stored by the dapp encrypted with the the publicKey
  */
-async function generateUserKeypair() {
-    return await subtle.generateKey({
-        name: "RSA-OAEP",
-        modulusLength: 4096,
-        publicExponent: new Uint8Array([1, 0, 1]),
-        hash: "SHA-256"
-    }, true, ['encrypt', 'decrypt']);
+let publicKey = null;
+/**
+ * @type {CryptoKey || null}
+ * private key associated with logged in device. Used to decrypt the symmetric secretKey,
+ *  which is stored by the dapp encrypted with the the publicKey
+ */
+let privateKey = null;
+
+/**
+   * Fetch this browser's public key in 'spki' format. 
+   * If no keypair exists, one will be generated and stored in localStorage.
+   *
+   * @returns {Promise<ArrayBuffer>}
+   */
+async function getLocalUserPublicKey() {
+
+    this.publicKey = await loadKey('public');
+    this.privateKey = await loadKey('private');
+
+    if (!publicKey || !privateKey) {
+        const keypair = await subtle.generateKey({
+            name: "RSA-OAEP",
+            modulusLength: 4096,
+            publicExponent: new Uint8Array([1, 0, 1]),
+            hash: "SHA-256"
+        }, true, ['encrypt', 'decrypt']);
+        await storeKey('public', keypair.publicKey);
+        await storeKey('private', keypair.privateKey);
+        this.publicKey = keypair.publicKey;
+        this.privateKey = keypair.privateKey;
+    }
+    return await subtle.exportKey(
+      'spki',
+      this.publicKey
+    );
 }
 
 /**
  * @param {ArrayBuffer} plaintext 
- * @param {CryptoKey} publicKey 
- * @returns an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer.
+ * @param {ArrayBuffer} publicKey in 'spki' format
+ * @returns {Promise<ArrayBuffer>} containing the encrypted version of the plaintext ArrayBuffer.
  */
 async function encryptForUser(plaintext, publicKey) {
-    return await subtle.encrypt({
-            name: "RSA-OAEP"
-        },
+
+    const importedKey = await subtle.importKey(
+        'spki',
         publicKey,
+        {
+          name: 'RSA-OAEP',
+          hash: { name: 'SHA-256' },
+        },
+        true,
+        ['encrypt']
+      );
+
+    return await subtle.encrypt({
+        name: "RSA-OAEP"
+        },
+        importedKey,
         plaintext
     );
 }
 
 /**
  * @param {ArrayBuffer} ciphertext 
- * @param {CryptoKey} privateKey 
  * @returns {Promise<ArrayBuffer>} containing the decrypted version of the ciphertext ArrayBuffer
  */
-async function decryptForUser(ciphertext, privateKey) {
+async function decryptForUser(ciphertext) {
     return await subtle.decrypt({
         name: "RSA-OAEP"
       },
-      privateKey,
+      this.privateKey,
       ciphertext
     );
 }
 
-// Return AES-GCM key
+
+/**
+   * Create a symmetric key for a file in 'raw' format
+   *
+   * @returns {Promise<ArrayBuffer>}
+   */
 async function generateFileKey() {
     const key = await subtle.generateKey({
             name: 'AES-GCM',
             length: 256,
     }, true, ['encrypt', 'decrypt']);
   
-    return key;
+    return  await subtle.exportKey(
+        'raw',
+        key
+      );
 }
 
-// Return an ArrayBuffer containing the encrypted version of the plaintext ArrayBuffer, including the initialization vector
-async function encryptFile(data, key) {  
+/**
+ * @param {ArrayBuffer} file to encrypt 
+ * @param {ArrayBuffer} rawKey in 'raw' format
+ * @returns {Promise<ArrayBuffer>} containing the encrypted version of the ciphertext ArrayBuffer (which must include the initialization vector in the first 12 bytes) 
+ */
+async function encryptFile(file, rawKey) {  
+    const key = await subtle.importKey(
+        'raw',
+        rawKey,
+        {
+            name: 'AES-GCM'
+        },
+        true,
+        ['encrypt']
+    );
     // The iv must never be reused with a given key.
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const ciphertext = await subtle.encrypt(
@@ -60,7 +123,7 @@ async function encryptFile(data, key) {
                         iv: iv
                     },
                     key,
-                    data
+                    file
                     );
     const length = ciphertext.byteLength + iv.byteLength;
     const cipherBuffer = new ArrayBuffer(length);
@@ -71,16 +134,25 @@ async function encryptFile(data, key) {
 }
 
 /**
- * @param {ArrayBuffer} data 
- * @param {CryptoKey} key 
- * @returns {Promise<ArrayBuffer>} containing the decrypted version of the ciphertext ArrayBuffer (which must include the initialization vector in the first 12 bytes) 
- */
-async function decryptFile(data, key) {
-    if (data.length < 13) {
+* @param {ArrayBuffer} encryptedFile to decrypt 
+* @param {ArrayBuffer} rawKey in 'raw' format
+* @returns {Promise<ArrayBuffer>} containing the encrypted version of the ciphertext ArrayBuffer (which must include the initialization vector in the first 12 bytes) 
+*/
+async function decryptFile(encryptedFile, rawKey) {
+    const key = await subtle.importKey(
+        'raw',
+        rawKey,
+        {
+            name: 'AES-GCM'
+        },
+        true,
+        ['decrypt']
+    );
+    if (encryptedFile.length < 13) {
         throw new Error('wrong encoding, too short to contain iv');
     }
-    const iv_decoded = new Uint8Array(data.slice(0,12));
-    const cipher_decoded = data.slice(12);
+    const iv_decoded = new Uint8Array(encryptedFile.slice(0,12));
+    const cipher_decoded = encryptedFile.slice(12);
 
     return await subtle.decrypt(
                     {
@@ -90,7 +162,7 @@ async function decryptFile(data, key) {
                     key,
                     cipher_decoded
                   );
-}
+    }
 
-module.exports = {generateUserKeypair, encryptForUser, decryptForUser,
+module.exports = {getLocalUserPublicKey, encryptForUser, decryptForUser,
     generateFileKey, encryptFile, decryptFile }
