@@ -6,8 +6,17 @@ use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 
+fn get_randomness_seed() -> Vec<u8> {
+    // this is an array of u8 of length 8.
+    let time_seed = ic_cdk::api::time().to_be_bytes();
+    // we need to extend this to an array of size 32 by adding to it an array of size 24 full of 0s.
+    let zeroes_arr: [u8; 24] = [0; 24];
+    [&time_seed[..], &zeroes_arr[..]].concat()
+}
+
 thread_local! {
-    static STATE: RefCell<State> = RefCell::new(State::default());
+    /// Initialize the state randomness with the current time.
+    static STATE: RefCell<State> = RefCell::new(State::new(&get_randomness_seed()[..]));
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone)]
@@ -119,14 +128,13 @@ pub struct State {
 impl State {
     pub(crate) fn generate_file_id(&mut self) -> u64 {
         // The file ID is an auto-incrementing integer.
+
         let file_id = self.file_count;
         self.file_count += 1;
         file_id
     }
-}
 
-impl Default for State {
-    fn default() -> Self {
+    fn new(rand_seed: &[u8]) -> Self {
         Self {
             file_count: 0,
             users: BTreeMap::new(),
@@ -134,10 +142,14 @@ impl Default for State {
             file_alias_index: BTreeMap::new(),
             file_alias_user_key_index: BTreeMap::new(),
             file_owners: BTreeMap::new(),
-            alias_generator: AliasGenerator::new(
-                Randomness::try_from(vec![0; 32].as_slice()).unwrap(),
-            ),
+            alias_generator: AliasGenerator::new(Randomness::try_from(rand_seed).unwrap()),
         }
+    }
+}
+
+impl Default for State {
+    fn default() -> Self {
+        State::new(vec![0; 32].as_slice())
     }
 }
 
