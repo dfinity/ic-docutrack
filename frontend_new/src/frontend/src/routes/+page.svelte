@@ -3,7 +3,10 @@
 
 	export let data;
 
-  let tableColumns = [{key: "name", label: "Name"}, {key: "access", label: "Access"}];
+	let tableColumns = [
+		{ key: 'name', label: 'Name' },
+		{ key: 'access', label: 'Access' }
+	];
 </script>
 
 <svelte:head>

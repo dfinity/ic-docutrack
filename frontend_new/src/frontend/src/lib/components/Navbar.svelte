@@ -53,12 +53,12 @@
 			console.log(principalValue);
 			// Create an actor to interact with the IC for a particular canister ID
 			actor.set(createActor(canisterId, { agentOptions: { host } }));
-      await actorValue.set_user({
-        first_name: "Peter",
-        last_name: "Meyer",
-        public_key: await getLocalUserPublicKey()
-      });
-      console.log('Local public key: ', await getLocalUserPublicKey());
+			await actorValue.set_user({
+				first_name: 'Peter',
+				last_name: 'Meyer',
+				public_key: await getLocalUserPublicKey()
+			});
+			console.log('Local public key: ', await getLocalUserPublicKey());
 			// Call the IC
 			greeting = await actorValue.hello_world();
 		} catch (err: unknown) {
@@ -69,40 +69,40 @@
 </script>
 
 <Navbar color="light" light expand="md">
-    <NavbarBrand href="/">DocuTrack</NavbarBrand>
-    <NavbarToggler on:click={() => (isOpen = !isOpen)} />
-    <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
-      {#if principalValue}
-        <Nav class="ms-md-3">
-          <NavItem>
-              {greeting}
-          </NavItem>
-        </Nav>
-      {/if}
-      <Nav class="ms-auto" navbar>
-        <NavItem>
-          <NavLink href="/">My Files</NavLink>
-        </NavItem>
-        <!-- <NavItem>
+	<NavbarBrand href="/">DocuTrack</NavbarBrand>
+	<NavbarToggler on:click={() => (isOpen = !isOpen)} />
+	<Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
+		{#if principalValue}
+			<Nav class="ms-md-3">
+				<NavItem>
+					{greeting}
+				</NavItem>
+			</Nav>
+		{/if}
+		<Nav class="ms-auto" navbar>
+			<NavItem>
+				<NavLink href="/">My Files</NavLink>
+			</NavItem>
+			<!-- <NavItem>
             <NavLink href="/requestFile">Request File</NavLink>
         </NavItem> -->
-        <!-- <NavItem>
+			<!-- <NavItem>
             <NavLink href="/activity">Activity</NavLink>
         </NavItem> -->
-        <NavItem>
-            <NavLink href="/requests">Requests</NavLink>
-        </NavItem>
-        <!-- <NavItem>
+			<NavItem>
+				<NavLink href="/requests">Requests</NavLink>
+			</NavItem>
+			<!-- <NavItem>
             <NavLink href="/upload">Upload File</NavLink>
         </NavItem> -->
-        <NavItem>
-            {#if !principalValue}
-            <!-- Add link to the II login -->
-            <NavLink on:click={handleOnSubmit}>Login</NavLink>
-            {:else}
-            <NavLink href="#">Logout</NavLink>
-            {/if}
-        </NavItem>
-      </Nav>
-    </Collapse>
-  </Navbar>
+			<NavItem>
+				{#if !principalValue}
+					<!-- Add link to the II login -->
+					<NavLink on:click={handleOnSubmit}>Login</NavLink>
+				{:else}
+					<NavLink href="#">Logout</NavLink>
+				{/if}
+			</NavItem>
+		</Nav>
+	</Collapse>
+</Navbar>

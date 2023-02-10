@@ -15,7 +15,7 @@
 	principal.subscribe((value) => (principalValue = value));
 </script>
 
-<RequestModal isOpen={false} actor={data.actor}/>
+<RequestModal isOpen={false} actor={data.actor} />
 
 {#if principalValue}
 	<ContentTable columns={tableColumns} data={data.tableData} />

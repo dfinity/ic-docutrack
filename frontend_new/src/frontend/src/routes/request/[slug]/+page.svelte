@@ -10,12 +10,12 @@
 	let fileData;
 
 	let actorValue;
-	actor.subscribe( value => actorValue = value);
+	actor.subscribe((value) => (actorValue = value));
 
 	async function sendFile() {
-    	// TODO: Add file encryption and submission to backend
+		// TODO: Add file encryption and submission to backend
 		let encFile = files[0];
-		actorValue.upload_file(data.fileId, encFile)
+		actorValue.upload_file(data.fileId, encFile);
 		isFileSubmitted = true;
 	}
 
@@ -59,25 +59,24 @@
 <section>
 	<h1>File Upload</h1>
 	{#if data.fileName}
-	<h3 class="mt-4">{data.fileName}</h3>
-	{#if isFileSubmitted}
-		<p>File has been submitted. Thank you!</p>
-	{:else}
-		<div class="my-3">
-			<label for="formFile" class="form-label">Upload your file</label>
-			<input bind:files on:change={onChange} class="form-control" type="file" id="formFile" />
-		</div>
-		<div class="mb-3">
-			<button on:click={sendFile} class="btn btn-primary">Submit</button>
-		</div>
+		<h3 class="mt-4">{data.fileName}</h3>
+		{#if isFileSubmitted}
+			<p>File has been submitted. Thank you!</p>
+		{:else}
+			<div class="my-3">
+				<label for="formFile" class="form-label">Upload your file</label>
+				<input bind:files on:change={onChange} class="form-control" type="file" id="formFile" />
+			</div>
+			<div class="mb-3">
+				<button on:click={sendFile} class="btn btn-primary">Submit</button>
+			</div>
 
-		{#if file && file.data}
-			<h4>File Preview</h4>
-			<FilePreview {file} />
+			{#if file && file.data}
+				<h4>File Preview</h4>
+				<FilePreview {file} />
+			{/if}
 		{/if}
-	{/if}
 	{:else}
-	<h3 class="mt-4">Link is expired or not valid.</h3>
+		<h3 class="mt-4">Link is expired or not valid.</h3>
 	{/if}
-	
 </section>
