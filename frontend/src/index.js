@@ -34,6 +34,14 @@ window.onload = async () => {
     document.getElementById("loggedInOnly").hidden = false;
     document.getElementById("loggedOutOnly").hidden = true;
     await getFiles(backendService);
+
+    console.log("setting user");
+    await backendService.set_user({
+      'first_name': 'First name',
+      'last_name': 'Last name',
+      'public_key': Uint8Array.from([1,2,3])
+    });
+    console.log("done");
   } else {
     console.log("not logged in");
     document.getElementById("loginBtn").hidden = false;
@@ -86,12 +94,13 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     agent
   });
 
+  console.log("setting user");
   await backend.set_user({
     'first_name': 'First name',
     'last_name': 'Last name',
     'public_key': Uint8Array.from([1,2,3])
   });
-
+  console.log("done");
 
   // Call the backend which returns a message with the principal (user id) of the current user.
   console.log(await backend.who_am_i());
@@ -117,7 +126,7 @@ async function getFiles(backend) {
       a.href = "#";
       a.onclick = async () => {
         // Download the file.
-        const downloadFileResponse = await backendService.download_file(file.file_id);
+        const downloadFileResponse = await backend.download_file(file.file_id);
 
         const data = downloadFileResponse.found_file;
         const content = new Blob([data.buffer], { type: "application/pdf"});
@@ -157,7 +166,9 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
 
   // Upload file
   console.log("uploading file...");
+  document.getElementById("uploadFileResult").innerText = "Uploading...";
   console.log(await backendService.upload_file(aliasInfo.Ok.file_id, new Uint8Array(fileBytes)));
+  document.getElementById("uploadFileResult").innerText = "File uploaded successfully.";
 });
 
 document.getElementById("downloadBtn").addEventListener("click", async () => {
