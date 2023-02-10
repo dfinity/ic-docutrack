@@ -14,16 +14,28 @@
     export let isOpen = false;
     const toggle = () => (isOpen = !isOpen);
 
+    import { actor } from '$lib/shared/stores/auth.js';
+
+    let actorValue;
+
+    actor.subscribe( value => actorValue = value);
+
     let requestName = '';
     let requestUrl = '';
 
-    function updateRequestUrl() {
+    async function updateRequestUrl() {
         // Do not request new url when there is already one
         if(requestUrl || !requestName) return;
-        // TODO: Implement backend request
-        // requestUrl = ...
-        // Update request view
+        let greetings = await actorValue.hello_world();
+        console.log(greetings);
+        let alias = await actorValue.request_file(requestName);
+        console.log('Alias: ', alias);
+        requestUrl = 'http://localhost:5173/request/' + alias;
     }
+
+
+
+
   </script>
   
   <div>

@@ -1,20 +1,25 @@
 import { error } from '@sveltejs/kit';
-
+import { actor } from '$lib/shared/stores/auth.js';
 /**
-   * @param {Object} data File data
-   * @param {Number} d  ata.fileId Unique file identifier
+   * @param {Number} data.fileId Unique file identifier
    * @param {String} file.fileName File name
    * @param {Object} file.userPublicKey Public Key used for the file encryption
    */
-let data = {'fileName': 'Test Request Name'};
+let data = {};
+
+let actorValue;
+actor.subscribe( value => actorValue = value);
+
 
 /** @type {import('./$types').PageLoad} */
-export function load({ params }) {
-// TODO: add backend connection
-// get_alias_info(params.slug)
-// Check if request exists
-// if yes, feed data into var, else
-// throw error(404, 'Not found');
+export async function load({ params }) {
+   if(actorValue) {
+   let requestInfo = await actorValue.get_alias_info(params.slug);
+   console.log('request info: ', requestInfo);
 
-return data;
+   data['fileId'] = requestInfo.file_id;
+   data['fileName'] = requestInfo.file_name;
+   data['userPublicKey'] =  requestInfo.user_public_key;
+   }
+   return data;
 }

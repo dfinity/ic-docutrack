@@ -14,6 +14,7 @@
 	  import { AuthClient } from '@dfinity/auth-client';
 
     import { principal, identity, actor } from '$lib/shared/stores/auth.js';
+    import { getLocalUserPublicKey } from '$lib/crypto.js';
     
     
     let principalValue;
@@ -57,11 +58,17 @@
 			});
 			// At this point we're authenticated, and we can get the identity from the auth client:
 			identity.set(authClient.getIdentity());
-			console.log(identityValue);
+			console.log('Identity: ', identityValue);
       principal.set(identityValue.getPrincipal());
-			console.log(principalValue);
+			console.log('Principal: ', principalValue);
 			// Create an actor to interact with the IC for a particular canister ID
 			actor.set(createActor(canisterId, { agentOptions: { host } }));
+      await actorValue.set_user({
+        first_name: "Peter",
+        last_name: "Meyer",
+        public_key: await getLocalUserPublicKey()
+      });
+      console.log('Local public key: ', await getLocalUserPublicKey());
 			// Call the IC
 			greeting = await actorValue.hello_world();
 		} catch (err: unknown) {
@@ -85,18 +92,18 @@
         <NavItem>
           <NavLink href="/">My Files</NavLink>
         </NavItem>
-        <NavItem>
+        <!-- <NavItem>
             <NavLink href="/requestFile">Request File</NavLink>
-        </NavItem>
-        <NavItem>
+        </NavItem> -->
+        <!-- <NavItem>
             <NavLink href="/activity">Activity</NavLink>
-        </NavItem>
+        </NavItem> -->
         <NavItem>
             <NavLink href="/requests">Requests</NavLink>
         </NavItem>
-        <NavItem>
+        <!-- <NavItem>
             <NavLink href="/upload">Upload File</NavLink>
-        </NavItem>
+        </NavItem> -->
         <NavItem>
             {#if !principalValue}
             <!-- Add link to the II login -->

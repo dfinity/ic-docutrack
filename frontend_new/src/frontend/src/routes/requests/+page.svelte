@@ -6,6 +6,7 @@
   import RequestModal from '$lib/components/RequestModal.svelte';
 
   let principalValue;
+  let alias;
   let requestedFiles = [];
   $: tableColumns = [];
   $: tableData = [];
@@ -15,19 +16,6 @@
 
   principal.subscribe( value => principalValue = value);
 
-  function getRequestedFiles() {
-    // Backend call to get all the files requested by the principal
-    return null;
-  }
-
-  function formatTableData(requestedFiles) {
-    // TODO: based on the different possible outputs from the backend, move this function to lib/utils
-    // Transform the output from the backend in columns and rows
-    // in order to render the Table
-    let row;
-    tableData.push(row);
-    return tableColumns;
-  }
 
 	const setupPoller = () => {
 		if (poller) {
@@ -38,7 +26,7 @@
 
 	const doPoll = () => async () => {
 		tableData = await new Promise(resolve => setTimeout(() => {
-			resolve(formatTableData(getRequestedFiles()))
+			// resolve(formatTableData(getRequestedFiles()))
 		}, 500));
 	}
 
@@ -48,7 +36,7 @@
 {#if principalValue}
   <RequestModal isOpen={false}/>
   <br>
-  <ContentTable columns={tableColumns} data={tableData}/>
+  <!-- <ContentTable columns={tableColumns} data={tableData}/> -->
 {:else}
   <Alert color="warning">
     <h4 class="alert-heading text-capitalize">warning</h4>

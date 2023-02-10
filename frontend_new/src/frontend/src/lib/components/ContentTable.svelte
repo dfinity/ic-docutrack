@@ -12,12 +12,13 @@
       {#each columns as col}
         <th>{col.label}</th>
       {/each}
-      {#if data && "items" in data[0]}
+      {#if data && data[0] && "items" in data[0]}
         <th></th>
       {/if}
     </tr>
   </thead>
-  <tbody>
+      {#if data.length > 0}
+      <tbody>
     {#each data as row}
       <tr>
         {#each columns as col}
@@ -31,4 +32,5 @@
       </tr>
     {/each}
   </tbody>
+  {/if}
 </Table>
