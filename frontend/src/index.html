@@ -33,17 +33,20 @@
   <body>
     <main>
       <h1>Docutrack</h1>
-      <section>
-        <button id="loginBtn">Login</button>
-      </section>
       <section id="loginStatus">
-        <p>Not logged in</p>
+        <p></p>
+      </section>
+      <section>
+        <button id="loginBtn" hidden>Login</button>
+        <button id="logoutBtn" hidden>Logout</button>
       </section>
 
       <br>
 
+      <div id="loggedInOnly" hidden>
       <h1>My Files</h1>
       <div id="filesList">
+        Loading...
       </div>
 
       <br>
@@ -59,7 +62,9 @@
       <span id="createRequestResult"></span>
 
       <br>
+      </div>
 
+      <div id="loggedOutOnly" hidden>
       <h1>Upload File</h1>
       <section>
         <label for="alias">Alias:</label>
@@ -67,14 +72,15 @@
       </section>
       <input type="file" id="file-selector">
       <section>
-        <button id="uploadBtn">Upload Button</button>
+        <button id="uploadBtn">Upload</button>
       </section>
+      </div>
 
-      <h1>Download File</h1>
+      <!--<h1>Download File</h1>
       <section>
         <button id="downloadBtn">Download</button>
       </section>
-      <a id="downloadLink">Download</a>
+      <a id="downloadLink">Download</a>-->
     </main>
   </body>
 </html>

@@ -6,16 +6,52 @@ import { HttpAgent } from "@dfinity/agent";
 import { AuthClient } from "@dfinity/auth-client";
 import { createActor, canisterId as backendCanisterId } from "./declarations/backend/index.js";
 
-let backendService = () => {
-  createActor(backendCanisterId);
-}
+let backendService = createActor(backendCanisterId);
 
 window.onload = async () => {
+  /*console.log("checking local");
+  console.log(localStorage.getItem("authInProgress"));
+  if (localStorage.getItem("authInProgress") == "1") {
+    console.log("skipping onload");
+    return
+  }*/
+
+  console.log("running onload");
   const authClient = await AuthClient.create();
-  console.log(authClient.isAuthenticated());
+  if (await authClient.isAuthenticated()) {
+    console.log("logged in");
+    console.log(authClient.getIdentity().getPrincipal());
+    console.log(authClient.getIdentity().getPrincipal());
+    document.getElementById("loginBtn").hidden = true;
+    document.getElementById("logoutBtn").hidden = false;
+
+    const identity = authClient.getIdentity();
+    document.getElementById("loginStatus").innerText = `Hello ${identity.getPrincipal()}`;
+    backendService = createActor(backendCanisterId, {
+      agent: new HttpAgent({identity})
+    });
+
+    document.getElementById("loggedInOnly").hidden = false;
+    document.getElementById("loggedOutOnly").hidden = true;
+    await getFiles(backendService);
+  } else {
+    console.log("not logged in");
+    document.getElementById("loginBtn").hidden = false;
+    document.getElementById("loginStatus").innerText = "Not logged in."
+    document.getElementById("filesList").innerText = "No files to show.";
+    document.getElementById("loggedInOnly").hidden = true;
+    document.getElementById("loggedOutOnly").hidden = false;
+  }
 }
 
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await (await AuthClient.create()).logout();
+  window.location.reload();
+});
+
 document.getElementById("loginBtn").addEventListener("click", async () => {
+  //localStorage.setItem("authInProgress", "1");
+  //console.log(localStorage.getItem("authInProgress"));
   // When the user clicks, we start the login process.
   // First we have to create and AuthClient.
   const authClient = await AuthClient.create();
@@ -39,6 +75,8 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     });
   });
 
+  localStorage.removeItem("authInProgress");
+
   // At this point we're authenticated, and we can get the identity from the auth client:
   const identity = authClient.getIdentity();
   // Using the identity obtained from the auth client, we can create an agent to interact with the IC.
@@ -49,18 +87,30 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   });
 
   await backend.set_user({
-    'first_name': 'Islam',
-    'last_name': 'El-Ashi',
+    'first_name': 'First name',
+    'last_name': 'Last name',
     'public_key': Uint8Array.from([1,2,3])
   });
 
-  // Call the backend which returns a message with the principal (user id) of the current user.
-  document.getElementById("loginStatus").innerText = await backend.who_am_i();
 
+  // Call the backend which returns a message with the principal (user id) of the current user.
+  console.log(await backend.who_am_i());
+  document.getElementById("loginStatus").innerText = `Hello ${identity.getPrincipal()}`;
+  document.getElementById("loggedInOnly").hidden = false;
+  document.getElementById("loggedOutOnly").hidden = true;
+  document.getElementById("loginBtn").hidden = true;
+  document.getElementById("logoutBtn").hidden = false;
+  await getFiles(backend);
+
+  backendService = backend;
+});
+
+async function getFiles(backend) {
   const files = await backend.get_files();
   if (files.length == 0) {
     document.getElementById("filesList").innerText = "No files to show.";
   } else {
+    document.getElementById("filesList").innerText = "";
     files.forEach((file) => {
       const a = document.createElement("a");
       a.innerText = file.file_name;
@@ -82,9 +132,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
       document.getElementById("filesList").appendChild(document.createElement("br"));
     })
   }
-
-  backendService = backend;
-});
+}
 
 document.getElementById("createRequestBtn").addEventListener("click", async () => {
   const alias = await backendService.request_file(document.getElementById("file_name").value);
