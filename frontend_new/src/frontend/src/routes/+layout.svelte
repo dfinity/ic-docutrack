@@ -1,6 +1,6 @@
 <script>
 	export const ssr = false;
-	import {Container} from 'sveltestrap';
+	import { Container } from 'sveltestrap';
 	import Navbar from '$lib/components/Navbar.svelte';
 </script>
 

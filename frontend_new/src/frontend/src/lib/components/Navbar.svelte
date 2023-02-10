@@ -1,40 +1,30 @@
 <script lang="ts">
-    import {
-      Collapse,
-      Navbar,
-      NavbarToggler,
-      NavbarBrand,
-      Nav,
-      NavItem,
-      NavLink,
-    } from 'sveltestrap';
+	import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'sveltestrap';
 
-    import { createActor } from '../../../../declarations/backend';
-    import { HttpAgent } from '@dfinity/agent';
-	  import { AuthClient } from '@dfinity/auth-client';
+	import { createActor } from '../../../../declarations/backend';
+	import { HttpAgent } from '@dfinity/agent';
+	import { AuthClient } from '@dfinity/auth-client';
 
-    import { principal, identity, actor } from '$lib/shared/stores/auth.js';
-    import { getLocalUserPublicKey } from '$lib/crypto.js';
-    
-    
-    let principalValue;
-    let identityValue;
-    let actorValue;
+	import { principal, identity, actor } from '$lib/shared/stores/auth.js';
 
-    principal.subscribe( value => principalValue = value);
-    identity.subscribe( value => identityValue = value);
-    actor.subscribe( value => actorValue = value);
-    // firstName.subscribe( value => firstNameValue = value);
-  
-    let isOpen = false;
-    
-    function handleUpdate(event) {
-      isOpen = event.detail.isOpen;
-    }
-    let disabled = false;
-	  let greeting = '';
+	let principalValue;
+	let identityValue;
+	let actorValue;
 
-    const handleOnSubmit = async () => {
+	principal.subscribe((value) => (principalValue = value));
+	identity.subscribe((value) => (identityValue = value));
+	actor.subscribe((value) => (actorValue = value));
+	// firstName.subscribe( value => firstNameValue = value);
+
+	let isOpen = false;
+
+	function handleUpdate(event) {
+		isOpen = event.detail.isOpen;
+	}
+	let disabled = false;
+	let greeting = '';
+
+	const handleOnSubmit = async () => {
 		disabled = true;
 		try {
 			// Canister IDs are automatically expanded to .env config - see vite.config.ts
@@ -58,9 +48,9 @@
 			});
 			// At this point we're authenticated, and we can get the identity from the auth client:
 			identity.set(authClient.getIdentity());
-			console.log('Identity: ', identityValue);
-      principal.set(identityValue.getPrincipal());
-			console.log('Principal: ', principalValue);
+			console.log(identityValue);
+			principal.set(identityValue.getPrincipal());
+			console.log(principalValue);
 			// Create an actor to interact with the IC for a particular canister ID
 			actor.set(createActor(canisterId, { agentOptions: { host } }));
       await actorValue.set_user({
@@ -76,7 +66,8 @@
 		}
 		disabled = false;
 	};
-  </script>
+</script>
+
 <Navbar color="light" light expand="md">
     <NavbarBrand href="/">DocuTrack</NavbarBrand>
     <NavbarToggler on:click={() => (isOpen = !isOpen)} />

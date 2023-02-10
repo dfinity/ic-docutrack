@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { actor } from '$lib/shared/stores/auth.js';
-  import ContentTable from '$lib/components/ContentTable.svelte';
+	import ContentTable from '$lib/components/ContentTable.svelte';
 
-  export let data;
+	export let data;
 
   let tableColumns = [{key: "name", label: "Name"}, {key: "access", label: "Access"}];
 </script>
@@ -13,5 +12,5 @@
 </svelte:head>
 
 <section>
-    <ContentTable columns={tableColumns} data={data}/>
+	<ContentTable columns={tableColumns} {data} />
 </section>

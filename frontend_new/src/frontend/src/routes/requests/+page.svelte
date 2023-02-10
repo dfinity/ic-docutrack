@@ -1,9 +1,9 @@
 <script>
-  import { Alert } from 'sveltestrap';
+	import { Alert } from 'sveltestrap';
 
-  import { principal } from '$lib/shared/stores/auth.js';
-  import ContentTable from '$lib/components/ContentTable.svelte';
-  import RequestModal from '$lib/components/RequestModal.svelte';
+	import { principal } from '$lib/shared/stores/auth.js';
+	import ContentTable from '$lib/components/ContentTable.svelte';
+	import RequestModal from '$lib/components/RequestModal.svelte';
 
   let principalValue;
   let alias;
@@ -14,7 +14,7 @@
   let progress = {};
 	let poller;
 
-  principal.subscribe( value => principalValue = value);
+	principal.subscribe((value) => (principalValue = value));
 
 
 	const setupPoller = () => {
@@ -22,7 +22,7 @@
 			clearInterval(poller);
 		}
 		poller = setInterval(doPoll(), 2000);
-	}
+	};
 
 	const doPoll = () => async () => {
 		tableData = await new Promise(resolve => setTimeout(() => {
@@ -38,8 +38,8 @@
   <br>
   <!-- <ContentTable columns={tableColumns} data={tableData}/> -->
 {:else}
-  <Alert color="warning">
-    <h4 class="alert-heading text-capitalize">warning</h4>
-    User must be authenticated.
-  </Alert>
+	<Alert color="warning">
+		<h4 class="alert-heading text-capitalize">warning</h4>
+		User must be authenticated.
+	</Alert>
 {/if}
