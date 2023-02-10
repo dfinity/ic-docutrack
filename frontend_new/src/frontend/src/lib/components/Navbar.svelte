@@ -1,39 +1,30 @@
 <script lang="ts">
-    import {
-      Collapse,
-      Navbar,
-      NavbarToggler,
-      NavbarBrand,
-      Nav,
-      NavItem,
-      NavLink,
-    } from 'sveltestrap';
+	import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'sveltestrap';
 
-    import { createActor } from '../../../../declarations/backend';
-    import { HttpAgent } from '@dfinity/agent';
-	  import { AuthClient } from '@dfinity/auth-client';
+	import { createActor } from '../../../../declarations/backend';
+	import { HttpAgent } from '@dfinity/agent';
+	import { AuthClient } from '@dfinity/auth-client';
 
-    import { principal, identity, actor } from '$lib/shared/stores/auth.js';
-    
-    
-    let principalValue;
-    let identityValue;
-    let actorValue;
+	import { principal, identity, actor } from '$lib/shared/stores/auth.js';
 
-    principal.subscribe( value => principalValue = value);
-    identity.subscribe( value => identityValue = value);
-    actor.subscribe( value => actorValue = value);
-    // firstName.subscribe( value => firstNameValue = value);
-  
-    let isOpen = false;
-    
-    function handleUpdate(event) {
-      isOpen = event.detail.isOpen;
-    }
-    let disabled = false;
-	  let greeting = '';
+	let principalValue;
+	let identityValue;
+	let actorValue;
 
-    const handleOnSubmit = async () => {
+	principal.subscribe((value) => (principalValue = value));
+	identity.subscribe((value) => (identityValue = value));
+	actor.subscribe((value) => (actorValue = value));
+	// firstName.subscribe( value => firstNameValue = value);
+
+	let isOpen = false;
+
+	function handleUpdate(event) {
+		isOpen = event.detail.isOpen;
+	}
+	let disabled = false;
+	let greeting = '';
+
+	const handleOnSubmit = async () => {
 		disabled = true;
 		try {
 			// Canister IDs are automatically expanded to .env config - see vite.config.ts
@@ -58,7 +49,7 @@
 			// At this point we're authenticated, and we can get the identity from the auth client:
 			identity.set(authClient.getIdentity());
 			console.log(identityValue);
-      principal.set(identityValue.getPrincipal());
+			principal.set(identityValue.getPrincipal());
 			console.log(principalValue);
 			// Create an actor to interact with the IC for a particular canister ID
 			actor.set(createActor(canisterId, { agentOptions: { host } }));
@@ -69,42 +60,43 @@
 		}
 		disabled = false;
 	};
-  </script>
+</script>
+
 <Navbar color="light" light expand="md">
-    <NavbarBrand href="/">DocuTrack</NavbarBrand>
-    <NavbarToggler on:click={() => (isOpen = !isOpen)} />
-    <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
-      {#if principalValue}
-        <Nav class="ms-md-3">
-          <NavItem>
-              {greeting}
-          </NavItem>
-        </Nav>
-      {/if}
-      <Nav class="ms-auto" navbar>
-        <NavItem>
-          <NavLink href="/">My Files</NavLink>
-        </NavItem>
-        <NavItem>
-            <NavLink href="/requestFile">Request File</NavLink>
-        </NavItem>
-        <NavItem>
-            <NavLink href="/activity">Activity</NavLink>
-        </NavItem>
-        <NavItem>
-            <NavLink href="/requests">Requests</NavLink>
-        </NavItem>
-        <NavItem>
-            <NavLink href="/upload">Upload File</NavLink>
-        </NavItem>
-        <NavItem>
-            {#if !principalValue}
-            <!-- Add link to the II login -->
-            <NavLink on:click={handleOnSubmit}>Login</NavLink>
-            {:else}
-            <NavLink href="#">Logout</NavLink>
-            {/if}
-        </NavItem>
-      </Nav>
-    </Collapse>
-  </Navbar>
+	<NavbarBrand href="/">DocuTrack</NavbarBrand>
+	<NavbarToggler on:click={() => (isOpen = !isOpen)} />
+	<Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
+		{#if principalValue}
+			<Nav class="ms-md-3">
+				<NavItem>
+					{greeting}
+				</NavItem>
+			</Nav>
+		{/if}
+		<Nav class="ms-auto" navbar>
+			<NavItem>
+				<NavLink href="/">My Files</NavLink>
+			</NavItem>
+			<NavItem>
+				<NavLink href="/request-file">Request File</NavLink>
+			</NavItem>
+			<NavItem>
+				<NavLink href="/activity">Activity</NavLink>
+			</NavItem>
+			<NavItem>
+				<NavLink href="/requests">Requests</NavLink>
+			</NavItem>
+			<NavItem>
+				<NavLink href="/upload">Upload File</NavLink>
+			</NavItem>
+			<NavItem>
+				{#if !principalValue}
+					<!-- Add link to the II login -->
+					<NavLink on:click={handleOnSubmit}>Login</NavLink>
+				{:else}
+					<NavLink href="#">Logout</NavLink>
+				{/if}
+			</NavItem>
+		</Nav>
+	</Collapse>
+</Navbar>

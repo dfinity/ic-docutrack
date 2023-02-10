@@ -1,4 +1,4 @@
-require("fake-indexeddb/auto");
+require('fake-indexeddb/auto');
 const { getLocalUserPublicKey } = require('./crypto');
 const File = require('./file');
 
@@ -12,11 +12,7 @@ test('can encrypt and decrypt a file.', async () => {
 
 	const encryptedFileKey = await file.getEncryptedFileKey(userKey);
 
-	const file2 = await File.fromEncrypted(
-		'file name',
-		encryptedContents,
-		encryptedFileKey
-	);
+	const file2 = await File.fromEncrypted('file name', encryptedContents, encryptedFileKey);
 
 	expect(file.contents).toEqual(fileContents);
 	expect(file2.contents).toEqual(fileContents);
