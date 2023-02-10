@@ -1,11 +1,10 @@
-const { subtle } = require('crypto');
-const {
-	generateFileKey,
-	encryptForUser,
-	decryptForUser,
-	decryptFile,
-	encryptFile
-} = require('./crypto');
+import {
+	default as decryptFile,
+	default as decryptForUser,
+	default as encryptFile,
+	default as encryptForUser,
+	default as generateFileKey
+} from './crypto';
 
 /**
  * A file that is backed by the docutrack backend service.
@@ -83,4 +82,4 @@ class File {
 	}
 }
 
-module.exports = File;
+export default File;

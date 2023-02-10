@@ -1,5 +1,5 @@
 const { subtle } = globalThis.crypto;
-const { clearKeys, storeKey, loadKey } = require('./keyStorage');
+import { default as loadKey, default as storeKey } from './keyStorage';
 
 /**
  * @type {CryptoKey || null}
@@ -165,7 +165,7 @@ async function decryptFile(encryptedFile, rawKey) {
 	);
 }
 
-module.exports = {
+export default {
 	getLocalUserPublicKey,
 	encryptForUser,
 	decryptForUser,

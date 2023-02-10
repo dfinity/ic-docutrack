@@ -2,21 +2,19 @@
 	import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'sveltestrap';
 
 	import { createActor } from '../../../../declarations/backend';
-	import { HttpAgent } from '@dfinity/agent';
 	import { AuthClient } from '@dfinity/auth-client';
 
 	import { principal, identity, actor } from '$lib/shared/stores/auth.js';
+	import getLocalUserPublicKey from '$lib/crypto';
+
+	let isOpen = false;
 
 	let principalValue;
 	let identityValue;
 	let actorValue;
-
 	principal.subscribe((value) => (principalValue = value));
 	identity.subscribe((value) => (identityValue = value));
 	actor.subscribe((value) => (actorValue = value));
-	// firstName.subscribe( value => firstNameValue = value);
-
-	let isOpen = false;
 
 	function handleUpdate(event) {
 		isOpen = event.detail.isOpen;
@@ -52,7 +50,7 @@
 			principal.set(identityValue.getPrincipal());
 			console.log(principalValue);
 			// Create an actor to interact with the IC for a particular canister ID
-			actor.set(createActor(canisterId, { agentOptions: { host } }));
+			actorValue.set(createActor(canisterId, { agentOptions: { host } }));
 			await actorValue.set_user({
 				first_name: 'Peter',
 				last_name: 'Meyer',

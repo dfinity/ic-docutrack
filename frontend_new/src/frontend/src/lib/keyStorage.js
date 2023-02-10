@@ -1,4 +1,4 @@
-const { openDB } = require('idb');
+import { openDB } from 'idb';
 
 const db = openDB('crypto-store', 1, {
 	upgrade(db) {
@@ -25,4 +25,4 @@ async function clearKeys() {
 	return (await db).clear('keys');
 }
 
-module.exports = { loadKey, storeKey, clearKeys };
+export default { loadKey, storeKey, clearKeys };
