@@ -5,7 +5,7 @@
   "scripts": {
     "wdio": "wdio run ./wdio.conf.ts",
     "format": "prettier --write --plugin-search-dir=. .",
-    "build": "cd frontend_new; npm run build",
+    "build": "cd frontend; npm run build",
     "start": "webpack serve --no-client-overlay",
     "test": "jest"
   },

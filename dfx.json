@@ -11,9 +11,9 @@
     "frontend": {
       "dependencies": ["backend"],
       "frontend": {
-        "entrypoint": "frontend_new/build/index.html"
+        "entrypoint": "frontend/build/index.html"
       },
-      "source": ["frontend_new/build/"],
+      "source": ["frontend/build/"],
       "type": "assets"
     },
 
