@@ -1,7 +1,10 @@
 mod aliases;
 pub mod api;
+pub mod memory;
 use crate::aliases::{AliasGenerator, Randomness};
 use ic_cdk::export::{candid::CandidType, Principal};
+use ic_stable_structures::StableBTreeMap;
+use memory::Memory;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
@@ -128,7 +131,7 @@ pub struct State {
     file_count: u64,
 
     /// Keeps track of usernames vs. their principals.
-    pub users: BTreeMap<Principal, User>,
+    pub users: StableBTreeMap<u64, User, Memory>,
 
     /// Mapping between file IDs and file information.
     pub file_data: BTreeMap<u64, File>,
