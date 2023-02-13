@@ -42,6 +42,7 @@ pub enum WhoamiResponse {
 pub struct FileMetadata {
     pub file_name: String,
     pub user_public_key: Vec<u8>,
+    pub requester_principal: Principal,
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -66,6 +67,8 @@ pub struct AliasInfo {
     pub file_name: String,
     #[serde(rename = "user_public_key")]
     pub user_public_key: Vec<u8>,
+    #[serde(rename = "requester_name")]
+    pub requester_name: String,
 }
 
 // A file is composed of its metadata and its content, which is a blob.

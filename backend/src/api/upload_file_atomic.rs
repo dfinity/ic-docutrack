@@ -20,6 +20,7 @@ pub fn upload_file_atomic(caller: Principal, request: UploadFileAtomicRequest, s
             metadata: FileMetadata {
                 file_name: request.name,
                 user_public_key: get_user_key(state, caller),
+                requester_principal: caller,
             },
             content: FileContent::Uploaded {
                 contents: request.content,
@@ -78,7 +79,8 @@ mod test {
                 0 => File {
                     metadata: FileMetadata {
                         file_name: "file_name".to_string(),
-                        user_public_key: get_user_key(&state, Principal::anonymous())
+                        user_public_key: get_user_key(&state, Principal::anonymous()),
+                        requester_principal: Principal::anonymous()
                     },
                     content: FileContent::Uploaded {
                         contents: vec![1,2,3],

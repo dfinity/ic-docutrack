@@ -1,4 +1,5 @@
 mod download_file;
+mod get_alias_info;
 mod get_files;
 mod get_users;
 mod request_file;
@@ -8,6 +9,7 @@ mod upload_file_atomic;
 mod user_info;
 
 pub use download_file::download_file;
+pub use get_alias_info::get_alias_info;
 pub use get_files::get_files;
 pub use get_users::get_users;
 pub use request_file::request_file;
