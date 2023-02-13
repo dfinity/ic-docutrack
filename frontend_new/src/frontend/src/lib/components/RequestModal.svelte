@@ -71,6 +71,7 @@
 				<div class="form-floating mb-3">
 					{#if requestLink}
 						<input type="text" class="form-control" id="requestLink" placeholder="" name="requestLink" value={requestLink} readonly>
+						<span><a href="mailto:?subject=Share your file&body=Please share a file with me here: {requestLink}">Email me!</a></span>
 					{:else}
 						<input type="text" class="form-control" id="requestLink" placeholder="" name="requestLink" readonly>
 					{/if}
