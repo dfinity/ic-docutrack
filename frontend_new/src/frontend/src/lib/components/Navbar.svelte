@@ -6,10 +6,9 @@
 
 	import { principal, identity, actor } from '$lib/shared/stores/auth.js';
 	import { default as crypto } from '$lib/crypto';
+	import { onMount } from 'svelte';
 
 	let isOpen = false;
-
-	let req = AuthClient.create();
 
 	let principalValue;
 	let identityValue;
@@ -23,6 +22,13 @@
 	}
 	let disabled = false;
 	let greeting = '';
+	let isAuthenticated = false;
+
+	onMount(async () => {
+		let authClient = await AuthClient.create();
+		isAuthenticated = await authClient.isAuthenticated();
+		console.log(isAuthenticated);
+	});
 
 	const handleOnSubmit = async () => {
 		disabled = true;
@@ -49,6 +55,7 @@
 			// At this point we're authenticated, and we can get the identity from the auth client:
 			identity.set(authClient.getIdentity());
 			principal.set(identityValue.getPrincipal());
+			isAuthenticated = true;
 			// Create an actor to interact with the IC for a particular canister ID
 			actor.set(createActor(canisterId, { agentOptions: { host } }));
 			console.log(await crypto.getLocalUserPublicKey());
@@ -70,8 +77,7 @@
 	<NavbarBrand href="/">DocuTrack</NavbarBrand>
 	<NavbarToggler on:click={() => (isOpen = !isOpen)} />
 	<Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
-		{#await req then authClient}
-		{#if authClient.isAuthenticated()}
+		{#if isAuthenticated}
 			<Nav class="ms-md-3">
 				<NavItem>
 					{greeting}
@@ -81,30 +87,22 @@
 			<NavItem>
 				<NavLink href="/">My Files</NavLink>
 			</NavItem>
-			<!-- <NavItem>
-            <NavLink href="/requestFile">Request File</NavLink>
-        </NavItem> -->
-			<!-- <NavItem>
-            <NavLink href="/activity">Activity</NavLink>
-        </NavItem> -->
+
 			<NavItem>
 				<NavLink href="/requests">Requests</NavLink>
 			</NavItem>
-			<!-- <NavItem>
-            <NavLink href="/upload">Upload File</NavLink>
-        </NavItem> -->
+
 			<NavItem>
 				<NavLink href="#">Logout</NavLink>
 			</NavItem>
 			</Nav>
-			{:else}
-			<Nav class="ms-auto" navbar>
-				<NavItem>
+		{:else}
+		<Nav class="ms-auto" navbar>
+			<NavItem>
 				<!-- Add link to the II login -->
 				<NavLink on:click={handleOnSubmit}>Login</NavLink>
 			</NavItem>
-			</Nav>
+		</Nav>
 		{/if}
-		{/await}
 	</Collapse>
 </Navbar>
