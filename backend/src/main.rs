@@ -73,4 +73,9 @@ fn share_file(user_id: Principal, file_id: u64) -> FileSharingResponse {
     with_state_mut(|s| backend::api::share_file(s, caller(), user_id, file_id))
 }
 
+#[query]
+fn get_users() -> GetUsersResponse {
+    with_state(|s| backend::api::get_users(s, caller()))
+}
+
 fn main() {}
