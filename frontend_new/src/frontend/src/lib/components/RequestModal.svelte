@@ -80,11 +80,9 @@
 							value={requestLink}
 							readonly
 						/>
-						<span
-							><a
-								href="mailto:?subject=Share your file&body=Please share a file with me here: {requestLink}"
-								>Email me!</a
-							></span
+						<span>
+							<a href="mailto:?subject=Share your file&body=Please share a file with me here: {requestLink}">Email me!</a>
+						</span
 						>
 					{:else}
 						<input
