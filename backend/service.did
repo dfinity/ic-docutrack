@@ -33,11 +33,16 @@ type get_alias_info_response = variant {
   }
 };
 
+type found_file = record {
+  contents: blob;
+  file_key: blob;
+};
+
 type download_file_response = variant {
   not_found_file;
   not_uploaded_file;
   permission_error;
-  found_file: blob;
+  found_file: found_file;
 };
 
 type upload_file_response = variant {
@@ -56,11 +61,24 @@ type upload_file_error = variant {
 type upload_file_atomic_request = record {
   name: text;
   content: blob;
+  file_key: blob;
 };
 
 type share_file_response = variant {
   permission_error;
   ok;
+};
+
+type user_data = record {
+  first_name: text;
+  last_name: text;
+  public_key: blob;
+  ic_principal: principal;
+};
+
+type get_users_response = variant {
+  permission_error;
+  users: vec user_data;
 };
 
 service docutrack : {
@@ -78,7 +96,7 @@ service docutrack : {
   // it returns the name and id of the file to be uploaded.
   get_alias_info: (alias: text) -> (get_alias_info_response);
 
-  upload_file: (file_id, blob) -> (upload_file_response) ;
+  upload_file: (file_id, blob, blob) -> (upload_file_response) ;
 
   download_file: (file_id) -> (download_file_response) ;
 
@@ -87,5 +105,7 @@ service docutrack : {
   upload_file_atomic: (upload_file_atomic_request) -> ();
 
   share_file: (user_id: principal, file_id: file_id) -> (share_file_response);
+
+  get_users: () -> (get_users_response);
 }
 

@@ -77,12 +77,25 @@ pub struct File {
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum FileContent {
-    Pending { alias: String },
-    Uploaded { contents: Vec<u8> },
+    Pending {
+        alias: String,
+    },
+    Uploaded {
+        contents: Vec<u8>,
+        file_key: Vec<u8>,
+    },
+}
+
+#[derive(CandidType, Serialize, Deserialize, Debug, PartialEq)]
+pub struct FileData {
+    #[serde(rename = "contents")]
+    contents: Vec<u8>,
+    #[serde(rename = "file_key")]
+    file_key: Vec<u8>,
 }
 
 #[derive(CandidType, Serialize, Deserialize, PartialEq, Debug)]
-pub enum FileData {
+pub enum FileDownloadResponse {
     #[serde(rename = "not_found_file")]
     NotFoundFile,
     #[serde(rename = "not_uploaded_file")]
@@ -90,7 +103,7 @@ pub enum FileData {
     #[serde(rename = "permission_error")]
     PermissionError,
     #[serde(rename = "found_file")]
-    FoundFile(Vec<u8>),
+    FoundFile(FileData),
 }
 
 #[derive(CandidType, Serialize, Deserialize)]
@@ -182,4 +195,24 @@ pub fn with_state_mut<R>(f: impl FnOnce(&mut State) -> R) -> R {
 /// Returns an unused file alias.
 pub fn generate_alias() -> String {
     with_state_mut(|s| s.alias_generator.next())
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, PartialEq, Debug)]
+pub struct UserData {
+    #[serde(rename = "first_name")]
+    pub first_name: String,
+    #[serde(rename = "last_name")]
+    pub last_name: String,
+    #[serde(rename = "public_key")]
+    pub public_key: Vec<u8>,
+    #[serde(rename = "ic_principal")]
+    pub ic_principal: Principal,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub enum GetUsersResponse {
+    #[serde(rename = "permission_error")]
+    PermissionError,
+    #[serde(rename = "users")]
+    Users(Vec<UserData>),
 }

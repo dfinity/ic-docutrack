@@ -1,21 +1,24 @@
-use crate::{FileContent, FileData, State};
+use crate::{FileContent, FileData, FileDownloadResponse, State};
 use ic_cdk::export::candid::Principal;
 
-fn get_file_data(s: &State, file_id: u64) -> FileData {
+fn get_file_data(s: &State, file_id: u64) -> FileDownloadResponse {
     // unwrap is safe because we already know the file exists
     let this_file = s.file_data.get(&file_id).unwrap();
     match &this_file.content {
-        FileContent::Pending { .. } => FileData::NotUploadedFile,
-        FileContent::Uploaded { contents } => FileData::FoundFile(contents.clone()),
+        FileContent::Pending { .. } => FileDownloadResponse::NotUploadedFile,
+        FileContent::Uploaded { contents, file_key } => FileDownloadResponse::FoundFile(FileData {
+            contents: contents.clone(),
+            file_key: file_key.clone(),
+        }),
     }
 }
 
-pub fn download_file(s: &State, file_id: u64, caller: Principal) -> FileData {
+pub fn download_file(s: &State, file_id: u64, caller: Principal) -> FileDownloadResponse {
     match s.file_owners.get(&caller) {
-        None => FileData::PermissionError,
+        None => FileDownloadResponse::PermissionError,
         Some(files) => match files.contains(&file_id) {
             true => get_file_data(s, file_id),
-            false => FileData::PermissionError,
+            false => FileDownloadResponse::PermissionError,
         },
     }
 }
@@ -48,7 +51,7 @@ mod test {
         // try to download file as different user
         let result = download_file(&state, 0, Principal::from_slice(&[0, 1, 2]));
 
-        assert!(result == FileData::PermissionError);
+        assert!(result == FileDownloadResponse::PermissionError);
     }
 
     #[test]
@@ -86,7 +89,7 @@ mod test {
         // try to download a file that belongs to another user
         let result = download_file(&state, 3, Principal::anonymous());
 
-        assert!(result == FileData::PermissionError);
+        assert!(result == FileDownloadResponse::PermissionError);
     }
 
     #[test]
@@ -107,7 +110,7 @@ mod test {
         // try to download a file that was not uploaded yet
         let result = download_file(&state, 0, Principal::anonymous());
 
-        assert!(result == FileData::NotUploadedFile);
+        assert!(result == FileDownloadResponse::NotUploadedFile);
     }
 
     #[test]
@@ -129,11 +132,14 @@ mod test {
 
         // Upload the file, which we assume to have a file ID of zero.
         let file_id = 0;
-        let _alias = upload_file(file_id, vec![1, 2, 3], &mut state);
+        let _alias = upload_file(file_id, vec![1, 2, 3], vec![1, 2, 3], &mut state);
 
         assert_eq!(
             download_file(&state, file_id, Principal::anonymous()),
-            FileData::FoundFile(vec![1, 2, 3])
+            FileDownloadResponse::FoundFile(FileData {
+                contents: vec![1, 2, 3],
+                file_key: vec![1, 2, 3]
+            })
         );
     }
 }

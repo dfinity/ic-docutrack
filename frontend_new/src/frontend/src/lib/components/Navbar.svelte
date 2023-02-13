@@ -35,7 +35,7 @@
 		}
 	});
 
-	const handleOnSubmit = async () => {
+	const handleLogin = async () => {
 		disabled = true;
 		try {
 			// Canister IDs are automatically expanded to .env config - see vite.config.ts
@@ -60,7 +60,6 @@
 			isAuthenticated = true;
 			// Create an actor to interact with the IC for a particular canister ID
 			actor.set(createActor(canisterId, { agentOptions: { host } }));
-			console.log(await crypto.getLocalUserPublicKey());
 			await actorValue.set_user({
 				first_name: 'Peter',
 				last_name: 'Meyer',
@@ -73,6 +72,13 @@
 		}
 		disabled = false;
 	};
+
+	const handleLogout = async () => {
+		await (await AuthClient.create()).logout();
+		principal.set(null);
+		identity.set(null);
+		actor.set(null);
+	}
 </script>
 
 <Navbar color="light" light expand="md">
@@ -95,14 +101,14 @@
 				</NavItem>
 
 				<NavItem>
-					<NavLink href="#">Logout</NavLink>
+					<NavLink on:click={handleLogout}>Logout</NavLink>
 				</NavItem>
 			</Nav>
 		{:else}
 			<Nav class="ms-auto" navbar>
 				<NavItem>
 					<!-- Add link to the II login -->
-					<NavLink on:click={handleOnSubmit}>Login</NavLink>
+					<NavLink on:click={handleLogin}>Login</NavLink>
 				</NavItem>
 			</Nav>
 		{/if}
