@@ -1,7 +1,11 @@
 export const idlFactory = ({ IDL }) => {
 	const file_id = IDL.Nat64;
+	const found_file = IDL.Record({
+		contents: IDL.Vec(IDL.Nat8),
+		file_key: IDL.Vec(IDL.Nat8)
+	});
 	const download_file_response = IDL.Variant({
-		found_file: IDL.Vec(IDL.Nat8),
+		found_file: found_file,
 		permission_error: IDL.Null,
 		not_uploaded_file: IDL.Null,
 		not_found_file: IDL.Null
@@ -37,7 +41,8 @@ export const idlFactory = ({ IDL }) => {
 	});
 	const upload_file_atomic_request = IDL.Record({
 		content: IDL.Vec(IDL.Nat8),
-		name: IDL.Text
+		name: IDL.Text,
+		file_key: IDL.Vec(IDL.Nat8)
 	});
 	const who_am_i_response = IDL.Variant({
 		known_user: IDL.Record({
@@ -54,7 +59,11 @@ export const idlFactory = ({ IDL }) => {
 		request_file: IDL.Func([IDL.Text], [IDL.Text], []),
 		set_user: IDL.Func([user], [], []),
 		share_file: IDL.Func([IDL.Principal, file_id], [share_file_response], []),
-		upload_file: IDL.Func([file_id, IDL.Vec(IDL.Nat8)], [upload_file_response], []),
+		upload_file: IDL.Func(
+			[file_id, IDL.Vec(IDL.Nat8), IDL.Vec(IDL.Nat8)],
+			[upload_file_response],
+			[]
+		),
 		upload_file_atomic: IDL.Func([upload_file_atomic_request], [], []),
 		who_am_i: IDL.Func([], [who_am_i_response], [])
 	});

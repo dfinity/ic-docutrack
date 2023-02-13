@@ -67,7 +67,7 @@
 		principal.set(null);
 		identity.set(null);
 		actor.set(null);
-	}
+	};
 </script>
 
 <Navbar color="light" light expand="md">
