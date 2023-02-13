@@ -87,6 +87,7 @@ declare module '$env/static/private' {
 	export const npm_config_prefix: string;
 	export const npm_node_execpath: string;
 	export const NODE_ENV: string;
+	export const VITE___CANDID_UI_CANISTER_ID: string;
 	export const VITE_BACKEND_CANISTER_ID: string;
 	export const VITE_FRONTEND_CANISTER_ID: string;
 	export const VITE_INTERNET_IDENTITY_CANISTER_ID: string;
@@ -182,6 +183,7 @@ declare module '$env/dynamic/private' {
 		npm_config_prefix: string;
 		npm_node_execpath: string;
 		NODE_ENV: string;
+		VITE___CANDID_UI_CANISTER_ID: string;
 		VITE_BACKEND_CANISTER_ID: string;
 		VITE_FRONTEND_CANISTER_ID: string;
 		VITE_INTERNET_IDENTITY_CANISTER_ID: string;
