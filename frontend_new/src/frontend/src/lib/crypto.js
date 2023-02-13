@@ -1,5 +1,5 @@
 const { subtle } = globalThis.crypto;
-import { default as loadKey, default as storeKey } from './keyStorage';
+import { default as keyStorage } from './keyStorage';
 
 /**
  * @type {CryptoKey || null}
@@ -21,8 +21,8 @@ let privateKey = null;
  * @returns {Promise<ArrayBuffer>}
  */
 async function getLocalUserPublicKey() {
-	this.publicKey = await loadKey('public');
-	this.privateKey = await loadKey('private');
+	this.publicKey = await keyStorage.loadKey('public');
+	this.privateKey = await keyStorage.loadKey('private');
 
 	if (!publicKey || !privateKey) {
 		const keypair = await subtle.generateKey(
@@ -35,8 +35,8 @@ async function getLocalUserPublicKey() {
 			true,
 			['encrypt', 'decrypt']
 		);
-		await storeKey('public', keypair.publicKey);
-		await storeKey('private', keypair.privateKey);
+		await keyStorage.storeKey('public', keypair.publicKey);
+		await keyStorage.storeKey('private', keypair.privateKey);
 		this.publicKey = keypair.publicKey;
 		this.privateKey = keypair.privateKey;
 	}

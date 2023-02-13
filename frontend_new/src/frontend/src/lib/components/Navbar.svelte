@@ -5,7 +5,7 @@
 	import { AuthClient } from '@dfinity/auth-client';
 
 	import { principal, identity, actor } from '$lib/shared/stores/auth.js';
-	import {default as getLocalUserPublicKey} from '$lib/crypto';
+	import { default as crypto } from '$lib/crypto';
 
 	let isOpen = false;
 
@@ -46,17 +46,17 @@
 			});
 			// At this point we're authenticated, and we can get the identity from the auth client:
 			identity.set(authClient.getIdentity());
-			console.log(identityValue);
 			principal.set(identityValue.getPrincipal());
-			console.log(principalValue);
 			// Create an actor to interact with the IC for a particular canister ID
 			actor.set(createActor(canisterId, { agentOptions: { host } }));
+			// let localUserPublicKey = await crypto.getLocalUserPublicKey();
+			// console.log(localUserPublicKey);
 			await actorValue.set_user({
 				first_name: 'Peter',
 				last_name: 'Meyer',
-				public_key: await getLocalUserPublicKey()
+				// public_key: await crypto.getLocalUserPublicKey()
+				public_key: [1,2,3,4,5,6,7,8]
 			});
-			console.log('Local public key: ', await getLocalUserPublicKey());
 			// Call the IC
 			greeting = await actorValue.hello_world();
 		} catch (err: unknown) {
