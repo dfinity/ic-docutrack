@@ -69,6 +69,18 @@ type share_file_response = variant {
   ok;
 };
 
+type user_data = record {
+  first_name: text;
+  last_name: text;
+  public_key: blob;
+  ic_principal: principal;
+};
+
+type get_users_response = variant {
+  permission_error;
+  users: vec user_data;
+};
+
 service docutrack : {
   hello_world : () -> (text);
 
@@ -93,5 +105,7 @@ service docutrack : {
   upload_file_atomic: (upload_file_atomic_request) -> ();
 
   share_file: (user_id: principal, file_id: file_id) -> (share_file_response);
+
+  get_users: () -> (get_users_response);
 }
 
