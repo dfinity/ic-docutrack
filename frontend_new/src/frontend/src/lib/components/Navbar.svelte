@@ -4,23 +4,36 @@
 	import { createActor } from '../../../../declarations/backend';
 	import { AuthClient } from '@dfinity/auth-client';
 
-	import { principal, identity, actor } from '$lib/shared/stores/auth.js';
+	import { actor, authClient } from '$lib/shared/stores/auth.js';
 	import { default as crypto } from '$lib/crypto';
+	import { onMount } from 'svelte';
 
 	let isOpen = false;
 
-	let principalValue;
-	let identityValue;
 	let actorValue;
-	principal.subscribe((value) => (principalValue = value));
-	identity.subscribe((value) => (identityValue = value));
+	let authClientValue;
+
 	actor.subscribe((value) => (actorValue = value));
+	authClient.subscribe((value) => (authClientValue = value));
 
 	function handleUpdate(event) {
 		isOpen = event.detail.isOpen;
 	}
 	let disabled = false;
 	let greeting = '';
+	let isAuthenticated = false;
+
+	onMount(async () => {
+		authClient.set(await AuthClient.create());
+		isAuthenticated = await authClientValue.isAuthenticated();
+		if (isAuthenticated && !actorValue) {
+			// Canister IDs are automatically expanded to .env config - see vite.config.ts
+			const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
+			// We pass the host instead of using a proxy to support NodeJS >= v17 (ViteJS issue: https://github.com/vitejs/vite/issues/4794)
+			const host = import.meta.env.VITE_HOST;
+			actor.set(createActor(canisterId, { agentOptions: { host } }));
+		}
+	});
 
 	const handleLogin = async () => {
 		disabled = true;
@@ -31,22 +44,20 @@
 			const host = import.meta.env.VITE_HOST;
 			// When the user clicks, we start the login process.
 			// First we have to create and AuthClient.
-			const authClient = await AuthClient.create();
+			authClient.set(await AuthClient.create());
 			// Find out which URL should be used for login.
 			const iiUrl = 'http://127.0.0.1:8000/?canisterId=r7inp-6aaaa-aaaaa-aaabq-cai';
 			// Call authClient.login(...) to login with Internet Identity. This will open a new tab
 			// with the login prompt. The code has to wait for the login process to complete.
 			// We can either use the callback functions directly or wrap in a promise.
 			await new Promise((resolve, reject) => {
-				authClient.login({
+				    authClientValue.login({
 					identityProvider: iiUrl,
 					onSuccess: resolve,
 					onError: reject
 				});
 			});
-			// At this point we're authenticated, and we can get the identity from the auth client:
-			identity.set(authClient.getIdentity());
-			principal.set(identityValue.getPrincipal());
+			isAuthenticated = true;
 			// Create an actor to interact with the IC for a particular canister ID
 			actor.set(createActor(canisterId, { agentOptions: { host } }));
 			await actorValue.set_user({
@@ -74,37 +85,32 @@
 	<NavbarBrand href="/">DocuTrack</NavbarBrand>
 	<NavbarToggler on:click={() => (isOpen = !isOpen)} />
 	<Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
-		{#if principalValue}
+		{#if isAuthenticated}
 			<Nav class="ms-md-3">
 				<NavItem>
 					{greeting}
 				</NavItem>
 			</Nav>
-		{/if}
-		<Nav class="ms-auto" navbar>
-			<NavItem>
-				<NavLink href="/">My Files</NavLink>
-			</NavItem>
-			<!-- <NavItem>
-            <NavLink href="/requestFile">Request File</NavLink>
-        </NavItem> -->
-			<!-- <NavItem>
-            <NavLink href="/activity">Activity</NavLink>
-        </NavItem> -->
-			<NavItem>
-				<NavLink href="/requests">Requests</NavLink>
-			</NavItem>
-			<!-- <NavItem>
-            <NavLink href="/upload">Upload File</NavLink>
-        </NavItem> -->
-			<NavItem>
-				{#if !principalValue}
+			<Nav class="ms-auto" navbar>
+				<NavItem>
+					<NavLink href="/">My Files</NavLink>
+				</NavItem>
+
+				<NavItem>
+					<NavLink href="/requests">Requests</NavLink>
+				</NavItem>
+
+				<NavItem>
+					<NavLink on:click={handleLogout}>Logout</NavLink>
+				</NavItem>
+			</Nav>
+		{:else}
+			<Nav class="ms-auto" navbar>
+				<NavItem>
 					<!-- Add link to the II login -->
 					<NavLink on:click={handleLogin}>Login</NavLink>
-				{:else}
-					<NavLink on:click={handleLogout}>Logout</NavLink>
-				{/if}
-			</NavItem>
-		</Nav>
+				</NavItem>
+			</Nav>
+		{/if}
 	</Collapse>
 </Navbar>
