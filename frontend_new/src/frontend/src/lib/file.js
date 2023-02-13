@@ -1,10 +1,4 @@
-import {
-	default as decryptFile,
-	default as decryptForUser,
-	default as encryptFile,
-	default as encryptForUser,
-	default as generateFileKey
-} from './crypto';
+import { default as crypto } from './crypto';
 
 /**
  * A file that is backed by the docutrack backend service.
@@ -33,10 +27,10 @@ class File {
 	 */
 	static async fromEncrypted(name, encryptedBytes, encryptedDocumentKey) {
 		// Decrypt the file's key using the user's key.
-		const documentKey = await decryptForUser(encryptedDocumentKey);
+		const documentKey = await crypto.decryptForUser(encryptedDocumentKey);
 
 		// Decrypt the document.
-		const contents = await decryptFile(encryptedBytes, documentKey);
+		const contents = await crypto.decryptFile(encryptedBytes, documentKey);
 
 		return new File(name, contents);
 	}
@@ -56,7 +50,7 @@ class File {
 	 */
 	async encrypt() {
 		const documentKey = await this._getFileKey();
-		return encryptFile(this.contents, documentKey);
+		return crypto.encryptFile(this.contents, documentKey);
 	}
 
 	/**
@@ -67,7 +61,7 @@ class File {
 		const key = await this._getFileKey();
 
 		// Encrypt the exported key with the user's public key.
-		return await encryptForUser(key, userPublicKey);
+		return await crypto.encryptForUser(key, userPublicKey);
 	}
 
 	/**
@@ -75,9 +69,8 @@ class File {
 	 */
 	async _getFileKey() {
 		if (this.documentKey == null) {
-			this.documentKey = await generateFileKey();
+			this.documentKey = await crypto.generateFileKey();
 		}
-
 		return this.documentKey;
 	}
 }

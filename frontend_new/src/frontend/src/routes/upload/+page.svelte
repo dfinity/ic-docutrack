@@ -2,7 +2,8 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { createActor } from '../../../../declarations/backend';
-	import FilePreview from '../../lib/components/FilePreview.svelte';
+	import FilePreview from '$lib/components/FilePreview.svelte';
+	import File from '$lib/file';
 
 	const alias = $page.url.searchParams.get('alias') || '';
 	const host = import.meta.env.VITE_HOST;
@@ -16,11 +17,7 @@
 	let files;
 
 	onMount(async () => {
-		console.log(canisterId);
-		console.log(host);
-
 		fileInfo = await backend.get_alias_info(alias);
-		console.log(fileInfo);
 		loading = false;
 	});
 
@@ -49,19 +46,21 @@
 	const handleUpload = async () => {
 		const fileSelector = document.getElementById('file-selector');
 		const fileBytes = await fileSelector.files[0].arrayBuffer();
+		let fileToEncrypt = new File(fileInfo.Ok.file_name, fileBytes);
+		const encFile = await fileToEncrypt.encrypt();
+
 		// Upload file
 		uploadingStatus = 'Uploading...';
 		const res = await backend.upload_file(
 			fileInfo.Ok.file_id,
-			new Uint8Array(fileBytes),
-			new Uint8Array([1, 2, 3])
+			new Uint8Array(encFile),
+			new Uint8Array(fileToEncrypt.documentKey)
 		);
 
 		if ('Ok' in res) {
 			uploadingStatus = 'File uploaded successfully.';
 		} else {
 			uploadingStatus = 'An error occurred. Try again.';
-			console.log(res);
 		}
 	};
 </script>
