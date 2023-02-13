@@ -9,6 +9,8 @@
 
 	let isOpen = false;
 
+	let req = AuthClient.create();
+
 	let principalValue;
 	let identityValue;
 	let actorValue;
@@ -68,13 +70,13 @@
 	<NavbarBrand href="/">DocuTrack</NavbarBrand>
 	<NavbarToggler on:click={() => (isOpen = !isOpen)} />
 	<Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
-		{#if principalValue}
+		{#await req then authClient}
+		{#if authClient.isAuthenticated()}
 			<Nav class="ms-md-3">
 				<NavItem>
 					{greeting}
 				</NavItem>
 			</Nav>
-		{/if}
 		<Nav class="ms-auto" navbar>
 			<NavItem>
 				<NavLink href="/">My Files</NavLink>
@@ -92,13 +94,17 @@
             <NavLink href="/upload">Upload File</NavLink>
         </NavItem> -->
 			<NavItem>
-				{#if !principalValue}
-					<!-- Add link to the II login -->
-					<NavLink on:click={handleOnSubmit}>Login</NavLink>
-				{:else}
-					<NavLink href="#">Logout</NavLink>
-				{/if}
+				<NavLink href="#">Logout</NavLink>
 			</NavItem>
-		</Nav>
+			</Nav>
+			{:else}
+			<Nav class="ms-auto" navbar>
+				<NavItem>
+				<!-- Add link to the II login -->
+				<NavLink on:click={handleOnSubmit}>Login</NavLink>
+			</NavItem>
+			</Nav>
+		{/if}
+		{/await}
 	</Collapse>
 </Navbar>
