@@ -49,13 +49,11 @@
 			principal.set(identityValue.getPrincipal());
 			// Create an actor to interact with the IC for a particular canister ID
 			actor.set(createActor(canisterId, { agentOptions: { host } }));
-			// let localUserPublicKey = await crypto.getLocalUserPublicKey();
-			// console.log(localUserPublicKey);
+			console.log(await crypto.getLocalUserPublicKey());
 			await actorValue.set_user({
 				first_name: 'Peter',
 				last_name: 'Meyer',
-				// public_key: await crypto.getLocalUserPublicKey()
-				public_key: [1,2,3,4,5,6,7,8]
+				public_key: new Uint8Array(await crypto.getLocalUserPublicKey())
 			});
 			// Call the IC
 			greeting = await actorValue.hello_world();
