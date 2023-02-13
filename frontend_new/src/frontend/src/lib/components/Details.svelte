@@ -1,10 +1,6 @@
 <script>
 	import { Row, Col, Table } from 'sveltestrap';
 
-	import { principal, firstName } from '$lib/shared/stores/auth.js';
-	let principalValue;
-	principal.subscribe((value) => (principalValue = value));
-
 	/**
 	 * @param {Number} file Contains the metadata of a file
 	 * @param {String} file.name File name
