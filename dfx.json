@@ -9,15 +9,12 @@
     },
 
     "frontend": {
-      "type": "assets",
-
-      "__1": "NOTE: dfx will run 'npm run build' when the canister is to be built (dfx build or dfx deploy)",
-      "__2": "(which in this case populates 'dist/', see package.json).",
-      "__3": "source must be a directory, otherwise we get a cryptic error.",
-      "source": ["dist/"],
-
-      "__4": "NOTE: the 'frontend' signals dfx that it is useful to print out the front-end URL of this canister when deploying. It is not strictly required.",
-      "frontend": {}
+      "dependencies": ["backend"],
+      "frontend": {
+        "entrypoint": "frontend_new/build/index.html"
+      },
+      "source": ["frontend_new/build/"],
+      "type": "assets"
     },
 
     "internet_identity": {
@@ -35,6 +32,13 @@
     "build": {
       "packtool": ""
     }
+
   },
+  "networks": {
+		"local": {
+			"bind": "127.0.0.1:8000",
+			"type": "ephemeral"
+		}
+	},
   "version": 1
 }

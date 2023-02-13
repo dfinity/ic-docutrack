@@ -5,7 +5,7 @@
   "scripts": {
     "wdio": "wdio run ./wdio.conf.ts",
     "format": "prettier --write --plugin-search-dir=. .",
-    "build": "webpack",
+    "build": "cd frontend_new; npm run build",
     "start": "webpack serve --no-client-overlay",
     "test": "jest"
   },
@@ -32,7 +32,16 @@
     "@dfinity/agent": "^0.15.3",
     "@dfinity/identity": "^0.15.3",
     "axios": "^0.21.4",
+    "fake-indexeddb": "^4.0.1",
+    "idb": "^7.1.1",
     "n": "^9.0.1",
+    "node": "^19.6.0",
     "npm": "^9.4.1"
-  }
+  },
+  "networks": {
+		"local": {
+			"bind": "127.0.0.1:8000",
+			"type": "ephemeral"
+		}
+	}
 }

@@ -1,4 +1,7 @@
+use backend::api::UploadFileAtomicRequest;
 use backend::*;
+use ic_cdk::api::caller;
+use ic_cdk::export::candid::Principal;
 use ic_cdk_macros::query;
 use ic_cdk_macros::update;
 
@@ -8,16 +11,8 @@ fn hello_world() -> String {
 }
 
 #[update]
-fn set_user(first_name: String, last_name: String) {
-    with_state_mut(|s| {
-        s.users.insert(
-            ic_cdk::api::caller(),
-            User {
-                first_name,
-                last_name,
-            },
-        );
-    });
+fn set_user(user: User) {
+    with_state_mut(|s| backend::api::set_user_info(s, caller(), user))
 }
 
 #[query]
@@ -29,71 +24,53 @@ fn who_am_i() -> WhoamiResponse {
 }
 
 #[query]
-fn get_request_info(alias: String) -> FileMetadata {
-    with_state(|s| match s.file_alias_index.get(&alias) {
-        Some(file_metadata) => file_metadata.clone(),
-        None => FileMetadata {
-            file_id: 0,
-            file_name: "non-existing file".to_string(),
-        },
-    })
-}
-
-#[update]
-fn upload_file(file_id: u64, file_content: Vec<u8>) -> UploadFileResponse {
-    with_state_mut(|s| match s.file_data.get_mut(&file_id) {
-        None => UploadFileResponse::NotRequestedFile,
-        Some(file) => {
-            let file_contents = &file.contents;
-            match file_contents {
-                None => {
-                    file.contents = Some(file_content.clone());
-                    UploadFileResponse::UploadOk
-                }
-                Some(_vec) => UploadFileResponse::AlreadyUploadedFile,
-            }
-        }
-    })
-}
-
-#[update]
-fn create_file_request(request_name: String) -> String {
-    let crnt_file = with_state_mut(|s| {
-        s.file_count += 1;
-        s.file_count
-    });
-    let file_metadata = FileMetadata {
-        file_id: crnt_file,
-        file_name: request_name,
-    };
-    let file = File {
-        metadata: file_metadata.clone(),
-        contents: None,
-    };
-    with_state_mut(|s| {
-        s.file_data.insert(crnt_file, file);
-    });
-    let alias = generate_alias();
-    // TODO: verify that file alias has not been used before.
-    with_state_mut(|s| {
-        s.file_alias_index.insert(alias.clone(), file_metadata);
-    });
-
-    alias
+fn get_files() -> Vec<PublicFileMetadata> {
+    with_state(|s| backend::api::get_files(s, caller()))
 }
 
 #[query]
-fn download_file(file_id: u64) -> FileData {
-    with_state(|s| match s.file_data.get(&file_id) {
-        None => FileData::NotFoundFile,
-        Some(file) => {
-            let file_contents = &file.contents;
-            match file_contents {
-                None => FileData::NotUploadedFile,
-                Some(vec) => FileData::FoundFile(vec.clone()),
-            }
-        }
+fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
+    with_state(|s| {
+        s.file_alias_index
+            .get(&alias)
+            .ok_or(GetAliasInfoError::NotFound)
+            .map(|file_id| AliasInfo {
+                file_id: *file_id,
+                file_name: s.file_data.get(file_id).unwrap().metadata.file_name.clone(),
+                user_public_key: s
+                    .file_data
+                    .get(file_id)
+                    .unwrap()
+                    .metadata
+                    .user_public_key
+                    .clone(),
+            })
     })
+}
+
+#[update]
+fn upload_file(file_id: u64, contents: Vec<u8>, file_key: Vec<u8>) -> Result<(), UploadFileError> {
+    with_state_mut(|s| backend::api::upload_file(file_id, contents, file_key, s))
+}
+
+#[update]
+fn upload_file_atomic(request: UploadFileAtomicRequest) {
+    with_state_mut(|s| backend::api::upload_file_atomic(caller(), request, s))
+}
+
+#[update]
+fn request_file(request_name: String) -> String {
+    with_state_mut(|s| backend::api::request_file(caller(), request_name, s))
+}
+
+#[query]
+fn download_file(file_id: u64) -> FileDownloadResponse {
+    with_state(|s| backend::api::download_file(s, file_id, caller()))
+}
+
+#[update]
+fn share_file(user_id: Principal, file_id: u64) -> FileSharingResponse {
+    with_state_mut(|s| backend::api::share_file(s, caller(), user_id, file_id))
 }
 
 fn main() {}

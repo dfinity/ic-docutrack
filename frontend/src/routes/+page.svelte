@@ -1,59 +1,33 @@
 <script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
+  import { principal } from '$lib/shared/stores/auth.js';
+  import ContentTable from '$lib/components/ContentTable.svelte';
+
+  let principalValue;
+  $: tableColumns = [{key: "name", label: "Name"}, {key: "access", label: "Access"}];
+  $: tableData = [{name: "escrow_hotel_zurich.docx", access: "Only you", items: [{url: "#", text: "Open"}]}];
+
+  principal.subscribe( value => principalValue = value);
+
+  function getAccessibleFiles() {
+    // Backend call to get all the files requested by the principal
+    let accessibleFiles;
+    return accessibleFiles;
+  }
+
+  function formatTableData(accessibleFiles) {
+    // TODO: based on the different possible outputs from the backend, move this function to lib/utils
+    // Transform the output from the backend in columns and rows
+    // in order to render the Table
+    let row;
+    tableData.push(row);
+  }
 </script>
 
 <svelte:head>
 	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
+	<meta name="description" content="DokuTrack" />
 </svelte:head>
 
 <section>
-	<h1>
-		<span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcome_fallback} alt="Welcome" />
-			</picture>
-		</span>
-
-		to your new<br />SvelteKit app
-	</h1>
-
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
-
-	<Counter />
+    <ContentTable columns={tableColumns} data={tableData}/>
 </section>
-
-<style>
-	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		flex: 0.6;
-	}
-
-	h1 {
-		width: 100%;
-	}
-
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
-	}
-</style>
