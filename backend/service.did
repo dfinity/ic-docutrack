@@ -69,11 +69,6 @@ type share_file_response = variant {
   ok;
 };
 
-type share_file_response = variant {
-  permission_error;
-  ok;
-};
-
 service docutrack : {
   hello_world : () -> (text);
 
