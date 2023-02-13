@@ -26,66 +26,72 @@
  * ```
  */
 declare module '$env/static/private' {
+	export const CANISTER_ID_backend: string;
 	export const NIX_PROFILES: string;
+	export const CANISTER_CANDID_PATH: string;
 	export const TERM_PROGRAM: string;
 	export const NODE: string;
 	export const INIT_CWD: string;
-	export const TERM: string;
 	export const SHELL: string;
-	export const npm_config_metrics_registry: string;
+	export const TERM: string;
 	export const TMPDIR: string;
+	export const npm_config_metrics_registry: string;
 	export const npm_config_global_prefix: string;
 	export const TERM_PROGRAM_VERSION: string;
 	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
-	export const npm_package_optional: string;
 	export const COLOR: string;
 	export const npm_config_noproxy: string;
 	export const npm_config_local_prefix: string;
 	export const USER: string;
 	export const COMMAND_MODE: string;
 	export const npm_config_globalconfig: string;
-	export const npm_package_peer: string;
+	export const DFX_NETWORK: string;
 	export const SSH_AUTH_SOCK: string;
 	export const __CF_USER_TEXT_ENCODING: string;
 	export const npm_execpath: string;
-	export const npm_package_integrity: string;
 	export const PATH: string;
-	export const npm_package_json: string;
-	export const npm_config_engine_strict: string;
 	export const _: string;
-	export const npm_config_userconfig: string;
-	export const npm_config_init_module: string;
+	export const npm_package_json: string;
 	export const __CFBundleIdentifier: string;
-	export const npm_command: string;
+	export const npm_config_init_module: string;
+	export const npm_config_userconfig: string;
 	export const NIX_PATH: string;
 	export const PWD: string;
-	export const npm_lifecycle_event: string;
+	export const npm_command: string;
+	export const DFX_VERSION: string;
 	export const EDITOR: string;
-	export const npm_package_name: string;
+	export const npm_lifecycle_event: string;
+	export const CANISTER_ID_frontend: string;
+	export const CANISTER_ID_internet_identity: string;
 	export const LANG: string;
+	export const npm_package_name: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 	export const XPC_FLAGS: string;
 	export const NIX_SSL_CERT_FILE: string;
-	export const npm_package_engines_node: string;
 	export const npm_config_node_gyp: string;
-	export const npm_package_dev: string;
-	export const npm_package_version: string;
 	export const XPC_SERVICE_NAME: string;
-	export const npm_package_resolved: string;
-	export const SHLVL: string;
+	export const npm_package_version: string;
 	export const HOME: string;
+	export const SHLVL: string;
 	export const VSCODE_GIT_ASKPASS_MAIN: string;
-	export const npm_package_dev_optional: string;
-	export const npm_config_cache: string;
+	export const CANISTER_CANDID_PATH_backend: string;
 	export const LOGNAME: string;
+	export const npm_config_cache: string;
 	export const npm_lifecycle_script: string;
 	export const VSCODE_GIT_IPC_HANDLE: string;
 	export const npm_config_user_agent: string;
-	export const VSCODE_GIT_ASKPASS_NODE: string;
 	export const GIT_ASKPASS: string;
-	export const npm_node_execpath: string;
-	export const npm_config_prefix: string;
+	export const VSCODE_GIT_ASKPASS_NODE: string;
+	export const CANISTER_ID: string;
 	export const COLORTERM: string;
+	export const npm_config_prefix: string;
+	export const npm_node_execpath: string;
+	export const NODE_ENV: string;
+	export const VITE_BACKEND_CANISTER_ID: string;
+	export const VITE_FRONTEND_CANISTER_ID: string;
+	export const VITE_INTERNET_IDENTITY_CANISTER_ID: string;
+	export const VITE_DFX_NETWORK: string;
+	export const VITE_HOST: string;
 }
 
 /**
@@ -115,67 +121,72 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		CANISTER_ID_backend: string;
 		NIX_PROFILES: string;
+		CANISTER_CANDID_PATH: string;
 		TERM_PROGRAM: string;
 		NODE: string;
 		INIT_CWD: string;
-		TERM: string;
 		SHELL: string;
-		npm_config_metrics_registry: string;
+		TERM: string;
 		TMPDIR: string;
+		npm_config_metrics_registry: string;
 		npm_config_global_prefix: string;
 		TERM_PROGRAM_VERSION: string;
 		ORIGINAL_XDG_CURRENT_DESKTOP: string;
-		npm_package_optional: string;
 		COLOR: string;
 		npm_config_noproxy: string;
 		npm_config_local_prefix: string;
 		USER: string;
 		COMMAND_MODE: string;
 		npm_config_globalconfig: string;
-		npm_package_peer: string;
+		DFX_NETWORK: string;
 		SSH_AUTH_SOCK: string;
 		__CF_USER_TEXT_ENCODING: string;
 		npm_execpath: string;
-		npm_package_integrity: string;
 		PATH: string;
-		npm_package_json: string;
-		npm_config_engine_strict: string;
 		_: string;
-		npm_config_userconfig: string;
-		npm_config_init_module: string;
+		npm_package_json: string;
 		__CFBundleIdentifier: string;
-		npm_command: string;
+		npm_config_init_module: string;
+		npm_config_userconfig: string;
 		NIX_PATH: string;
 		PWD: string;
-		npm_lifecycle_event: string;
+		npm_command: string;
+		DFX_VERSION: string;
 		EDITOR: string;
-		npm_package_name: string;
+		npm_lifecycle_event: string;
+		CANISTER_ID_frontend: string;
+		CANISTER_ID_internet_identity: string;
 		LANG: string;
+		npm_package_name: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 		XPC_FLAGS: string;
 		NIX_SSL_CERT_FILE: string;
-		npm_package_engines_node: string;
 		npm_config_node_gyp: string;
-		npm_package_dev: string;
-		npm_package_version: string;
 		XPC_SERVICE_NAME: string;
-		npm_package_resolved: string;
-		SHLVL: string;
+		npm_package_version: string;
 		HOME: string;
+		SHLVL: string;
 		VSCODE_GIT_ASKPASS_MAIN: string;
-		npm_package_dev_optional: string;
-		npm_config_cache: string;
+		CANISTER_CANDID_PATH_backend: string;
 		LOGNAME: string;
+		npm_config_cache: string;
 		npm_lifecycle_script: string;
 		VSCODE_GIT_IPC_HANDLE: string;
 		npm_config_user_agent: string;
-		VSCODE_GIT_ASKPASS_NODE: string;
 		GIT_ASKPASS: string;
-		npm_node_execpath: string;
-		npm_config_prefix: string;
+		VSCODE_GIT_ASKPASS_NODE: string;
+		CANISTER_ID: string;
 		COLORTERM: string;
-		[key: `PUBLIC_${string}`]: undefined;
+		npm_config_prefix: string;
+		npm_node_execpath: string;
+		NODE_ENV: string;
+		VITE_BACKEND_CANISTER_ID: string;
+		VITE_FRONTEND_CANISTER_ID: string;
+		VITE_INTERNET_IDENTITY_CANISTER_ID: string;
+		VITE_DFX_NETWORK: string;
+		VITE_HOST: string;
 		[key: string]: string | undefined;
 	}
 }
@@ -192,6 +203,6 @@ declare module '$env/dynamic/private' {
  */
 declare module '$env/dynamic/public' {
 	export const env: {
-		[key: `PUBLIC_${string}`]: string | undefined;
+		[key: string]: string | undefined;
 	}
 }

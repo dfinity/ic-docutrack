@@ -1,19 +1,19 @@
 <script lang="ts">
-	import ContentTable from '$lib/components/ContentTable.svelte';
+  import ContentTable from "$lib/components/ContentTable.svelte";
 
-	export let data;
+  export let data;
 
-	let tableColumns = [
-		{ key: 'name', label: 'Name' },
-		{ key: 'access', label: 'Access' }
-	];
+  let tableColumns = [
+    { key: "name", label: "Name" },
+    { key: "access", label: "Access" },
+  ];
 </script>
 
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="DokuTrack" />
+  <title>Home</title>
+  <meta name="description" content="DokuTrack" />
 </svelte:head>
 
 <section>
-	<ContentTable columns={tableColumns} {data} />
+  <ContentTable columns={tableColumns} {data} />
 </section>

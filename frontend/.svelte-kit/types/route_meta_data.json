@@ -1,20 +1,23 @@
 {
 	"/": [
-		"src/routes/+page.js"
+		"src/frontend/src/routes/+page.js"
 	],
 	"/details/[slug]": [
-		"src/routes/details/[slug]/+page.js"
+		"src/frontend/src/routes/details/[slug]/+page.js"
 	],
 	"/files-overview": [
-		"src/routes/files-overview/+page.js"
+		"src/frontend/src/routes/files-overview/+page.js"
 	],
 	"/requestFile": [
 		"src/routes/requestFile/+page.js"
 	],
 	"/requests": [
-		"src/routes/requests/+page.js"
+		"src/frontend/src/routes/requests/+page.js"
 	],
 	"/request/[slug]": [
-		"src/routes/request/[slug]/+page.js"
+		"src/frontend/src/routes/request/[slug]/+page.js"
+	],
+	"/request-file": [
+		"src/frontend/src/routes/request-file/+page.js"
 	]
 }

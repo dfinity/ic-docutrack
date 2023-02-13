@@ -1,12 +1,12 @@
 <script>
-	export const ssr = false;
-	import { Container } from 'sveltestrap';
-	import Navbar from '$lib/components/Navbar.svelte';
+  export const ssr = false;
+  import { Container } from "sveltestrap";
+  import Navbar from "$lib/components/Navbar.svelte";
 </script>
 
 <div class="app">
-	<Navbar />
-	<Container class="pt-4">
-		<slot />
-	</Container>
+  <Navbar />
+  <Container class="pt-4">
+    <slot />
+  </Container>
 </div>

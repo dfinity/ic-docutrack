@@ -1,11 +1,12 @@
 {
 	"compilerOptions": {
+		"baseUrl": "..",
 		"paths": {
 			"$lib": [
-				"../src/lib"
+				"src/frontend/src/lib"
 			],
 			"$lib/*": [
-				"../src/lib/*"
+				"src/frontend/src/lib/*"
 			]
 		},
 		"rootDirs": [
@@ -28,21 +29,18 @@
 		"ambient.d.ts",
 		"./types/**/$types.d.ts",
 		"../vite.config.ts",
-		"../src/**/*.js",
-		"../src/**/*.ts",
-		"../src/**/*.svelte",
-		"../src/**/*.js",
-		"../src/**/*.ts",
-		"../src/**/*.svelte",
+		"../src/frontend/src/**/*.js",
+		"../src/frontend/src/**/*.ts",
+		"../src/frontend/src/**/*.svelte",
+		"../src/frontend/src/**/*.js",
+		"../src/frontend/src/**/*.ts",
+		"../src/frontend/src/**/*.svelte",
 		"../tests/**/*.js",
 		"../tests/**/*.ts",
 		"../tests/**/*.svelte"
 	],
 	"exclude": [
 		"../node_modules/**",
-		"./[!ambient.d.ts]**",
-		"../src/service-worker.js",
-		"../src/service-worker.ts",
-		"../src/service-worker.d.ts"
+		"./[!ambient.d.ts]**"
 	]
 }
