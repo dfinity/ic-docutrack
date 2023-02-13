@@ -3,7 +3,6 @@
 	import { onMount } from 'svelte';
 	import { AuthClient } from '@dfinity/auth-client';
 
-
 	import ContentTable from '$lib/components/ContentTable.svelte';
 	import RequestModal from '$lib/components/RequestModal.svelte';
 	import { authClient } from '$lib/shared/stores/auth.js';

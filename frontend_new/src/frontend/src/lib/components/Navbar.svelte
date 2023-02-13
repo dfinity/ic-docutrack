@@ -51,7 +51,7 @@
 			// with the login prompt. The code has to wait for the login process to complete.
 			// We can either use the callback functions directly or wrap in a promise.
 			await new Promise((resolve, reject) => {
-				    authClientValue.login({
+				authClientValue.login({
 					identityProvider: iiUrl,
 					onSuccess: resolve,
 					onError: reject
@@ -78,7 +78,7 @@
 		principal.set(null);
 		identity.set(null);
 		actor.set(null);
-	}
+	};
 </script>
 
 <Navbar color="light" light expand="md">
