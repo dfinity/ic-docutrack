@@ -1,14 +1,22 @@
 <script>
 	import { Alert } from 'sveltestrap';
+	import { onMount } from 'svelte';
+	import { AuthClient } from '@dfinity/auth-client';
 
-	import { principal } from '$lib/shared/stores/auth.js';
 	import ContentTable from '$lib/components/ContentTable.svelte';
+	import { authClient } from '$lib/shared/stores/auth.js';
 
-	let principalValue;
+	let authClientValue;
+	let isAuthenticated = false;
+	authClient.subscribe((value) => (authClientValue = value));
+
+	onMount(async () => {
+		authClient.set(await AuthClient.create());
+		isAuthenticated = await authClientValue.isAuthenticated();
+	});
+
 	$: tableColumns = [];
 	$: tableData = [];
-
-	principal.subscribe((value) => (principalValue = value));
 
 	function getAccessibleFiles() {
 		// Backend call to get all the files requested by the principal
@@ -25,7 +33,7 @@
 	}
 </script>
 
-{#if principalValue}
+{#if isAuthenticated}
 	<ContentTable columns={tableColumns} data={tableData} />
 {:else}
 	<Alert color="warning">
