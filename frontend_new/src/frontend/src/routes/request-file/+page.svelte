@@ -1,9 +1,15 @@
 <script>
 	import { Alert } from 'sveltestrap';
+	import { onMount } from 'svelte';
+	import { AuthClient } from '@dfinity/auth-client';
 
-	import { principal } from '$lib/shared/stores/auth.js';
+	import { authClient } from '$lib/shared/stores/auth.js';
 	import ContentTable from '$lib/components/ContentTable.svelte';
 	import RequestModal from '$lib/components/RequestModal.svelte';
+
+	let authClientValue;
+	let isAuthenticated = false;
+	authClient.subscribe((value) => (authClientValue = value));
 
 	export let data;
 	let principalValue;
@@ -12,12 +18,15 @@
 		{ key: 'access', label: 'Access' }
 	];
 
-	principal.subscribe((value) => (principalValue = value));
+	onMount(async () => {
+		authClient.set(await AuthClient.create());
+		isAuthenticated = await authClientValue.isAuthenticated();
+	});
 </script>
 
 <RequestModal isOpen={false} actor={data.actor} />
 
-{#if principalValue}
+{#if isAuthenticated}
 	<ContentTable columns={tableColumns} data={data.tableData} />
 {:else}
 	<Alert color="warning">

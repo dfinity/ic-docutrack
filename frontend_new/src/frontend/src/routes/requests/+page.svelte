@@ -1,9 +1,21 @@
 <script>
 	import { Alert } from 'sveltestrap';
+	import { onMount } from 'svelte';
+	import { AuthClient } from '@dfinity/auth-client';
 
-	import { principal } from '$lib/shared/stores/auth.js';
+
 	import ContentTable from '$lib/components/ContentTable.svelte';
 	import RequestModal from '$lib/components/RequestModal.svelte';
+	import { authClient } from '$lib/shared/stores/auth.js';
+
+	let authClientValue;
+	let isAuthenticated = false;
+	authClient.subscribe((value) => (authClientValue = value));
+
+	onMount(async () => {
+		authClient.set(await AuthClient.create());
+		isAuthenticated = await authClientValue.isAuthenticated();
+	});
 
 	let principalValue;
 	let alias;
@@ -13,8 +25,6 @@
 	// Polling
 	let progress = {};
 	let poller;
-
-	principal.subscribe((value) => (principalValue = value));
 
 	const setupPoller = () => {
 		if (poller) {
@@ -34,7 +44,7 @@
 	$: setupPoller();
 </script>
 
-{#if principalValue}
+{#if isAuthenticated}
 	<RequestModal isOpen={false} />
 	<br />
 	<!-- <ContentTable columns={tableColumns} data={tableData}/> -->
