@@ -60,9 +60,6 @@ const config: UserConfig = {
 				global: 'globalThis'
 			}
 		}
-	},
-	ssr: {
-		noExternal: ['@popperjs/core']
 	}
 };
 

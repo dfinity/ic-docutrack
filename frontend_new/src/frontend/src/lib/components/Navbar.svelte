@@ -54,8 +54,8 @@
 			await actorValue.set_user({
 				first_name: 'Peter',
 				last_name: 'Meyer',
-				// public_key: await crypto.getLocalUserPublicKey()
-				public_key: [1,2,3,4,5,6,7,8]
+				public_key: await crypto.getLocalUserPublicKey()
+				// public_key: [1,2,3,4,5,6,7,8]
 			});
 			// Call the IC
 			greeting = await actorValue.hello_world();
