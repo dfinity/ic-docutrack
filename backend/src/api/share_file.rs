@@ -61,7 +61,7 @@ pub fn get_shared_files(state: &State, caller: Principal) -> Vec<PublicFileMetad
                     .metadata
                     .file_name
                     .clone(),
-                users_allowed: get_allowed_users(state, *file_id),
+                shared_with: get_allowed_users(state, *file_id),
                 file_status: get_file_status(state, *file_id),
             })
             .collect(),
@@ -131,8 +131,8 @@ mod test {
                 PublicFileMetadata {
                     file_id: 0,
                     file_name: "request".to_string(),
-                    file_status: FileStatus::Pending(alias1),
-                    users_allowed: vec![User {
+                    file_status: FileStatus::Pending { alias: alias1 },
+                    shared_with: vec![User {
                         first_name: "John".to_string(),
                         last_name: "Smith".to_string(),
                         public_key: vec![1, 2, 3],
@@ -141,8 +141,8 @@ mod test {
                 PublicFileMetadata {
                     file_id: 2,
                     file_name: "request3".to_string(),
-                    file_status: FileStatus::Pending(alias3),
-                    users_allowed: vec![User {
+                    file_status: FileStatus::Pending { alias: alias3 },
+                    shared_with: vec![User {
                         first_name: "John".to_string(),
                         last_name: "Smith".to_string(),
                         public_key: vec![1, 2, 3],
@@ -242,8 +242,8 @@ mod test {
             vec![PublicFileMetadata {
                 file_id: 2,
                 file_name: "request3".to_string(),
-                file_status: FileStatus::Pending(alias3),
-                users_allowed: vec![User {
+                file_status: FileStatus::Pending { alias: alias3 },
+                shared_with: vec![User {
                     first_name: "John".to_string(),
                     last_name: "Smith".to_string(),
                     public_key: vec![1, 2, 3],

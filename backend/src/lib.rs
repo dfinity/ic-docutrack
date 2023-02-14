@@ -48,7 +48,7 @@ pub struct FileMetadata {
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum FileStatus {
     #[serde(rename = "pending")]
-    Pending(String),
+    Pending { alias: String },
     #[serde(rename = "uploaded")]
     Uploaded,
 }
@@ -58,7 +58,7 @@ pub struct PublicFileMetadata {
     pub file_id: u64,
     pub file_name: String,
     pub file_status: FileStatus,
-    pub users_allowed: Vec<User>,
+    pub shared_with: Vec<User>,
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]

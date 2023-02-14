@@ -1,7 +1,7 @@
 type file_id = nat64;
 
 type file_status = variant {
-  pending: text; 
+  pending: record { alias: text }; 
   uploaded;
 };
 
@@ -9,7 +9,7 @@ type file_metadata = record {
   file_id: file_id;
   file_name : text;
   file_status: file_status;
-  users_allowed: vec user;
+  shared_with: vec user;
 };
 
 // A file's contents + its metadata.
