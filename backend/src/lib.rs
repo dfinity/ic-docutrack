@@ -19,7 +19,7 @@ thread_local! {
     static STATE: RefCell<State> = RefCell::new(State::new(&get_randomness_seed()[..]));
 }
 
-#[derive(CandidType, Serialize, Deserialize, Clone)]
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct User {
     #[serde(rename = "first_name")]
     pub first_name: String,
@@ -42,6 +42,7 @@ pub enum WhoamiResponse {
 pub struct FileMetadata {
     pub file_name: String,
     pub user_public_key: Vec<u8>,
+    pub requester_principal: Principal,
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -60,12 +61,9 @@ pub enum GetAliasInfoError {
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct AliasInfo {
-    #[serde(rename = "file_id")]
     pub file_id: u64,
-    #[serde(rename = "file_name")]
     pub file_name: String,
-    #[serde(rename = "user_public_key")]
-    pub user_public_key: Vec<u8>,
+    pub user: User,
 }
 
 // A file is composed of its metadata and its content, which is a blob.

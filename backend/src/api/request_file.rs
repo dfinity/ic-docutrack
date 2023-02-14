@@ -18,6 +18,7 @@ pub fn request_file<S: Into<String>>(
         metadata: FileMetadata {
             file_name: request_name.into(),
             user_public_key: get_user_key(state, caller),
+            requester_principal: caller,
         },
         content: FileContent::Pending {
             alias: alias.clone(),
@@ -65,7 +66,8 @@ mod test {
                 0 => File {
                     metadata: FileMetadata {
                         file_name: "request".to_string(),
-                        user_public_key: get_user_key(&state, Principal::anonymous())
+                        user_public_key: get_user_key(&state, Principal::anonymous()),
+                        requester_principal: Principal::anonymous()
                     },
                     content: FileContent::Pending { alias: "puzzling-mountain".to_string() }
                 }
