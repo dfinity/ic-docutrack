@@ -24,8 +24,8 @@ fn who_am_i() -> WhoamiResponse {
 }
 
 #[query]
-fn get_files() -> Vec<PublicFileMetadata> {
-    with_state(|s| backend::api::get_files(s, caller()))
+fn get_requests() -> Vec<PublicFileMetadata> {
+    with_state(|s| backend::api::get_requests(s, caller()))
 }
 
 #[query]

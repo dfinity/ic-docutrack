@@ -1,7 +1,7 @@
 use crate::{PublicFileMetadata, State};
 use ic_cdk::export::candid::Principal;
 
-pub fn get_files(state: &State, caller: Principal) -> Vec<PublicFileMetadata> {
+pub fn get_requests(state: &State, caller: Principal) -> Vec<PublicFileMetadata> {
     match state.file_owners.get(&caller) {
         None => vec![],
         Some(file_ids) => file_ids
@@ -54,7 +54,7 @@ mod test {
         // We assume here that the file id generation starts at 0 and continues
         // incrementing the id while files are requested.
         assert_eq!(
-            get_files(&state, Principal::anonymous()),
+            get_requests(&state, Principal::anonymous()),
             vec![
                 PublicFileMetadata {
                     file_id: 0,
