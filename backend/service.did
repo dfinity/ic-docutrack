@@ -43,7 +43,7 @@ type get_alias_info_response = variant {
 type found_file = record {
   contents: blob;
   file_type: text;
-  file_key: blob;
+  owner_key: blob;
 };
 
 type download_file_response = variant {
@@ -69,7 +69,7 @@ type upload_file_error = variant {
 type upload_file_atomic_request = record {
   name: text;
   content: blob;
-  file_key: blob;
+  owner_key: blob;
 };
 
 type share_file_response = variant {
@@ -93,7 +93,7 @@ type upload_file_request = record {
   file_id: file_id;
   file_content: blob;
   file_type: text;
-  file_key: blob;
+  owner_key: blob;
 };
 
 service docutrack : {
@@ -119,7 +119,7 @@ service docutrack : {
 
   upload_file_atomic: (upload_file_atomic_request) -> ();
 
-  share_file: (user_id: principal, file_id: file_id) -> (share_file_response);
+  share_file: (user_id: principal, file_id: file_id, file_key_encrypted_for_user: blob) -> (share_file_response);
 
   get_users: () -> (get_users_response);
 }

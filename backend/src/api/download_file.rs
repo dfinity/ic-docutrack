@@ -9,11 +9,12 @@ fn get_file_data(s: &State, file_id: u64) -> FileDownloadResponse {
         FileContent::Uploaded {
             contents,
             file_type,
-            file_key,
+            owner_key,
+            shared_keys: _,
         } => FileDownloadResponse::FoundFile(FileData {
             contents: contents.clone(),
             file_type: file_type.clone(),
-            file_key: file_key.clone(),
+            user_key: owner_key.clone(),
         }),
     }
 }
@@ -150,7 +151,7 @@ mod test {
             FileDownloadResponse::FoundFile(FileData {
                 contents: vec![1, 2, 3],
                 file_type: "jpeg".to_string(),
-                file_key: vec![1, 2, 3]
+                user_key: vec![1, 2, 3],
             })
         );
     }

@@ -2,7 +2,7 @@ export const idlFactory = ({ IDL }) => {
   const file_id = IDL.Nat64;
   const found_file = IDL.Record({
     contents: IDL.Vec(IDL.Nat8),
-    file_key: IDL.Vec(IDL.Nat8),
+    owner_key: IDL.Vec(IDL.Nat8),
   });
   const download_file_response = IDL.Variant({
     found_file: found_file,
@@ -52,7 +52,7 @@ export const idlFactory = ({ IDL }) => {
   const upload_file_atomic_request = IDL.Record({
     content: IDL.Vec(IDL.Nat8),
     name: IDL.Text,
-    file_key: IDL.Vec(IDL.Nat8),
+    owner_key: IDL.Vec(IDL.Nat8),
   });
   const who_am_i_response = IDL.Variant({
     known_user: IDL.Record({

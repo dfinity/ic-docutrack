@@ -8,6 +8,7 @@ pub fn share_file(
     caller: Principal,
     sharing_with: Principal,
     file_id: u64,
+    _file_key_encrypted_for_user: Vec<u8>,
 ) -> FileSharingResponse {
     if !can_share(state, caller, file_id) {
         FileSharingResponse::PermissionError
@@ -115,6 +116,7 @@ mod test {
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             0,
+            vec![1, 2, 3],
         );
         // share file index 2
         share_file(
@@ -122,6 +124,7 @@ mod test {
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             2,
+            vec![1, 2, 3],
         );
 
         // check if both files are shared correctly
@@ -176,6 +179,7 @@ mod test {
                 Principal::anonymous(),
                 Principal::from_slice(&[0, 1, 2]),
                 2,
+                vec![1, 2, 3],
             ),
             FileSharingResponse::PermissionError
         );
@@ -219,6 +223,7 @@ mod test {
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             0,
+            vec![1, 2, 3],
         );
         // share file index 2
         share_file(
@@ -226,6 +231,7 @@ mod test {
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             2,
+            vec![1, 2, 3],
         );
 
         // revoke share for file index 0
@@ -304,6 +310,7 @@ mod test {
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             0,
+            vec![1, 2, 3],
         );
 
         // revoke share with user who was not shared with should not work

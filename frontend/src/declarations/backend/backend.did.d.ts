@@ -17,7 +17,7 @@ export interface file_metadata {
 }
 export interface found_file {
   contents: Uint8Array;
-  file_key: Uint8Array;
+  owner_key: Uint8Array;
 }
 export type get_alias_info_response =
   | {
@@ -35,7 +35,7 @@ export type share_file_response = { ok: null } | { permission_error: null };
 export interface upload_file_atomic_request {
   content: Uint8Array;
   name: string;
-  file_key: Uint8Array;
+  owner_key: Uint8Array;
 }
 export type upload_file_error =
   | { not_requested: null }
