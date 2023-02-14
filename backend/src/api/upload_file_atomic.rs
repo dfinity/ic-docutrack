@@ -24,6 +24,8 @@ pub fn upload_file_atomic(caller: Principal, request: UploadFileAtomicRequest, s
             },
             content: FileContent::Uploaded {
                 contents: request.content,
+                // TODO: fix this properly by updating the interface!
+                file_type: "not_yet_set".to_string(),
                 file_key: request.file_key,
             },
         },
@@ -84,6 +86,7 @@ mod test {
                     },
                     content: FileContent::Uploaded {
                         contents: vec![1,2,3],
+                        file_type: "not_yet_set".to_string(),
                         file_key: vec![1,2,3]
                     }
                 }

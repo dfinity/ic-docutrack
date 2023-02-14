@@ -88,15 +88,15 @@ pub enum FileContent {
     },
     Uploaded {
         contents: Vec<u8>,
+        file_type: String,
         file_key: Vec<u8>,
     },
 }
 
 #[derive(CandidType, Serialize, Deserialize, Debug, PartialEq)]
 pub struct FileData {
-    #[serde(rename = "contents")]
     contents: Vec<u8>,
-    #[serde(rename = "file_key")]
+    file_type: String,
     file_key: Vec<u8>,
 }
 
