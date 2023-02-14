@@ -128,5 +128,6 @@ jobs:
   build-frontend:
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v3
       - name: npm run build
       - run: echo "test"
