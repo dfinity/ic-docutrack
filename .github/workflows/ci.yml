@@ -125,7 +125,7 @@ jobs:
       env:
         SHELLCHECK_OPTS: -e SC1090 -e SC2119 -e SC1091
 
-  npm-test:
+  frontent-build:
     runs-on: ubuntu-22.04
 
     strategy:
