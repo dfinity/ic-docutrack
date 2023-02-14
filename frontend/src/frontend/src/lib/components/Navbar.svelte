@@ -13,10 +13,11 @@
   import { AuthClient } from "@dfinity/auth-client";
 
   import { actor, authClient } from "$lib/shared/stores/auth.js";
-  import { default as crypto } from "$lib/crypto";
+  import RegistrationModal from "$lib/components/RegistrationModal.svelte";
   import { onMount } from "svelte";
 
   let isOpen = false;
+  let isOpenRegistrationModal = false;
 
   let actorValue;
   let authClientValue;
@@ -68,14 +69,21 @@
       });
       isAuthenticated = true;
       // Create an actor to interact with the IC for a particular canister ID
-      actor.set(createActor(canisterId, { agentOptions: { host } }));
-      await actorValue.set_user({
-        first_name: "Peter",
-        last_name: "Meyer",
-        public_key: new Uint8Array(await crypto.getLocalUserPublicKey()),
-      });
-      // Call the IC
-      greeting = await actorValue.hello_world();
+      actor.set(createActor(canisterId, { agentOptions: { host, identity: authClientValue.getIdentity() } }));
+      // Check whether the used identity is already registered in the app
+      let res = await actorValue.hello_world();
+      console.log("Hello World response: ", res);
+      let record = await actorValue.who_am_i();
+      console.log("Who am I response: ", record);
+      console.log(
+        "Current principal: ",
+        authClientValue.getIdentity().getPrincipal()
+      );
+      if ("unknown_user" in record) {
+        isOpenRegistrationModal = true;
+      } else {
+        greeting = "Hello " + record.known_user.first_name;
+      }
     } catch (err: unknown) {
       console.error(err);
     }
@@ -84,9 +92,9 @@
 
   const handleLogout = async () => {
     await (await AuthClient.create()).logout();
-    principal.set(null);
-    identity.set(null);
     actor.set(null);
+    authClient.set(null);
+    isAuthenticated = false;
   };
 </script>
 
@@ -122,4 +130,5 @@
       </Nav>
     {/if}
   </Collapse>
+  <RegistrationModal isOpen={isOpenRegistrationModal} />
 </Navbar>
