@@ -123,6 +123,8 @@ pub enum UploadFileError {
 
 #[derive(CandidType, Serialize, Deserialize, Debug, PartialEq)]
 pub enum FileSharingResponse {
+    #[serde(rename = "pending_error")]
+    PendingError,
     #[serde(rename = "permission_error")]
     PermissionError,
     #[serde(rename = "ok")]

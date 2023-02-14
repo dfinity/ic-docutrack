@@ -1,7 +1,8 @@
-use crate::{FileSharingResponse, PublicFileMetadata, State};
+use crate::{FileContent, FileSharingResponse, PublicFileMetadata, State};
 use ic_cdk::export::candid::Principal;
 
 use super::get_files::{get_allowed_users, get_file_status};
+use super::upload_file::{upload_file};
 
 pub fn share_file(
     state: &mut State,
@@ -12,6 +13,8 @@ pub fn share_file(
 ) -> FileSharingResponse {
     if !can_share(state, caller, file_id) {
         FileSharingResponse::PermissionError
+    } else if!is_uploaded(state, file_id){
+        FileSharingResponse::PendingError
     } else {
         state
             .file_shares
@@ -26,6 +29,14 @@ fn can_share(state: &State, user: Principal, file_id: u64) -> bool {
     match state.file_owners.get(&user) {
         None => false,
         Some(arr) => arr.contains(&file_id),
+    }
+}
+
+
+fn is_uploaded(state: &State, file_id: u64) -> bool {
+    match state.file_data.get(&file_id).unwrap().content {
+        FileContent::Pending { .. } => false,
+        FileContent::Uploaded { .. } => true,
     }
 }
 
@@ -110,7 +121,15 @@ mod test {
         // Request a file.
         request_file(Principal::anonymous(), "request4", &mut state);
 
-        // share file index 0
+        // Upload a file with file ID of zero.
+        let _alias0 = upload_file(
+            0,
+            vec![1, 2, 3],
+            "jpeg".to_string(),
+            vec![1, 2, 3],
+            &mut state,
+        );
+        // share file with ID 0
         share_file(
             &mut state,
             Principal::anonymous(),
@@ -118,6 +137,14 @@ mod test {
             0,
             vec![1, 2, 3],
         );
+        // Upload a file with file ID 2
+        let _alias2 = upload_file(
+            2,
+            vec![1, 2, 3],
+            "jpeg".to_string(),
+            vec![1, 2, 3],
+            &mut state,
+        );        
         // share file index 2
         share_file(
             &mut state,
