@@ -124,3 +124,9 @@ jobs:
       uses: ludeeus/action-shellcheck@master
       env:
         SHELLCHECK_OPTS: -e SC1090 -e SC2119 -e SC1091
+
+  build-frontend:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: npm run build
+      - run: echo "test"
