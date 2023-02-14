@@ -148,6 +148,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: |
-          mkdir -p .dfx/local/canisters/internet_identity
-          wget https://github.com/dfinity/internet-identity/releases/download/release-2023-01-31/internet_identity.did -O .dfx/local/canisters/internet_identity/internet_identity.did
+          dfx start --background
+          dfx canister create --all
           npm run build
