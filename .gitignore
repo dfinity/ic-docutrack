@@ -12,3 +12,7 @@ node_modules
 
 # IDE
 .idea/*
+
+# Frontend
+**/build/*
+**/.svelte-kit/*
