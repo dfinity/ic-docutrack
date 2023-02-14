@@ -244,6 +244,14 @@ mod test {
         // Request a file.
         let _alias4 = request_file(Principal::anonymous(), "request4", &mut state);
 
+         // Upload a file with file ID of 0.
+         let _alias0 = upload_file(
+            0,
+            vec![1, 2, 3],
+            "jpeg".to_string(),
+            vec![1, 2, 3],
+            &mut state,
+        );
         // share file index 0
         share_file(
             &mut state,
@@ -251,6 +259,14 @@ mod test {
             Principal::from_slice(&[0, 1, 2]),
             0,
             vec![1, 2, 3],
+        );
+         // Upload a file with file ID of 2.
+         let _alias0 = upload_file(
+            2,
+            vec![1, 2, 3],
+            "jpeg".to_string(),
+            vec![1, 2, 3],
+            &mut state,
         );
         // share file index 2
         share_file(
@@ -275,7 +291,7 @@ mod test {
             vec![PublicFileMetadata {
                 file_id: 2,
                 file_name: "request3".to_string(),
-                file_status: FileStatus::Pending { alias: alias3 },
+                file_status: FileStatus::Uploaded,
                 shared_with: vec![User {
                     first_name: "John".to_string(),
                     last_name: "Smith".to_string(),
