@@ -2,7 +2,6 @@ use crate::{FileContent, FileSharingResponse, PublicFileMetadata, State};
 use ic_cdk::export::candid::Principal;
 
 use super::get_files::{get_allowed_users, get_file_status};
-use super::upload_file::{upload_file};
 
 pub fn share_file(
     state: &mut State,
@@ -14,15 +13,29 @@ pub fn share_file(
     if !can_share(state, caller, file_id) {
         FileSharingResponse::PermissionError
     } else {
-        match &state.file_data.get_mut(&file_id).unwrap().content {
+        let file = state.file_data.get_mut(&file_id).unwrap();
+        match &file.content {
             FileContent::Pending { .. } => FileSharingResponse::PendingError,
-            FileContent::Uploaded { shared_keys: sk, .. } => {
+            FileContent::Uploaded {
+                shared_keys,
+                contents,
+                file_type,
+                owner_key,
+            } => {
                 state
                     .file_shares
                     .entry(sharing_with)
                     .or_insert_with(Vec::new)
                     .push(file_id);
-                sk.insert(sharing_with, file_key_encrypted_for_user);  
+
+                let mut sk = shared_keys.clone();
+                sk.insert(sharing_with, file_key_encrypted_for_user);
+                file.content = FileContent::Uploaded {
+                    contents: contents.clone(),
+                    file_type: file_type.clone(),
+                    owner_key: owner_key.clone(),
+                    shared_keys: sk,
+                };
                 FileSharingResponse::Ok
             }
         }
@@ -80,7 +93,7 @@ pub fn get_shared_files(state: &State, caller: Principal) -> Vec<PublicFileMetad
 mod test {
     use super::*;
     use crate::{
-        api::{request_file, set_user_info},
+        api::{request_file, set_user_info, upload_file},
         FileStatus, PublicFileMetadata, User,
     };
     use ic_cdk::export::Principal;
@@ -118,7 +131,7 @@ mod test {
         request_file(Principal::anonymous(), "request4", &mut state);
 
         // Upload a file with file ID of zero.
-        let _alias0 =  upload_file(
+        let _alias0 = upload_file(
             0,
             vec![1, 2, 3],
             "jpeg".to_string(),
@@ -140,7 +153,7 @@ mod test {
             "jpeg".to_string(),
             vec![1, 2, 3],
             &mut state,
-        );        
+        );
         // share file index 2
         share_file(
             &mut state,
@@ -240,8 +253,8 @@ mod test {
         // Request a file.
         let _alias4 = request_file(Principal::anonymous(), "request4", &mut state);
 
-         // Upload a file with file ID of 0.
-         let _alias0 = upload_file(
+        // Upload a file with file ID of 0.
+        let _alias0 = upload_file(
             0,
             vec![1, 2, 3],
             "jpeg".to_string(),
@@ -256,8 +269,8 @@ mod test {
             0,
             vec![1, 2, 3],
         );
-         // Upload a file with file ID of 2.
-         let _alias2 = upload_file(
+        // Upload a file with file ID of 2.
+        let _alias2 = upload_file(
             2,
             vec![1, 2, 3],
             "jpeg".to_string(),

@@ -62,8 +62,14 @@ fn download_file(file_id: u64) -> FileDownloadResponse {
 }
 
 #[update]
-fn share_file(user_id: Principal, file_id: u64, file_key_encrypted_for_user: Vec<u8>) -> FileSharingResponse {
-    with_state_mut(|s| backend::api::share_file(s, caller(), user_id, file_id, file_key_encrypted_for_user))
+fn share_file(
+    user_id: Principal,
+    file_id: u64,
+    file_key_encrypted_for_user: Vec<u8>,
+) -> FileSharingResponse {
+    with_state_mut(|s| {
+        backend::api::share_file(s, caller(), user_id, file_id, file_key_encrypted_for_user)
+    })
 }
 
 #[query]
