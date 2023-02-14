@@ -9,19 +9,23 @@ pub fn share_file(
     caller: Principal,
     sharing_with: Principal,
     file_id: u64,
-    _file_key_encrypted_for_user: Vec<u8>,
+    file_key_encrypted_for_user: Vec<u8>,
 ) -> FileSharingResponse {
     if !can_share(state, caller, file_id) {
         FileSharingResponse::PermissionError
-    } else if!is_uploaded(state, file_id){
-        FileSharingResponse::PendingError
     } else {
-        state
-            .file_shares
-            .entry(sharing_with)
-            .or_insert_with(Vec::new)
-            .push(file_id);
-        FileSharingResponse::Ok
+        match &state.file_data.get_mut(&file_id).unwrap().content {
+            FileContent::Pending { .. } => FileSharingResponse::PendingError,
+            FileContent::Uploaded { shared_keys: sk, .. } => {
+                state
+                    .file_shares
+                    .entry(sharing_with)
+                    .or_insert_with(Vec::new)
+                    .push(file_id);
+                sk.insert(sharing_with, file_key_encrypted_for_user);  
+                FileSharingResponse::Ok
+            }
+        }
     }
 }
 
@@ -29,14 +33,6 @@ fn can_share(state: &State, user: Principal, file_id: u64) -> bool {
     match state.file_owners.get(&user) {
         None => false,
         Some(arr) => arr.contains(&file_id),
-    }
-}
-
-
-fn is_uploaded(state: &State, file_id: u64) -> bool {
-    match state.file_data.get(&file_id).unwrap().content {
-        FileContent::Pending { .. } => false,
-        FileContent::Uploaded { .. } => true,
     }
 }
 
@@ -113,16 +109,16 @@ mod test {
         );
 
         // Request a file.
-        let alias1 = request_file(Principal::anonymous(), "request", &mut state);
+        request_file(Principal::anonymous(), "request", &mut state);
         // Request a file.
         request_file(Principal::anonymous(), "request2", &mut state);
         // Request a file.
-        let alias3 = request_file(Principal::anonymous(), "request3", &mut state);
+        request_file(Principal::anonymous(), "request3", &mut state);
         // Request a file.
         request_file(Principal::anonymous(), "request4", &mut state);
 
         // Upload a file with file ID of zero.
-        let _alias0 = upload_file(
+        let _alias0 =  upload_file(
             0,
             vec![1, 2, 3],
             "jpeg".to_string(),
@@ -240,7 +236,7 @@ mod test {
         // Request a file.
         let _alias2 = request_file(Principal::anonymous(), "request2", &mut state);
         // Request a file.
-        let alias3 = request_file(Principal::anonymous(), "request3", &mut state);
+        let _alias3 = request_file(Principal::anonymous(), "request3", &mut state);
         // Request a file.
         let _alias4 = request_file(Principal::anonymous(), "request4", &mut state);
 
@@ -261,7 +257,7 @@ mod test {
             vec![1, 2, 3],
         );
          // Upload a file with file ID of 2.
-         let _alias0 = upload_file(
+         let _alias2 = upload_file(
             2,
             vec![1, 2, 3],
             "jpeg".to_string(),
