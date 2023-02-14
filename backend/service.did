@@ -29,7 +29,7 @@ type get_alias_info_response = variant {
   Ok: record {
     file_id: file_id;
     file_name: text;
-    user_public_key: blob;
+    user: user;
   }
 };
 
