@@ -43,14 +43,16 @@ pub struct FileMetadata {
     pub file_name: String,
     pub user_public_key: Vec<u8>,
     pub requester_principal: Principal,
+    pub requested_at: u64,
+    pub uploaded_at: Option<u64>,
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum FileStatus {
     #[serde(rename = "pending")]
-    Pending { alias: String },
+    Pending { alias: String, requested_at: u64 },
     #[serde(rename = "uploaded")]
-    Uploaded,
+    Uploaded { uploaded_at: u64 },
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -225,4 +227,15 @@ pub struct UploadFileRequest {
     pub file_content: Vec<u8>,
     pub file_type: String,
     pub file_key: Vec<u8>,
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn get_time() -> u64 {
+    ic_cdk::api::time()
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub fn get_time() -> u64 {
+    // This is used only in tests and we need a fixed value we can test against.
+    12345
 }

@@ -1,4 +1,4 @@
-use crate::{FileContent, State, UploadFileError};
+use crate::{get_time, FileContent, State, UploadFileError};
 
 pub fn upload_file(
     file_id: u64,
@@ -22,6 +22,7 @@ pub fn upload_file(
                 file_type,
                 file_key,
             };
+            file.metadata.uploaded_at = Some(get_time());
             alias
         }
         FileContent::Uploaded { .. } => return Err(UploadFileError::AlreadyUploaded),
@@ -84,7 +85,9 @@ mod test {
                     metadata: FileMetadata {
                         file_name: "request".to_string(),
                         user_public_key: get_user_key(&state, Principal::anonymous()),
-                        requester_principal: Principal::anonymous()
+                        requester_principal: Principal::anonymous(),
+                        requested_at: get_time(),
+                        uploaded_at: Some(get_time()),
                     },
                     content: FileContent::Uploaded {
                         contents: vec![1,2,3],

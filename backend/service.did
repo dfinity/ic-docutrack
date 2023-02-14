@@ -1,8 +1,8 @@
 type file_id = nat64;
 
 type file_status = variant {
-  pending: record { alias: text }; 
-  uploaded;
+  pending: record { alias: text; requested_at: nat64; }; 
+  uploaded: record { uploaded_at: nat64; };
 };
 
 type file_metadata = record {

@@ -1,7 +1,7 @@
 use crate::{FileSharingResponse, PublicFileMetadata, State};
 use ic_cdk::export::candid::Principal;
 
-use super::get_files::{get_allowed_users, get_file_status};
+use super::get_requests::{get_allowed_users, get_file_status};
 
 pub fn share_file(
     state: &mut State,
@@ -73,7 +73,7 @@ mod test {
     use super::*;
     use crate::{
         api::{request_file, set_user_info},
-        FileStatus, PublicFileMetadata, User,
+        get_time, FileStatus, PublicFileMetadata, User,
     };
     use ic_cdk::export::Principal;
 
@@ -131,7 +131,10 @@ mod test {
                 PublicFileMetadata {
                     file_id: 0,
                     file_name: "request".to_string(),
-                    file_status: FileStatus::Pending { alias: alias1 },
+                    file_status: FileStatus::Pending {
+                        alias: alias1,
+                        requested_at: get_time()
+                    },
                     shared_with: vec![User {
                         first_name: "John".to_string(),
                         last_name: "Smith".to_string(),
@@ -141,7 +144,10 @@ mod test {
                 PublicFileMetadata {
                     file_id: 2,
                     file_name: "request3".to_string(),
-                    file_status: FileStatus::Pending { alias: alias3 },
+                    file_status: FileStatus::Pending {
+                        alias: alias3,
+                        requested_at: get_time()
+                    },
                     shared_with: vec![User {
                         first_name: "John".to_string(),
                         last_name: "Smith".to_string(),
@@ -242,7 +248,10 @@ mod test {
             vec![PublicFileMetadata {
                 file_id: 2,
                 file_name: "request3".to_string(),
-                file_status: FileStatus::Pending { alias: alias3 },
+                file_status: FileStatus::Pending {
+                    alias: alias3,
+                    requested_at: get_time()
+                },
                 shared_with: vec![User {
                     first_name: "John".to_string(),
                     last_name: "Smith".to_string(),
