@@ -24,8 +24,8 @@ fn who_am_i() -> WhoamiResponse {
 }
 
 #[query]
-fn get_files() -> Vec<PublicFileMetadata> {
-    with_state(|s| backend::api::get_files(s, caller()))
+fn get_requests() -> Vec<PublicFileMetadata> {
+    with_state(|s| backend::api::get_requests(s, caller()))
 }
 
 #[query]
@@ -34,8 +34,16 @@ fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
 }
 
 #[update]
-fn upload_file(file_id: u64, contents: Vec<u8>, file_key: Vec<u8>) -> Result<(), UploadFileError> {
-    with_state_mut(|s| backend::api::upload_file(file_id, contents, file_key, s))
+fn upload_file(request: UploadFileRequest) -> Result<(), UploadFileError> {
+    with_state_mut(|s| {
+        backend::api::upload_file(
+            request.file_id,
+            request.file_content,
+            request.file_type,
+            request.file_key,
+            s,
+        )
+    })
 }
 
 #[update]

@@ -6,8 +6,13 @@ fn get_file_data(s: &State, file_id: u64) -> FileDownloadResponse {
     let this_file = s.file_data.get(&file_id).unwrap();
     match &this_file.content {
         FileContent::Pending { .. } => FileDownloadResponse::NotUploadedFile,
-        FileContent::Uploaded { contents, file_key } => FileDownloadResponse::FoundFile(FileData {
+        FileContent::Uploaded {
+            contents,
+            file_type,
+            file_key,
+        } => FileDownloadResponse::FoundFile(FileData {
             contents: contents.clone(),
+            file_type: file_type.clone(),
             file_key: file_key.clone(),
         }),
     }
@@ -132,12 +137,19 @@ mod test {
 
         // Upload the file, which we assume to have a file ID of zero.
         let file_id = 0;
-        let _alias = upload_file(file_id, vec![1, 2, 3], vec![1, 2, 3], &mut state);
+        let _alias = upload_file(
+            file_id,
+            vec![1, 2, 3],
+            "jpeg".to_string(),
+            vec![1, 2, 3],
+            &mut state,
+        );
 
         assert_eq!(
             download_file(&state, file_id, Principal::anonymous()),
             FileDownloadResponse::FoundFile(FileData {
                 contents: vec![1, 2, 3],
+                file_type: "jpeg".to_string(),
                 file_key: vec![1, 2, 3]
             })
         );

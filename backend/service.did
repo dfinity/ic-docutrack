@@ -1,8 +1,15 @@
 type file_id = nat64;
 
+type file_status = variant {
+  pending: record { alias: text }; 
+  uploaded;
+};
+
 type file_metadata = record {
   file_id: file_id;
   file_name : text;
+  file_status: file_status;
+  shared_with: vec user;
 };
 
 // A file's contents + its metadata.
@@ -35,6 +42,7 @@ type get_alias_info_response = variant {
 
 type found_file = record {
   contents: blob;
+  file_type: text;
   file_key: blob;
 };
 
@@ -81,6 +89,13 @@ type get_users_response = variant {
   users: vec user_data;
 };
 
+type upload_file_request = record {
+  file_id: file_id;
+  file_content: blob;
+  file_type: text;
+  file_key: blob;
+};
+
 service docutrack : {
   hello_world : () -> (text);
 
@@ -96,11 +111,11 @@ service docutrack : {
   // it returns the name and id of the file to be uploaded.
   get_alias_info: (alias: text) -> (get_alias_info_response);
 
-  upload_file: (file_id, blob, blob) -> (upload_file_response) ;
+  upload_file: (upload_file_request) -> (upload_file_response) ;
 
   download_file: (file_id) -> (download_file_response) ;
 
-  get_files: () -> (vec file_metadata);
+  get_requests: () -> (vec file_metadata);
 
   upload_file_atomic: (upload_file_atomic_request) -> ();
 
