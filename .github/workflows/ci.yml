@@ -153,10 +153,4 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: npm run build
-      - run: |
-          # npm run build requires a canister_ids.json file
-          # and the candid of the internet identity canister.
-          # We add those here.
-          mkdir -p .dfx/local/canisters/internet_identity/
-          wget https://github.com/dfinity/internet-identity/releases/download/release-2023-01-31/internet_identity.did -O dfx/local/canisters/internet_identity
-          npm run build
+      - run: npm run build
