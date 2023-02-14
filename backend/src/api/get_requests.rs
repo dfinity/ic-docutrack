@@ -22,7 +22,11 @@ pub fn get_requests(state: &State, caller: Principal) -> Vec<PublicFileMetadata>
     }
 }
 
-pub fn get_file_info(state: &State, caller: Principal, file_id: u64) -> Option<PublicFileMetadata> {
+pub fn _get_file_info(
+    state: &State,
+    caller: Principal,
+    file_id: u64,
+) -> Option<PublicFileMetadata> {
     Some(PublicFileMetadata {
         file_id: file_id,
         file_name: state
