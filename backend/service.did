@@ -1,7 +1,7 @@
 type file_id = nat64;
 
 type file_status = variant {
-  pending: record { text; };
+  pending: text; 
   uploaded;
 };
 
