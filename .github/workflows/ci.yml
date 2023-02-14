@@ -147,7 +147,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: |
+      - name: Build frontend
+        run: |
           dfx start --background
           dfx canister create --all
           npm run build
