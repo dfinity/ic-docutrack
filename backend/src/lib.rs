@@ -61,11 +61,8 @@ pub enum GetAliasInfoError {
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct AliasInfo {
-    #[serde(rename = "file_id")]
     pub file_id: u64,
-    #[serde(rename = "file_name")]
     pub file_name: String,
-    #[serde(rename = "user")]
     pub user: User,
 }
 
