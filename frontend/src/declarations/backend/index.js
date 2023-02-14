@@ -5,6 +5,7 @@ import { idlFactory } from "./backend.did.js";
 export { idlFactory } from "./backend.did.js";
 
 // CANISTER_ID is replaced by webpack based on node environment
+export const canisterId = process.env.BACKEND_CANISTER_ID;
 
 export const createActor = (canisterId, options = {}) => {
   const agent = options.agent || new HttpAgent({ ...options.agentOptions });
