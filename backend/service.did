@@ -89,6 +89,13 @@ type get_users_response = variant {
   users: vec user_data;
 };
 
+type upload_file_request = record {
+  file_id: file_id;
+  file_content: blob;
+  file_type: text;
+  file_key: blob;
+};
+
 service docutrack : {
   hello_world : () -> (text);
 
@@ -104,7 +111,7 @@ service docutrack : {
   // it returns the name and id of the file to be uploaded.
   get_alias_info: (alias: text) -> (get_alias_info_response);
 
-  upload_file: (file_id, blob, text, blob) -> (upload_file_response) ;
+  upload_file: (upload_file_request) -> (upload_file_response) ;
 
   download_file: (file_id) -> (download_file_response) ;
 

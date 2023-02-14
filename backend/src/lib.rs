@@ -218,3 +218,11 @@ pub enum GetUsersResponse {
     #[serde(rename = "users")]
     Users(Vec<UserData>),
 }
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct UploadFileRequest {
+    pub file_id: u64,
+    pub file_content: Vec<u8>,
+    pub file_type: String,
+    pub file_key: Vec<u8>,
+}
