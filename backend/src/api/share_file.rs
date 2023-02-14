@@ -161,7 +161,7 @@ mod test {
                 PublicFileMetadata {
                     file_id: 0,
                     file_name: "request".to_string(),
-                    file_status: FileStatus::Pending { alias: alias1 },
+                    file_status: FileStatus::Uploaded { alias: alias1 },
                     shared_with: vec![User {
                         first_name: "John".to_string(),
                         last_name: "Smith".to_string(),
@@ -171,7 +171,7 @@ mod test {
                 PublicFileMetadata {
                     file_id: 2,
                     file_name: "request3".to_string(),
-                    file_status: FileStatus::Pending { alias: alias3 },
+                    file_status: FileStatus::Uploaded { alias: alias3 },
                     shared_with: vec![User {
                         first_name: "John".to_string(),
                         last_name: "Smith".to_string(),
