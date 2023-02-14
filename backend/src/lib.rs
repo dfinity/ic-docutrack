@@ -46,11 +46,19 @@ pub struct FileMetadata {
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub enum FileStatus {
+    #[serde(rename = "pending")]
+    Pending { alias: String },
+    #[serde(rename = "uploaded")]
+    Uploaded,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct PublicFileMetadata {
-    #[serde(rename = "file_id")]
     pub file_id: u64,
-    #[serde(rename = "file_name")]
     pub file_name: String,
+    pub file_status: FileStatus,
+    pub shared_with: Vec<User>,
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -134,9 +142,6 @@ pub struct State {
     /// Mapping between file aliases (randomly generated links) and file ID.
     pub file_alias_index: BTreeMap<String, u64>,
 
-    /// Mapping between file aliases (randomly generated links) and file ID.
-    pub file_alias_user_key_index: BTreeMap<String, Vec<u8>>,
-
     /// Mapping between a user's principal and the list of files that are owned by the user.
     pub file_owners: BTreeMap<Principal, Vec<u64>>,
 
@@ -162,7 +167,6 @@ impl State {
             users: BTreeMap::new(),
             file_data: BTreeMap::new(),
             file_alias_index: BTreeMap::new(),
-            file_alias_user_key_index: BTreeMap::new(),
             file_owners: BTreeMap::new(),
             file_shares: BTreeMap::new(),
             alias_generator: AliasGenerator::new(Randomness::try_from(rand_seed).unwrap()),

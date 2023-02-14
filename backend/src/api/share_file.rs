@@ -1,6 +1,8 @@
 use crate::{FileSharingResponse, PublicFileMetadata, State};
 use ic_cdk::export::candid::Principal;
 
+use super::get_files::{get_allowed_users, get_file_status};
+
 pub fn share_file(
     state: &mut State,
     caller: Principal,
@@ -59,6 +61,8 @@ pub fn get_shared_files(state: &State, caller: Principal) -> Vec<PublicFileMetad
                     .metadata
                     .file_name
                     .clone(),
+                shared_with: get_allowed_users(state, *file_id),
+                file_status: get_file_status(state, *file_id),
             })
             .collect(),
     }
@@ -69,7 +73,7 @@ mod test {
     use super::*;
     use crate::{
         api::{request_file, set_user_info},
-        PublicFileMetadata, User,
+        FileStatus, PublicFileMetadata, User,
     };
     use ic_cdk::export::Principal;
 
@@ -86,12 +90,22 @@ mod test {
             },
         );
 
+        set_user_info(
+            &mut state,
+            Principal::from_slice(&[0, 1, 2]),
+            User {
+                first_name: "John".to_string(),
+                last_name: "Smith".to_string(),
+                public_key: vec![1, 2, 3],
+            },
+        );
+
         // Request a file.
-        request_file(Principal::anonymous(), "request", &mut state);
+        let alias1 = request_file(Principal::anonymous(), "request", &mut state);
         // Request a file.
         request_file(Principal::anonymous(), "request2", &mut state);
         // Request a file.
-        request_file(Principal::anonymous(), "request3", &mut state);
+        let alias3 = request_file(Principal::anonymous(), "request3", &mut state);
         // Request a file.
         request_file(Principal::anonymous(), "request4", &mut state);
 
@@ -116,11 +130,23 @@ mod test {
             vec![
                 PublicFileMetadata {
                     file_id: 0,
-                    file_name: "request".to_string()
+                    file_name: "request".to_string(),
+                    file_status: FileStatus::Pending { alias: alias1 },
+                    shared_with: vec![User {
+                        first_name: "John".to_string(),
+                        last_name: "Smith".to_string(),
+                        public_key: vec![1, 2, 3],
+                    }]
                 },
                 PublicFileMetadata {
                     file_id: 2,
-                    file_name: "request3".to_string()
+                    file_name: "request3".to_string(),
+                    file_status: FileStatus::Pending { alias: alias3 },
+                    shared_with: vec![User {
+                        first_name: "John".to_string(),
+                        last_name: "Smith".to_string(),
+                        public_key: vec![1, 2, 3],
+                    }]
                 },
             ]
         );
@@ -168,14 +194,24 @@ mod test {
             },
         );
 
+        set_user_info(
+            &mut state,
+            Principal::from_slice(&[0, 1, 2]),
+            User {
+                first_name: "John".to_string(),
+                last_name: "Smith".to_string(),
+                public_key: vec![1, 2, 3],
+            },
+        );
+
         // Request a file.
-        request_file(Principal::anonymous(), "request", &mut state);
+        let _alias1 = request_file(Principal::anonymous(), "request", &mut state);
         // Request a file.
-        request_file(Principal::anonymous(), "request2", &mut state);
+        let _alias2 = request_file(Principal::anonymous(), "request2", &mut state);
         // Request a file.
-        request_file(Principal::anonymous(), "request3", &mut state);
+        let alias3 = request_file(Principal::anonymous(), "request3", &mut state);
         // Request a file.
-        request_file(Principal::anonymous(), "request4", &mut state);
+        let _alias4 = request_file(Principal::anonymous(), "request4", &mut state);
 
         // share file index 0
         share_file(
@@ -205,7 +241,13 @@ mod test {
             get_shared_files(&state, Principal::from_slice(&[0, 1, 2])),
             vec![PublicFileMetadata {
                 file_id: 2,
-                file_name: "request3".to_string()
+                file_name: "request3".to_string(),
+                file_status: FileStatus::Pending { alias: alias3 },
+                shared_with: vec![User {
+                    first_name: "John".to_string(),
+                    last_name: "Smith".to_string(),
+                    public_key: vec![1, 2, 3],
+                }]
             },]
         );
     }

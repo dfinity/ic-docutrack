@@ -1,8 +1,15 @@
 type file_id = nat64;
 
+type file_status = variant {
+  pending: record { alias: text }; 
+  uploaded;
+};
+
 type file_metadata = record {
   file_id: file_id;
   file_name : text;
+  file_status: file_status;
+  shared_with: vec user;
 };
 
 // A file's contents + its metadata.
@@ -100,7 +107,7 @@ service docutrack : {
 
   download_file: (file_id) -> (download_file_response) ;
 
-  get_files: () -> (vec file_metadata);
+  get_requests: () -> (vec file_metadata);
 
   upload_file_atomic: (upload_file_atomic_request) -> ();
 
