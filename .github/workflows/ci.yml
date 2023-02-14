@@ -3,7 +3,6 @@ name: CI Checks
 env:
   RUST_VERSION: 1.67.0
   DFX_VERSION: 0.12.1
-  NODE_VERSION: 19.x
 
 on:
   push:
@@ -144,10 +143,10 @@ jobs:
           dfx cache install
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Use Node.js $NODE_VERSION
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: $NODE_VERSION
+          node-version: ${{ matrix.node-version }}
       - run: |
           mkdir -p .dfx/local/canisters/internet_identity
           wget https://github.com/dfinity/internet-identity/releases/download/release-2023-01-31/internet_identity.did -O .dfx/local/canisters/internet_identity/internet_identity.did
