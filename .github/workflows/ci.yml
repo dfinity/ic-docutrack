@@ -125,7 +125,7 @@ jobs:
       env:
         SHELLCHECK_OPTS: -e SC1090 -e SC2119 -e SC1091
 
-  npm-test:
+  build-frontend:
     runs-on: ubuntu-22.04
 
     strategy:
@@ -138,6 +138,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: npm run build
       - run: |
         # npm run build requires a canister_ids.json file
         # and the candid of the internet identity canister.
