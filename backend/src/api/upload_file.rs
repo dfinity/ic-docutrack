@@ -72,7 +72,8 @@ mod test {
                 file_id => File {
                     metadata: FileMetadata {
                         file_name: "request".to_string(),
-                        user_public_key: get_user_key(&state, Principal::anonymous())
+                        user_public_key: get_user_key(&state, Principal::anonymous()),
+                        requester_principal: Principal::anonymous()
                     },
                     content: FileContent::Uploaded {
                         contents: vec![1,2,3],

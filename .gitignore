@@ -13,5 +13,7 @@ node_modules
 # IDE
 .idea/*
 **/.vscode/*
+
+# Frontend
 **/build/*
 **/.svelte-kit/*

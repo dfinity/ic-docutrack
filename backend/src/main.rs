@@ -30,22 +30,7 @@ fn get_files() -> Vec<PublicFileMetadata> {
 
 #[query]
 fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
-    with_state(|s| {
-        s.file_alias_index
-            .get(&alias)
-            .ok_or(GetAliasInfoError::NotFound)
-            .map(|file_id| AliasInfo {
-                file_id: *file_id,
-                file_name: s.file_data.get(file_id).unwrap().metadata.file_name.clone(),
-                user_public_key: s
-                    .file_data
-                    .get(file_id)
-                    .unwrap()
-                    .metadata
-                    .user_public_key
-                    .clone(),
-            })
-    })
+    with_state(|s| backend::api::get_alias_info(s, alias))
 }
 
 #[update]
