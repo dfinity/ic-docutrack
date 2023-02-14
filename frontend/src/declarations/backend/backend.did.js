@@ -10,9 +10,14 @@ export const idlFactory = ({ IDL }) => {
     not_uploaded_file: IDL.Null,
     not_found_file: IDL.Null,
   });
+  const user = IDL.Record({
+    public_key: IDL.Vec(IDL.Nat8),
+    first_name: IDL.Text,
+    last_name: IDL.Text,
+  });
   const get_alias_info_response = IDL.Variant({
     Ok: IDL.Record({
-      user_public_key: IDL.Vec(IDL.Nat8),
+      user: user,
       file_name: IDL.Text,
       file_id: file_id,
     }),
@@ -31,11 +36,6 @@ export const idlFactory = ({ IDL }) => {
   const get_users_response = IDL.Variant({
     permission_error: IDL.Null,
     users: IDL.Vec(user_data),
-  });
-  const user = IDL.Record({
-    public_key: IDL.Vec(IDL.Nat8),
-    first_name: IDL.Text,
-    last_name: IDL.Text,
   });
   const share_file_response = IDL.Variant({
     ok: IDL.Null,

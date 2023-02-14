@@ -1,98 +1,102 @@
 <script>
-	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
-	import { createActor } from '../../../../declarations/backend';
-	import FilePreview from '$lib/components/FilePreview.svelte';
-	import File from '$lib/file';
+  import { page } from "$app/stores";
+  import { onMount } from "svelte";
+  import { createActor } from "../../../../declarations/backend";
+  import FilePreview from "$lib/components/FilePreview.svelte";
+  import File from "$lib/file";
 
-	const alias = $page.url.searchParams.get('alias') || '';
-	const host = import.meta.env.VITE_HOST;
-	const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
-	const backend = createActor(canisterId, { agentOptions: { host } });
+  const alias = $page.url.searchParams.get("alias") || "";
+  const host = import.meta.env.VITE_HOST;
+  const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
+  const backend = createActor(canisterId, { agentOptions: { host } });
 
-	let loading = true;
-	let uploadingStatus = '';
-	let fileInfo = null;
-	let file;
-	let files;
+  let loading = true;
+  let uploadingStatus = "";
+  let fileInfo = null;
+  let file;
+  let files;
 
-	onMount(async () => {
-		fileInfo = await backend.get_alias_info(alias);
-		loading = false;
-	});
+  onMount(async () => {
+    fileInfo = await backend.get_alias_info(alias);
+    loading = false;
+  });
 
-	function onChange() {
-		if (files) {
-			let inputFile = files[0];
+  function onChange() {
+    if (files) {
+      let inputFile = files[0];
 
-			const reader = new FileReader();
+      const reader = new FileReader();
 
-			file = {
-				name: inputFile.name,
-				dataType: inputFile.type,
-				data: ''
-			};
+      file = {
+        name: inputFile.name,
+        dataType: inputFile.type,
+        data: "",
+      };
 
-			reader.readAsDataURL(inputFile);
-			reader.onload = function () {
-				let base64 = reader.result;
-				let pattern = 'base64,';
-				let idx = base64.indexOf('base64,');
-				file.data = base64.substring(idx + pattern.length);
-			};
-		}
-	}
+      reader.readAsDataURL(inputFile);
+      reader.onload = function () {
+        let base64 = reader.result;
+        let pattern = "base64,";
+        let idx = base64.indexOf("base64,");
+        file.data = base64.substring(idx + pattern.length);
+      };
+    }
+  }
 
-	const handleUpload = async () => {
-		const fileSelector = document.getElementById('file-selector');
-		const fileBytes = await fileSelector.files[0].arrayBuffer();
-		let fileToEncrypt = new File(fileInfo.Ok.file_name, fileBytes);
-		const encFile = await fileToEncrypt.encrypt();
+  const handleUpload = async () => {
+    const fileSelector = document.getElementById("file-selector");
+    const fileBytes = await fileSelector.files[0].arrayBuffer();
+    let fileToEncrypt = File.fromUnencrypted(fileInfo.Ok.file_name, fileBytes);
+    const encryptedFileKey = fileToEncrypt.getEncryptedFileKey(
+      fileInfo.Ok.user_public_key
+    );
+    const encFile = await fileToEncrypt.encrypt();
 
-		// Upload file
-		uploadingStatus = 'Uploading...';
-		const res = await backend.upload_file(
-			fileInfo.Ok.file_id,
-			new Uint8Array(encFile),
-			new Uint8Array(fileToEncrypt.documentKey)
-		);
+    // Upload file
+    uploadingStatus = "Uploading...";
+    const res = await backend.upload_file(
+      fileInfo.Ok.file_id,
+      new Uint8Array(encFile),
+      new Uint8Array(encryptedFileKey)
+	//   file.dataType
+    );
 
-		if ('Ok' in res) {
-			uploadingStatus = 'File uploaded successfully.';
-		} else {
-			uploadingStatus = 'An error occurred. Try again.';
-		}
-	};
+    if ("Ok" in res) {
+      uploadingStatus = "File uploaded successfully.";
+    } else {
+      uploadingStatus = "An error occurred. Try again.";
+    }
+  };
 </script>
 
 <h1>File Upload</h1>
 {#if loading}
-	<p>Loading...</p>
+  <p>Loading...</p>
 {:else if fileInfo.Ok}
-	<p>File name: {fileInfo.Ok.file_name}</p>
-	<form class="row g3" on:submit|preventDefault={handleUpload}>
-		<div class="col-auto">
-			<input
-				bind:files
-				on:change={onChange}
-				class="form-control"
-				type="file"
-				id="file-selector"
-				required
-			/>
-		</div>
-		<div class="col-auto">
-			<button class="btn btn-primary" type="submit">Upload</button>
-		</div>
-	</form>
-	<span>{uploadingStatus}</span>
-	<br />
-	{#if file && file.data}
-		<h4>File Preview</h4>
-		<FilePreview {file} />
-	{/if}
-{:else if 'not_found' in fileInfo.Err}
-	<p>Unknown alias.</p>
+  <p>File name: {fileInfo.Ok.file_name}</p>
+  <form class="row g3" on:submit|preventDefault={handleUpload}>
+    <div class="col-auto">
+      <input
+        bind:files
+        on:change={onChange}
+        class="form-control"
+        type="file"
+        id="file-selector"
+        required
+      />
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-primary" type="submit">Upload</button>
+    </div>
+  </form>
+  <span>{uploadingStatus}</span>
+  <br />
+  {#if file && file.data}
+    <h4>File Preview</h4>
+    <FilePreview {file} />
+  {/if}
+{:else if "not_found" in fileInfo.Err}
+  <p>Unknown alias.</p>
 {:else}
-	<p>Something else is wrong.</p>
+  <p>Something else is wrong.</p>
 {/if}

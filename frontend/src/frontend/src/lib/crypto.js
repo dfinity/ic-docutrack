@@ -74,6 +74,9 @@ async function encryptForUser(plaintext, publicKey) {
  * @returns {Promise<ArrayBuffer>} containing the decrypted version of the ciphertext ArrayBuffer
  */
 async function decryptForUser(ciphertext) {
+  if (!this.privateKey) {
+    this.privateKey = await keyStorage.loadKey("private");
+  }
   return await subtle.decrypt(
     {
       name: "RSA-OAEP",

@@ -21,11 +21,7 @@ export interface found_file {
 }
 export type get_alias_info_response =
   | {
-      Ok: {
-        user_public_key: Uint8Array;
-        file_name: string;
-        file_id: file_id;
-      };
+      Ok: { user: user; file_name: string; file_id: file_id };
     }
   | { Err: { not_found: null } };
 export type get_users_response =
