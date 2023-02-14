@@ -131,13 +131,31 @@ jobs:
     strategy:
       matrix:
         node-version: [19.x]
-
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      #- run: npm run build --if-present
-      - run: npm test
+
+      - run: |
+        # npm run build requires a canister_ids.json file
+        # and the candid of the internet identity canister.
+        # We add those here.
+        mkdir -p .dfx/local/canisters/internet_identity/
+        wget https://github.com/dfinity/internet-identity/releases/download/release-2023-01-31/internet_identity.did -O dfx/local/canisters/internet_identity
+        cat .dfx/local/canister_ids.json << EOF
+{
+  "backend": {
+    "local": "rrkah-fqaaa-aaaaa-aaaaq-cai"
+  },
+  "frontend": {
+    "local": "ryjl3-tyaaa-aaaaa-aaaba-cai"
+  },
+  "internet_identity": {
+    "local": "r7inp-6aaaa-aaaaa-aaabq-cai"
+  }
+}
+EOF
+
+        npm run build
