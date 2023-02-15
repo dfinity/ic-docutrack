@@ -117,6 +117,8 @@ service docutrack : {
 
   get_requests: () -> (vec file_metadata);
 
+  get_shared_files: () -> (vec file_metadata);
+
   upload_file_atomic: (upload_file_atomic_request) -> ();
 
   share_file: (user_id: principal, file_id: file_id, file_key_encrypted_for_user: blob) -> (share_file_response);
