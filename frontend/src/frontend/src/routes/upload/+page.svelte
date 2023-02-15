@@ -58,7 +58,7 @@
     const res = await backend.upload_file({
       file_id: fileInfo.Ok.file_id,
       file_content: new Uint8Array(encFile),
-      file_key: new Uint8Array(encryptedFileKey),
+      owner_key: new Uint8Array(encryptedFileKey),
       file_type: file.dataType,
     });
 

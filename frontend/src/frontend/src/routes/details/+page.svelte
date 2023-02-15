@@ -50,7 +50,7 @@
         let decryptedFile = await File.fromEncrypted(
           file.name,
           downloadedFile.found_file.contents.buffer,
-          downloadedFile.found_file.file_key.buffer
+          downloadedFile.found_file.owner_key.buffer
         );
         file.data = Buffer.from(decryptedFile.contents).toString("base64");
       }
