@@ -17,7 +17,7 @@ actor.subscribe((value) => (actorValue = value));
 export async function load({ params }) {
   // Get data from backend
   if (actorValue) {
-    const fileData = await actorValue.get_files();
+    const fileData = await actorValue.get_requests();
     // Prepare data for page template
     for (let idx = 0; idx < fileData.length; ++idx) {
       tableData.push({

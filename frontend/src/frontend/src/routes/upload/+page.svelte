@@ -1,5 +1,6 @@
 <script>
   import { page } from "$app/stores";
+  import { default as crypto } from "$lib/crypto";
   import { onMount } from "svelte";
   import { createActor } from "../../../../declarations/backend";
   import FilePreview from "$lib/components/FilePreview.svelte";
@@ -47,19 +48,21 @@
     const fileSelector = document.getElementById("file-selector");
     const fileBytes = await fileSelector.files[0].arrayBuffer();
     let fileToEncrypt = File.fromUnencrypted(fileInfo.Ok.file_name, fileBytes);
-    const encryptedFileKey = fileToEncrypt.getEncryptedFileKey(
-      fileInfo.Ok.user_public_key
+    console.log(fileInfo.Ok.user.public_key);
+    console.log(await crypto.importPublicKey(fileInfo.Ok.user.public_key));
+    const encryptedFileKey = await fileToEncrypt.getEncryptedFileKey(
+      await crypto.importPublicKey(fileInfo.Ok.user.public_key)
     );
     const encFile = await fileToEncrypt.encrypt();
 
     // Upload file
     uploadingStatus = "Uploading...";
-    const res = await backend.upload_file(
-      fileInfo.Ok.file_id,
-      new Uint8Array(encFile),
-      new Uint8Array(encryptedFileKey)
-	//   file.dataType
-    );
+    const res = await backend.upload_file({
+      file_id: fileInfo.Ok.file_id,
+      file_content: new Uint8Array(encFile),
+      file_key: new Uint8Array(encryptedFileKey),
+      file_type: file.dataType,
+    });
 
     if ("Ok" in res) {
       uploadingStatus = "File uploaded successfully.";

@@ -7,9 +7,9 @@
 
   import { actor } from "$lib/shared/stores/auth.js";
   import { createActor } from "../../../../declarations/backend";
+  import { default as crypto } from "$lib/crypto";
 
   let actorValue: object;
-  let requestName: string;
   let requestLink: URL;
   let loading: boolean = false;
 

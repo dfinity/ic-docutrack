@@ -44,6 +44,22 @@ async function getLocalUserPublicKey() {
 }
 
 /**
+ * @param {Uint8Array} publicKey in 'spki' format
+ * @returns {Promise<CryptoKey>} CryptoKey object from the imported key.
+ */
+async function importPublicKey(publicKey) {
+  return await subtle.importKey(
+    "raw",
+    publicKey,
+    {
+      name: "AES-GCM",
+    },
+    true,
+    ["encrypt"]
+  );
+}
+
+/**
  * @param {ArrayBuffer} plaintext
  * @param {ArrayBuffer} publicKey in 'spki' format
  * @returns {Promise<ArrayBuffer>} containing the encrypted version of the plaintext ArrayBuffer.
@@ -175,4 +191,5 @@ export default {
   generateFileKey,
   encryptFile,
   decryptFile,
+  importPublicKey,
 };

@@ -6,7 +6,7 @@
   import { onMount } from "svelte";
   import FilePreview from "$lib/components/FilePreview.svelte";
   import File from "$lib/file";
-  import {default as crypto} from "$lib/crypto";
+  import { default as crypto } from "$lib/crypto";
   import { Alert } from "sveltestrap";
   import Details from "$lib/components/Details.svelte";
 
@@ -18,7 +18,7 @@
   let file = {
     name: "",
     dataType: "application/pdf",
-    data: ""
+    data: "",
   };
   let permissionError = false;
 
@@ -37,17 +37,22 @@
     actor.set(createActor(canisterId, { agentOptions: { host } }));
     if (isAuthenticated) {
       let downloadedFile = await actorValue.download_file(fileId);
+      console.log(downloadedFile);
       permissionError = downloadedFile.permission_error;
       if (!permissionError) {
-        let files = await actorValue.get_files();
-        files.every(entry => {
+        let files = await actorValue.get_requests();
+        files.every((entry) => {
           if (entry.file_id == BigInt(fileId)) {
             file.name = entry.file_name;
             return false;
           }
           return true;
         });
-        let decryptedFile = await File.fromEncrypted(file.name, new ArrayBuffer(downloadedFile.found_file.contents), new ArrayBuffer(downloadedFile.found_file.file_key));
+        let decryptedFile = await File.fromEncrypted(
+          file.name,
+          new ArrayBuffer(downloadedFile.found_file.contents),
+          new ArrayBuffer(downloadedFile.found_file.file_key)
+        );
         file.data = Buffer.from(decryptedFile.contents).toString("base64");
       }
     }
@@ -64,7 +69,7 @@
     <Details file={file.data} />
     {#if file && file.data}
       <h4>File Preview</h4>
-      <FilePreview file={file} />
+      <FilePreview {file} />
     {/if}
   {:else}
     <Alert color="warning">

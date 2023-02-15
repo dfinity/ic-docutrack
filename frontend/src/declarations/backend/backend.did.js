@@ -3,6 +3,7 @@ export const idlFactory = ({ IDL }) => {
   const found_file = IDL.Record({
     contents: IDL.Vec(IDL.Nat8),
     file_key: IDL.Vec(IDL.Nat8),
+    file_type: IDL.Text,
   });
   const download_file_response = IDL.Variant({
     found_file: found_file,
@@ -23,8 +24,14 @@ export const idlFactory = ({ IDL }) => {
     }),
     Err: IDL.Variant({ not_found: IDL.Null }),
   });
+  const file_status = IDL.Variant({
+    pending: IDL.Record({ alias: IDL.Text }),
+    uploaded: IDL.Null,
+  });
   const file_metadata = IDL.Record({
+    file_status: file_status,
     file_name: IDL.Text,
+    shared_with: IDL.Vec(user),
     file_id: file_id,
   });
   const user_data = IDL.Record({
@@ -40,6 +47,12 @@ export const idlFactory = ({ IDL }) => {
   const share_file_response = IDL.Variant({
     ok: IDL.Null,
     permission_error: IDL.Null,
+  });
+  const upload_file_request = IDL.Record({
+    file_key: IDL.Vec(IDL.Nat8),
+    file_type: IDL.Text,
+    file_content: IDL.Vec(IDL.Nat8),
+    file_id: file_id,
   });
   const upload_file_error = IDL.Variant({
     not_requested: IDL.Null,
@@ -64,17 +77,13 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     download_file: IDL.Func([file_id], [download_file_response], []),
     get_alias_info: IDL.Func([IDL.Text], [get_alias_info_response], []),
-    get_files: IDL.Func([], [IDL.Vec(file_metadata)], []),
+    get_requests: IDL.Func([], [IDL.Vec(file_metadata)], []),
     get_users: IDL.Func([], [get_users_response], []),
     hello_world: IDL.Func([], [IDL.Text], []),
     request_file: IDL.Func([IDL.Text], [IDL.Text], []),
     set_user: IDL.Func([user], [], []),
     share_file: IDL.Func([IDL.Principal, file_id], [share_file_response], []),
-    upload_file: IDL.Func(
-      [file_id, IDL.Vec(IDL.Nat8), IDL.Vec(IDL.Nat8)],
-      [upload_file_response],
-      []
-    ),
+    upload_file: IDL.Func([upload_file_request], [upload_file_response], []),
     upload_file_atomic: IDL.Func([upload_file_atomic_request], [], []),
     who_am_i: IDL.Func([], [who_am_i_response], []),
   });

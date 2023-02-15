@@ -29,7 +29,7 @@
       const host = import.meta.env.VITE_HOST;
       actor.set(createActor(canisterId, { agentOptions: { host } }));
 
-      const fileData = await actorValue.get_files();
+      const fileData = await actorValue.get_requests();
       // Prepare data for page template
       for (let idx = 0; idx < fileData.length; ++idx) {
         let detailsLink = new URL($page.url.origin + "/details");
