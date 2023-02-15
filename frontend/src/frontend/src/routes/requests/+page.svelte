@@ -5,51 +5,63 @@
 
   import ContentTable from "$lib/components/ContentTable.svelte";
   import RequestModal from "$lib/components/RequestModal.svelte";
-  import { authClient } from "$lib/shared/stores/auth.js";
+  import { actor, isAuthenticated } from "$lib/shared/stores/auth.js";
 
-  let authClientValue;
-  let isAuthenticated = false;
-  authClient.subscribe((value) => (authClientValue = value));
+  let data = null;
+  let tableColumns = [
+    { key: "name", label: "Name" },
+    { key: "access", label: "Access" },
+  ];
+  let actorValue;
+  let isAuthenticatedValue;
 
-  onMount(async () => {
-    authClient.set(await AuthClient.create());
-    isAuthenticated = await authClientValue.isAuthenticated();
+  actor.subscribe((value) => {
+    actorValue = value;
+  });
+  isAuthenticated.subscribe((value) => {
+    isAuthenticatedValue = value;
   });
 
-  let principalValue;
-  let alias;
-  let requestedFiles = [];
-  $: tableColumns = [];
-  $: tableData = [];
-  // Polling
-  let progress = {};
-  let poller;
-
-  const setupPoller = () => {
-    if (poller) {
-      clearInterval(poller);
+  async function syncBackend(backend) {
+    if (backend) {
+      const fileData = await backend.get_files();
+      console.log("file data: ", fileData);
+      let newData = [];
+      // Prepare data for page template
+      for (let idx = 0; idx < fileData.length; ++idx) {
+        newData.push({
+          name: fileData[idx].file_name,
+          access: "Only You",
+          items: [{ url: "/details/" + fileData[idx].file_id, text: "Open" }],
+        });
+      }
+      // Assign `data` to itself for reactivity purposes
+      data = newData;
+      console.log("Sync func: ", newData);
+    } else {
+      data = [];
     }
-    poller = setInterval(doPoll(), 2000);
-  };
+  }
 
-  const doPoll = () => async () => {
-    tableData = await new Promise((resolve) =>
-      setTimeout(() => {
-        // resolve(formatTableData(getRequestedFiles()))
-      }, 500)
-    );
-  };
-
-  $: setupPoller();
+  // The vars are not persistent, hence they have to be reloaded `onMount`
+  onMount(async () => {
+    await syncBackend(actorValue);
+  });
 </script>
 
-{#if isAuthenticated}
-  <RequestModal isOpen={false} />
-  <br />
-  <!-- <ContentTable columns={tableColumns} data={tableData}/> -->
-{:else}
-  <Alert color="warning">
-    <h4 class="alert-heading text-capitalize">warning</h4>
-    User must be authenticated.
-  </Alert>
-{/if}
+<svelte:head>
+  <title>Requests</title>
+  <meta name="description" content="DokuTrack" />
+</svelte:head>
+
+<section>
+  {#if isAuthenticatedValue === null || data === null}
+    <h3>Loading...</h3>
+  {:else if isAuthenticatedValue}
+    <RequestModal isOpen={false} />
+    <br />
+    <ContentTable columns={tableColumns} {data} />
+  {:else}
+    <h3>Please log in to see your data.</h3>
+  {/if}
+</section>

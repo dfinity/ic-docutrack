@@ -3,23 +3,26 @@
   import { onMount } from "svelte";
   import { createActor } from "../../../../declarations/backend";
   import FilePreview from "../../lib/components/FilePreview.svelte";
+  import {
+    actor,
+    isAuthenticated,
+    authClient,
+  } from "$lib/shared/stores/auth.js";
 
   const alias = $page.url.searchParams.get("alias") || "";
-  const host = import.meta.env.VITE_HOST;
-  const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
-  const backend = createActor(canisterId, { agentOptions: { host } });
 
   let loading = true;
   let uploadingStatus = "";
   let fileInfo = null;
   let file;
   let files;
+  let actorValue;
+  actor.subscribe(async (value) => {
+    actorValue = value;
+  });
 
   onMount(async () => {
-    console.log(canisterId);
-    console.log(host);
-
-    fileInfo = await backend.get_alias_info(alias);
+    fileInfo = await actorValue.get_alias_info(alias);
     console.log(fileInfo);
     loading = false;
   });
@@ -51,7 +54,7 @@
     const fileBytes = await fileSelector.files[0].arrayBuffer();
     // Upload file
     uploadingStatus = "Uploading...";
-    const res = await backend.upload_file(
+    const res = await actorValue.upload_file(
       fileInfo.Ok.file_id,
       new Uint8Array(fileBytes),
       new Uint8Array([1, 2, 3])
