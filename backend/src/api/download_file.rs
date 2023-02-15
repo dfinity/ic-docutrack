@@ -14,7 +14,7 @@ fn get_file_data(s: &State, file_id: u64) -> FileDownloadResponse {
         } => FileDownloadResponse::FoundFile(FileData {
             contents: contents.clone(),
             file_type: file_type.clone(),
-            user_key: owner_key.clone(),
+            owner_key: owner_key.clone(),
         }),
     }
 }
@@ -32,7 +32,7 @@ fn get_shared_file_data(s: &State, file_id: u64, user: Principal) -> FileDownloa
         } => FileDownloadResponse::FoundFile(FileData {
             contents: contents.clone(),
             file_type: file_type.clone(),
-            user_key: shared_keys.get(&user).unwrap().clone(),
+            owner_key: shared_keys.get(&user).unwrap().clone(),
         }),
     }
 }
@@ -183,7 +183,7 @@ mod test {
             FileDownloadResponse::FoundFile(FileData {
                 contents: vec![1, 2, 3],
                 file_type: "jpeg".to_string(),
-                user_key: vec![1, 2, 3],
+                owner_key: vec![1, 2, 3],
             })
         );
     }
@@ -238,7 +238,7 @@ mod test {
             FileDownloadResponse::FoundFile(FileData {
                 contents: vec![1, 2, 3],
                 file_type: "jpeg".to_string(),
-                user_key: vec![10, 11, 12],
+                owner_key: vec![10, 11, 12],
             })
         )
     }
