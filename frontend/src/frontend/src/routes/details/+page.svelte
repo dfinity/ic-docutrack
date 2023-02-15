@@ -1,20 +1,20 @@
 <script>
   import { page } from "$app/stores";
-  import { actor, authClient } from "$lib/shared/stores/auth.js";
-  import { createActor } from "../../../../declarations/backend";
-  import { AuthClient } from "@dfinity/auth-client";
   import { onMount } from "svelte";
   import FilePreview from "$lib/components/FilePreview.svelte";
   import File from "$lib/file";
   import { Buffer } from "buffer";
   import { Alert } from "sveltestrap";
   import Details from "$lib/components/Details.svelte";
+  import {
+    actor,
+    isAuthenticated,
+  } from "$lib/shared/stores/auth.js";
 
   const fileId = parseInt($page.url.searchParams.get("fileId") || "");
 
   let actorValue;
-  let authClientValue;
-  let isAuthenticated;
+  let isAuthenticatedValue;;
   let fileNotFound = false;
   let file = {
     name: "",
@@ -24,19 +24,10 @@
   let permissionError = false;
 
   actor.subscribe((value) => (actorValue = value));
-  authClient.subscribe((value) => (authClientValue = value));
+  isAuthenticated.subscribe((value) => (isAuthenticatedValue = value));
 
   onMount(async () => {
-    authClient.set(await AuthClient.create());
-    isAuthenticated = await authClientValue.isAuthenticated();
-
-    // Canister IDs are automatically expanded to .env config - see vite.config.ts
-    const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
-    // We pass the host instead of using a proxy to support NodeJS >= v17 (ViteJS issue: https://github.com/vitejs/vite/issues/4794)
-    const host = import.meta.env.VITE_HOST;
-    // Create an actor to interact with the IC for a particular canister ID
-    actor.set(createActor(canisterId, { agentOptions: { host } }));
-    if (isAuthenticated) {
+    if (isAuthenticatedValue) {
       let files = await actorValue.get_requests();
       files.every((entry) => {
         if (entry.file_id == BigInt(fileId)) {

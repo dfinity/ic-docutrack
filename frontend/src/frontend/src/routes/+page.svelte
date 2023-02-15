@@ -1,47 +1,56 @@
 <script lang="ts">
-  import ContentTable from "$lib/components/ContentTable.svelte";
-  import { actor, authClient } from "$lib/shared/stores/auth.js";
-  import { createActor } from "../../../declarations/backend";
-  import { AuthClient } from "@dfinity/auth-client";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
+  import {
+    actor,
+    isAuthenticated,
+  } from "$lib/shared/stores/auth.js";
+  import ContentTable from "$lib/components/ContentTable.svelte";
 
-  let data = [];
-
-  let actorValue;
-  let authClientValue;
-
-  actor.subscribe((value) => (actorValue = value));
-  authClient.subscribe((value) => (authClientValue = value));
-
+  let data = null;
   let tableColumns = [
     { key: "name", label: "Name" },
     { key: "access", label: "Access" },
   ];
+  let actorValue;
+  let isAuthenticatedValue;
 
-  onMount(async () => {
-    authClient.set(await AuthClient.create());
-    const isAuthenticated = await authClientValue.isAuthenticated();
-    if (isAuthenticated) {
-      // Canister IDs are automatically expanded to .env config - see vite.config.ts
-      const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
-      // We pass the host instead of using a proxy to support NodeJS >= v17 (ViteJS issue: https://github.com/vitejs/vite/issues/4794)
-      const host = import.meta.env.VITE_HOST;
-      actor.set(createActor(canisterId, { agentOptions: { host } }));
+  actor.subscribe((value) => {
+    actorValue = value;
+  });
+  isAuthenticated.subscribe((value) => {
+    isAuthenticatedValue = value;
+  });
 
+  async function syncBackend(backend) {
+    if (backend) {
       const fileData = await actorValue.get_requests();
+      let newData = [];
       // Prepare data for page template
       for (let idx = 0; idx < fileData.length; ++idx) {
         let detailsLink = new URL($page.url.origin + "/details");
         detailsLink.searchParams.append("fileId", fileData[idx].file_id);
-        data.push({
+        newData.push({
           name: fileData[idx].file_name,
           access: "Only You",
           items: [{ url: detailsLink, text: "Open" }],
         });
       }
-      data = data;
+      // Assign `data` to itself for reactivity purposes
+      data = newData;
+    } else {
+      data = [];
     }
+  }
+
+  // If there is a change to the backend actor, reload the data of the page
+  // actor.subscribe(async (value) => {
+  // await syncBackend(value);
+  // });
+
+  // The vars are not persistent, hence they have to be reloaded `onMount`
+  onMount(async () => {
+    await syncBackend(actorValue);
   });
 </script>
 
@@ -51,5 +60,11 @@
 </svelte:head>
 
 <section>
-  <ContentTable columns={tableColumns} {data} />
+  {#if isAuthenticatedValue === null || data === null}
+    <h3>Loading...</h3>
+  {:else if isAuthenticatedValue}
+    <ContentTable columns={tableColumns} {data} />
+  {:else}
+    <h3>Please log in to see your data.</h3>
+  {/if}
 </section>

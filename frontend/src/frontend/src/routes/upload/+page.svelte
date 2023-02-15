@@ -1,24 +1,24 @@
 <script>
   import { page } from "$app/stores";
-  import { default as crypto } from "$lib/crypto";
   import { onMount } from "svelte";
-  import { createActor } from "../../../../declarations/backend";
   import FilePreview from "$lib/components/FilePreview.svelte";
   import File from "$lib/file";
+  import { actor } from "$lib/shared/stores/auth.js";
 
   const alias = $page.url.searchParams.get("alias") || "";
-  const host = import.meta.env.VITE_HOST;
-  const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
-  const backend = createActor(canisterId, { agentOptions: { host } });
 
   let loading = true;
   let uploadingStatus = "";
   let fileInfo = null;
   let file;
   let files;
+  let actorValue;
+  actor.subscribe(async (value) => {
+    actorValue = value;
+  });
 
   onMount(async () => {
-    fileInfo = await backend.get_alias_info(alias);
+    fileInfo = await actorValue.get_alias_info(alias);
     loading = false;
   });
 
@@ -54,7 +54,7 @@
     const encFile = await fileToEncrypt.encrypt();
     // Upload file
     uploadingStatus = "Uploading...";
-    const res = await backend.upload_file({
+    const res = await actorValue.upload_file({
       file_id: fileInfo.Ok.file_id,
       file_content: new Uint8Array(encFile),
       owner_key: new Uint8Array(encryptedFileKey),
