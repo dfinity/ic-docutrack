@@ -5,7 +5,9 @@
       "type": "rust",
       "package": "backend",
       "candid": "./backend/service.did",
-      "wasm": ""
+      "declarations": {
+        "node_compatibility": true
+      }
     },
 
     "frontend": {
@@ -14,18 +16,24 @@
         "entrypoint": "frontend/build/index.html"
       },
       "source": ["frontend/build/"],
+      "declarations": {
+        "node_compatibility": true
+      },
       "type": "assets"
     },
 
     "internet_identity": {
-       "type": "custom",
-       "candid": "https://github.com/dfinity/internet-identity/releases/download/release-2023-01-31/internet_identity.did",
-       "wasm": "https://github.com/dfinity/internet-identity/releases/download/release-2023-01-31/internet_identity_dev.wasm",
-       "remote": {
-         "id": {
-           "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
-         }
-       }
+      "type": "custom",
+      "candid": "https://github.com/dfinity/internet-identity/releases/download/release-2023-01-31/internet_identity.did",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/download/release-2023-01-31/internet_identity_dev.wasm",
+      "declarations": {
+        "node_compatibility": true
+      },
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      }
     }
   },
   "defaults": {

@@ -1,23 +1,33 @@
-use crate::{FileSharingResponse, PublicFileMetadata, State};
+use crate::{FileContent, FileSharingResponse, PublicFileMetadata, State};
 use ic_cdk::export::candid::Principal;
 
-use super::get_files::{get_allowed_users, get_file_status};
+use super::get_requests::{get_allowed_users, get_file_status};
 
 pub fn share_file(
     state: &mut State,
     caller: Principal,
     sharing_with: Principal,
     file_id: u64,
+    file_key_encrypted_for_user: Vec<u8>,
 ) -> FileSharingResponse {
     if !can_share(state, caller, file_id) {
         FileSharingResponse::PermissionError
     } else {
-        state
-            .file_shares
-            .entry(sharing_with)
-            .or_insert_with(Vec::new)
-            .push(file_id);
-        FileSharingResponse::Ok
+        let file = state.file_data.get_mut(&file_id).unwrap();
+        match &mut file.content {
+            FileContent::Pending { .. } => FileSharingResponse::PendingError,
+            FileContent::Uploaded { shared_keys, .. } => {
+                state
+                    .file_shares
+                    .entry(sharing_with)
+                    .or_insert_with(Vec::new)
+                    .push(file_id);
+
+                shared_keys.insert(sharing_with, file_key_encrypted_for_user);
+
+                FileSharingResponse::Ok
+            }
+        }
     }
 }
 
@@ -41,7 +51,15 @@ pub fn revoke_share(
             None => FileSharingResponse::PermissionError,
             Some(arr) => {
                 arr.retain(|&val| val != file_id);
-                FileSharingResponse::Ok
+                let file = state.file_data.get_mut(&file_id).unwrap();
+                match &mut file.content {
+                    FileContent::Pending { .. } => FileSharingResponse::PendingError,
+                    FileContent::Uploaded { shared_keys, .. } => {
+                        shared_keys.remove(&sharing_with);
+
+                        FileSharingResponse::Ok
+                    }
+                }
             }
         }
     }
@@ -72,8 +90,8 @@ pub fn get_shared_files(state: &State, caller: Principal) -> Vec<PublicFileMetad
 mod test {
     use super::*;
     use crate::{
-        api::{request_file, set_user_info},
-        FileStatus, PublicFileMetadata, User,
+        api::{request_file, set_user_info, upload_file},
+        get_time, FileStatus, PublicFileMetadata, User,
     };
     use ic_cdk::export::Principal;
 
@@ -101,20 +119,37 @@ mod test {
         );
 
         // Request a file.
-        let alias1 = request_file(Principal::anonymous(), "request", &mut state);
+        request_file(Principal::anonymous(), "request", &mut state);
         // Request a file.
         request_file(Principal::anonymous(), "request2", &mut state);
         // Request a file.
-        let alias3 = request_file(Principal::anonymous(), "request3", &mut state);
+        request_file(Principal::anonymous(), "request3", &mut state);
         // Request a file.
         request_file(Principal::anonymous(), "request4", &mut state);
 
-        // share file index 0
+        // Upload a file with file ID of zero.
+        let _alias0 = upload_file(
+            0,
+            vec![1, 2, 3],
+            "jpeg".to_string(),
+            vec![1, 2, 3],
+            &mut state,
+        );
+        // share file with ID 0
         share_file(
             &mut state,
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             0,
+            vec![1, 1, 1],
+        );
+        // Upload a file with file ID 2
+        let _alias2 = upload_file(
+            2,
+            vec![1, 2, 3],
+            "jpeg".to_string(),
+            vec![1, 2, 3],
+            &mut state,
         );
         // share file index 2
         share_file(
@@ -122,6 +157,7 @@ mod test {
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             2,
+            vec![2, 2, 2],
         );
 
         // check if both files are shared correctly
@@ -131,7 +167,9 @@ mod test {
                 PublicFileMetadata {
                     file_id: 0,
                     file_name: "request".to_string(),
-                    file_status: FileStatus::Pending { alias: alias1 },
+                    file_status: FileStatus::Uploaded {
+                        uploaded_at: get_time(),
+                    },
                     shared_with: vec![User {
                         first_name: "John".to_string(),
                         last_name: "Smith".to_string(),
@@ -141,7 +179,9 @@ mod test {
                 PublicFileMetadata {
                     file_id: 2,
                     file_name: "request3".to_string(),
-                    file_status: FileStatus::Pending { alias: alias3 },
+                    file_status: FileStatus::Uploaded {
+                        uploaded_at: get_time()
+                    },
                     shared_with: vec![User {
                         first_name: "John".to_string(),
                         last_name: "Smith".to_string(),
@@ -176,6 +216,7 @@ mod test {
                 Principal::anonymous(),
                 Principal::from_slice(&[0, 1, 2]),
                 2,
+                vec![1, 2, 3],
             ),
             FileSharingResponse::PermissionError
         );
@@ -209,16 +250,33 @@ mod test {
         // Request a file.
         let _alias2 = request_file(Principal::anonymous(), "request2", &mut state);
         // Request a file.
-        let alias3 = request_file(Principal::anonymous(), "request3", &mut state);
+        let _alias3 = request_file(Principal::anonymous(), "request3", &mut state);
         // Request a file.
         let _alias4 = request_file(Principal::anonymous(), "request4", &mut state);
 
+        // Upload a file with file ID of 0.
+        let _alias0 = upload_file(
+            0,
+            vec![1, 2, 3],
+            "jpeg".to_string(),
+            vec![1, 2, 3],
+            &mut state,
+        );
         // share file index 0
         share_file(
             &mut state,
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             0,
+            vec![1, 2, 3],
+        );
+        // Upload a file with file ID of 2.
+        let _alias2 = upload_file(
+            2,
+            vec![1, 2, 3],
+            "jpeg".to_string(),
+            vec![1, 2, 3],
+            &mut state,
         );
         // share file index 2
         share_file(
@@ -226,6 +284,7 @@ mod test {
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             2,
+            vec![1, 2, 3],
         );
 
         // revoke share for file index 0
@@ -242,7 +301,9 @@ mod test {
             vec![PublicFileMetadata {
                 file_id: 2,
                 file_name: "request3".to_string(),
-                file_status: FileStatus::Pending { alias: alias3 },
+                file_status: FileStatus::Uploaded {
+                    uploaded_at: get_time()
+                },
                 shared_with: vec![User {
                     first_name: "John".to_string(),
                     last_name: "Smith".to_string(),
@@ -304,6 +365,7 @@ mod test {
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             0,
+            vec![1, 2, 3],
         );
 
         // revoke share with user who was not shared with should not work

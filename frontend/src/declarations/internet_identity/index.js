@@ -5,6 +5,7 @@ import { idlFactory } from "./internet_identity.did.js";
 export { idlFactory } from "./internet_identity.did.js";
 
 // CANISTER_ID is replaced by webpack based on node environment
+export const canisterId = process.env.INTERNET_IDENTITY_CANISTER_ID;
 
 export const createActor = (canisterId, options = {}) => {
   const agent = options.agent || new HttpAgent({ ...options.agentOptions });

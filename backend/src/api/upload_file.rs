@@ -1,10 +1,11 @@
-use crate::{FileContent, State, UploadFileError};
+use crate::{get_time, FileContent, State, UploadFileError};
+use std::collections::BTreeMap;
 
 pub fn upload_file(
     file_id: u64,
     contents: Vec<u8>,
     file_type: String,
-    file_key: Vec<u8>,
+    owner_key: Vec<u8>,
     state: &mut State,
 ) -> Result<(), UploadFileError> {
     // Fetch the file.
@@ -13,6 +14,7 @@ pub fn upload_file(
         None => return Err(UploadFileError::NotRequested),
     };
 
+    let shared_keys = BTreeMap::new();
     // Retrieve the alias associated with the file.
     let alias = match file.content {
         FileContent::Pending { ref alias } => {
@@ -20,8 +22,10 @@ pub fn upload_file(
             file.content = FileContent::Uploaded {
                 contents,
                 file_type,
-                file_key,
+                owner_key,
+                shared_keys,
             };
+            file.metadata.uploaded_at = Some(get_time());
             alias
         }
         FileContent::Uploaded { .. } => return Err(UploadFileError::AlreadyUploaded),
@@ -84,12 +88,15 @@ mod test {
                     metadata: FileMetadata {
                         file_name: "request".to_string(),
                         user_public_key: get_user_key(&state, Principal::anonymous()),
-                        requester_principal: Principal::anonymous()
+                        requester_principal: Principal::anonymous(),
+                        requested_at: get_time(),
+                        uploaded_at: Some(get_time()),
                     },
                     content: FileContent::Uploaded {
                         contents: vec![1,2,3],
                         file_type: "jpeg".to_string(),
-                        file_key: vec![1,2,3]
+                        owner_key: vec![1,2,3],
+                        shared_keys: BTreeMap::new(),
                     }
                 }
             }

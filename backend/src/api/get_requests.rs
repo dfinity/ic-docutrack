@@ -33,11 +33,15 @@ pub fn get_allowed_users(state: &State, file_id: u64) -> Vec<User> {
 
 pub fn get_file_status(state: &State, file_id: u64) -> FileStatus {
     // unwrap is safe, we know the file exists
-    match &state.file_data.get(&file_id).unwrap().content {
+    let file = &state.file_data.get(&file_id).unwrap();
+    match &file.content {
         FileContent::Pending { alias } => FileStatus::Pending {
             alias: alias.clone(),
+            requested_at: file.metadata.requested_at,
         },
-        FileContent::Uploaded { .. } => FileStatus::Uploaded,
+        FileContent::Uploaded { .. } => FileStatus::Uploaded {
+            uploaded_at: file.metadata.uploaded_at.unwrap(),
+        },
     }
 }
 
@@ -46,7 +50,7 @@ mod test {
     use super::*;
     use crate::{
         api::{request_file, set_user_info},
-        User,
+        get_time, User,
     };
     use ic_cdk::export::Principal;
 
@@ -80,25 +84,37 @@ mod test {
                 PublicFileMetadata {
                     file_id: 0,
                     file_name: "request".to_string(),
-                    file_status: FileStatus::Pending { alias: alias1 },
+                    file_status: FileStatus::Pending {
+                        alias: alias1,
+                        requested_at: get_time()
+                    },
                     shared_with: vec![]
                 },
                 PublicFileMetadata {
                     file_id: 1,
                     file_name: "request2".to_string(),
-                    file_status: FileStatus::Pending { alias: alias2 },
+                    file_status: FileStatus::Pending {
+                        alias: alias2,
+                        requested_at: get_time()
+                    },
                     shared_with: vec![]
                 },
                 PublicFileMetadata {
                     file_id: 2,
                     file_name: "request3".to_string(),
-                    file_status: FileStatus::Pending { alias: alias3 },
+                    file_status: FileStatus::Pending {
+                        alias: alias3,
+                        requested_at: get_time()
+                    },
                     shared_with: vec![]
                 },
                 PublicFileMetadata {
                     file_id: 3,
                     file_name: "request4".to_string(),
-                    file_status: FileStatus::Pending { alias: alias4 },
+                    file_status: FileStatus::Pending {
+                        alias: alias4,
+                        requested_at: get_time()
+                    },
                     shared_with: vec![]
                 }
             ]
