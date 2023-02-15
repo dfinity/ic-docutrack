@@ -18,7 +18,7 @@
   let fileNotFound = false;
   let file = {
     name: "",
-    dataType: "application/pdf",
+    dataType: "",
     data: "",
   };
   let permissionError = false;
@@ -46,6 +46,7 @@
             downloadedFile.found_file.contents.buffer,
             downloadedFile.found_file.owner_key.buffer
           );
+          file.dataType = downloadedFile.found_file.file_type;
           file.data = Buffer.from(decryptedFile.contents).toString("base64");
         }
       }
