@@ -15,6 +15,7 @@
   let actorValue;
   let authClientValue;
   let isAuthenticated;
+  let fileNotFound = false;
   let file = {
     name: "",
     dataType: "application/pdf",
@@ -36,23 +37,26 @@
     // Create an actor to interact with the IC for a particular canister ID
     actor.set(createActor(canisterId, { agentOptions: { host } }));
     if (isAuthenticated) {
-      let downloadedFile = await actorValue.download_file(fileId);
-      permissionError = downloadedFile.permission_error;
-      if (!permissionError) {
-        let files = await actorValue.get_requests();
-        files.every((entry) => {
-          if (entry.file_id == BigInt(fileId)) {
-            file.name = entry.file_name;
-            return false;
-          }
-          return true;
-        });
-        let decryptedFile = await File.fromEncrypted(
-          file.name,
-          downloadedFile.found_file.contents.buffer,
-          downloadedFile.found_file.owner_key.buffer
-        );
-        file.data = Buffer.from(decryptedFile.contents).toString("base64");
+      let files = await actorValue.get_requests();
+      files.every((entry) => {
+        if (entry.file_id == BigInt(fileId)) {
+          file.name = entry.file_name;
+          return false;
+        }
+        fileNotFound = true;
+        return true;
+      });
+      if (!fileNotFound){
+        let downloadedFile = await actorValue.download_file(fileId);
+        permissionError = downloadedFile.permission_error;
+        if (!permissionError) {
+          let decryptedFile = await File.fromEncrypted(
+            file.name,
+            downloadedFile.found_file.contents.buffer,
+            downloadedFile.found_file.owner_key.buffer
+          );
+          file.data = Buffer.from(decryptedFile.contents).toString("base64");
+        }
       }
     }
   });
@@ -64,12 +68,14 @@
 </svelte:head>
 <section>
   <h1>Details</h1>
-  {#if isAuthenticated && !permissionError}
+  {#if isAuthenticated && !permissionError && !fileNotFound}
     <Details {file} />
     {#if file && file.data}
       <h4>File Preview</h4>
       <FilePreview {file} />
     {/if}
+  {:else if fileNotFound}
+    <h4>File not found</h4>
   {:else}
     <Alert color="warning">
       <h4 class="alert-heading text-capitalize">warning</h4>
