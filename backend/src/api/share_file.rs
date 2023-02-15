@@ -52,22 +52,11 @@ pub fn revoke_share(
             Some(arr) => {
                 arr.retain(|&val| val != file_id);
                 let file = state.file_data.get_mut(&file_id).unwrap();
-                match &file.content {
+                match &mut file.content {
                     FileContent::Pending { .. } => FileSharingResponse::PendingError,
-                    FileContent::Uploaded {
-                        shared_keys,
-                        contents,
-                        file_type,
-                        owner_key,
-                    } => {
-                        let mut sk = shared_keys.clone();
-                        sk.remove(&sharing_with);
-                        file.content = FileContent::Uploaded {
-                            contents: contents.clone(),
-                            file_type: file_type.clone(),
-                            owner_key: owner_key.clone(),
-                            shared_keys: sk,
-                        };
+                    FileContent::Uploaded { shared_keys, .. } => {
+                        shared_keys.remove(&sharing_with);
+
                         FileSharingResponse::Ok
                     }
                 }
