@@ -29,6 +29,11 @@ fn get_requests() -> Vec<PublicFileMetadata> {
 }
 
 #[query]
+fn get_shared_files() -> Vec<PublicFileMetadata> {
+    with_state(|s| backend::api::get_shared_files(s, caller()))
+}
+
+#[query]
 fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
     with_state(|s| backend::api::get_alias_info(s, alias))
 }
