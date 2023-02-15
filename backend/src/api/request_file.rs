@@ -1,4 +1,4 @@
-use crate::{File, FileContent, FileMetadata, State};
+use crate::{get_time, File, FileContent, FileMetadata, State};
 use ic_cdk::export::Principal;
 
 use super::user_info::get_user_key;
@@ -19,6 +19,8 @@ pub fn request_file<S: Into<String>>(
             file_name: request_name.into(),
             user_public_key: get_user_key(state, caller),
             requester_principal: caller,
+            requested_at: get_time(),
+            uploaded_at: None,
         },
         content: FileContent::Pending {
             alias: alias.clone(),
@@ -67,7 +69,9 @@ mod test {
                     metadata: FileMetadata {
                         file_name: "request".to_string(),
                         user_public_key: get_user_key(&state, Principal::anonymous()),
-                        requester_principal: Principal::anonymous()
+                        requester_principal: Principal::anonymous(),
+                        requested_at: get_time(),
+                        uploaded_at: None,
                     },
                     content: FileContent::Pending { alias: "puzzling-mountain".to_string() }
                 }

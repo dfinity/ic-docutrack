@@ -24,8 +24,13 @@ fn who_am_i() -> WhoamiResponse {
 }
 
 #[query]
-fn get_files() -> Vec<PublicFileMetadata> {
-    with_state(|s| backend::api::get_files(s, caller()))
+fn get_requests() -> Vec<PublicFileMetadata> {
+    with_state(|s| backend::api::get_requests(s, caller()))
+}
+
+#[query]
+fn get_shared_files() -> Vec<PublicFileMetadata> {
+    with_state(|s| backend::api::get_shared_files(s, caller()))
 }
 
 #[query]
@@ -34,8 +39,16 @@ fn get_alias_info(alias: String) -> Result<AliasInfo, GetAliasInfoError> {
 }
 
 #[update]
-fn upload_file(file_id: u64, contents: Vec<u8>, file_key: Vec<u8>) -> Result<(), UploadFileError> {
-    with_state_mut(|s| backend::api::upload_file(file_id, contents, file_key, s))
+fn upload_file(request: UploadFileRequest) -> Result<(), UploadFileError> {
+    with_state_mut(|s| {
+        backend::api::upload_file(
+            request.file_id,
+            request.file_content,
+            request.file_type,
+            request.owner_key,
+            s,
+        )
+    })
 }
 
 #[update]
@@ -54,8 +67,14 @@ fn download_file(file_id: u64) -> FileDownloadResponse {
 }
 
 #[update]
-fn share_file(user_id: Principal, file_id: u64) -> FileSharingResponse {
-    with_state_mut(|s| backend::api::share_file(s, caller(), user_id, file_id))
+fn share_file(
+    user_id: Principal,
+    file_id: u64,
+    file_key_encrypted_for_user: Vec<u8>,
+) -> FileSharingResponse {
+    with_state_mut(|s| {
+        backend::api::share_file(s, caller(), user_id, file_id, file_key_encrypted_for_user)
+    })
 }
 
 #[query]

@@ -1,6 +1,7 @@
-use crate::{File, FileContent, FileMetadata, State};
+use crate::{get_time, File, FileContent, FileMetadata, State};
 use ic_cdk::export::{candid::CandidType, Principal};
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 use super::user_info::get_user_key;
 
@@ -8,7 +9,7 @@ use super::user_info::get_user_key;
 pub struct UploadFileAtomicRequest {
     name: String,
     content: Vec<u8>,
-    file_key: Vec<u8>,
+    owner_key: Vec<u8>,
 }
 
 pub fn upload_file_atomic(caller: Principal, request: UploadFileAtomicRequest, state: &mut State) {
@@ -21,10 +22,15 @@ pub fn upload_file_atomic(caller: Principal, request: UploadFileAtomicRequest, s
                 file_name: request.name,
                 user_public_key: get_user_key(state, caller),
                 requester_principal: caller,
+                requested_at: get_time(),
+                uploaded_at: Some(get_time()),
             },
             content: FileContent::Uploaded {
                 contents: request.content,
-                file_key: request.file_key,
+                // TODO: fix this properly by updating the interface!
+                file_type: "not_yet_set".to_string(),
+                owner_key: request.owner_key,
+                shared_keys: BTreeMap::new(),
             },
         },
     );
@@ -67,7 +73,7 @@ mod test {
             UploadFileAtomicRequest {
                 name: "file_name".to_string(),
                 content: vec![1, 2, 3],
-                file_key: vec![1, 2, 3],
+                owner_key: vec![1, 2, 3],
             },
             &mut state,
         );
@@ -80,11 +86,15 @@ mod test {
                     metadata: FileMetadata {
                         file_name: "file_name".to_string(),
                         user_public_key: get_user_key(&state, Principal::anonymous()),
-                        requester_principal: Principal::anonymous()
+                        requester_principal: Principal::anonymous(),
+                        requested_at: get_time(),
+                        uploaded_at: Some(get_time()),
                     },
                     content: FileContent::Uploaded {
                         contents: vec![1,2,3],
-                        file_key: vec![1,2,3]
+                        file_type: "not_yet_set".to_string(),
+                        owner_key: vec![1,2,3],
+                        shared_keys: BTreeMap::new()
                     }
                 }
             }
