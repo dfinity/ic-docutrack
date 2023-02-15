@@ -19,13 +19,45 @@ fn get_file_data(s: &State, file_id: u64) -> FileDownloadResponse {
     }
 }
 
+fn get_shared_file_data(s: &State, file_id: u64, user: Principal) -> FileDownloadResponse {
+    // unwrap is safe because we already know the file exists
+    let this_file = s.file_data.get(&file_id).unwrap();
+    match &this_file.content {
+        FileContent::Pending { .. } => FileDownloadResponse::NotUploadedFile,
+        FileContent::Uploaded {
+            contents,
+            file_type,
+            owner_key: _,
+            shared_keys,
+        } => FileDownloadResponse::FoundFile(FileData {
+            contents: contents.clone(),
+            file_type: file_type.clone(),
+            user_key: shared_keys.get(&user).unwrap().clone(),
+        }),
+    }
+}
 pub fn download_file(s: &State, file_id: u64, caller: Principal) -> FileDownloadResponse {
     match s.file_owners.get(&caller) {
-        None => FileDownloadResponse::PermissionError,
+        // This is the case where the files is owned by this user.
         Some(files) => match files.contains(&file_id) {
             true => get_file_data(s, file_id),
             false => FileDownloadResponse::PermissionError,
         },
+        // But it could also be the case that the file is shared with this user.
+        None => {
+            if is_file_shared_with_me(s, file_id, caller) {
+                get_shared_file_data(s, file_id, caller)
+            } else {
+                FileDownloadResponse::PermissionError
+            }
+        }
+    }
+}
+
+fn is_file_shared_with_me(s: &State, file_id: u64, caller: Principal) -> bool {
+    match s.file_shares.get(&caller) {
+        None => false,
+        Some(arr) => arr.contains(&file_id),
     }
 }
 
@@ -33,7 +65,7 @@ pub fn download_file(s: &State, file_id: u64, caller: Principal) -> FileDownload
 mod test {
     use super::*;
     use crate::{
-        api::request_file,
+        api::{request_file, share_file},
         api::{set_user_info, upload_file},
         User,
     };
@@ -154,5 +186,60 @@ mod test {
                 user_key: vec![1, 2, 3],
             })
         );
+    }
+
+    #[test]
+    fn download_shared_file() {
+        let mut state = State::default();
+
+        set_user_info(
+            &mut state,
+            Principal::anonymous(),
+            User {
+                first_name: "John".to_string(),
+                last_name: "Doe".to_string(),
+                public_key: vec![1, 2, 3],
+            },
+        );
+
+        set_user_info(
+            &mut state,
+            Principal::from_slice(&[0, 1, 2]),
+            User {
+                first_name: "John".to_string(),
+                last_name: "Test".to_string(),
+                public_key: vec![1, 2, 4],
+            },
+        );
+
+        // Request a file.
+        request_file(Principal::anonymous(), "request", &mut state);
+
+        // Upload the file, which we assume to have a file ID of zero.
+        let _alias = upload_file(
+            0,
+            vec![1, 2, 3],
+            "jpeg".to_string(),
+            vec![1, 2, 3],
+            &mut state,
+        );
+
+        // share file
+        share_file(
+            &mut state,
+            Principal::anonymous(),
+            Principal::from_slice(&[0, 1, 2]),
+            0,
+            vec![10, 11, 12],
+        );
+
+        assert_eq!(
+            download_file(&state, 0, Principal::from_slice(&[0, 1, 2])),
+            FileDownloadResponse::FoundFile(FileData {
+                contents: vec![1, 2, 3],
+                file_type: "jpeg".to_string(),
+                user_key: vec![10, 11, 12],
+            })
+        )
     }
 }
