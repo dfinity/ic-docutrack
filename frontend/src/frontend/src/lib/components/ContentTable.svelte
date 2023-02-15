@@ -3,7 +3,6 @@
   import Submenu from "$lib/components/Submenu.svelte";
   export let columns; // list of objects with key and label properties
   export let data; // list of objects where the properties match the keys in columns
-  console.log(data);
 </script>
 
 {#if data.length > 0}
