@@ -72,7 +72,7 @@ pub fn revoke_share(
                         owner_key,
                     } => {
                         let mut sk = shared_keys.clone();
-                        sk.remove(sharing_with);
+                        sk.remove(&sharing_with);
                         file.content = FileContent::Uploaded {
                             contents: contents.clone(),
                             file_type: file_type.clone(),
