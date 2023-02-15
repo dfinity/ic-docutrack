@@ -14,28 +14,17 @@ pub fn share_file(
         FileSharingResponse::PermissionError
     } else {
         let file = state.file_data.get_mut(&file_id).unwrap();
-        match &file.content {
+        match &mut file.content {
             FileContent::Pending { .. } => FileSharingResponse::PendingError,
-            FileContent::Uploaded {
-                shared_keys,
-                contents,
-                file_type,
-                owner_key,
-            } => {
+            FileContent::Uploaded { shared_keys, .. } => {
                 state
                     .file_shares
                     .entry(sharing_with)
                     .or_insert_with(Vec::new)
                     .push(file_id);
 
-                let mut sk = shared_keys.clone();
-                sk.insert(sharing_with, file_key_encrypted_for_user);
-                file.content = FileContent::Uploaded {
-                    contents: contents.clone(),
-                    file_type: file_type.clone(),
-                    owner_key: owner_key.clone(),
-                    shared_keys: sk,
-                };
+                shared_keys.insert(sharing_with, file_key_encrypted_for_user);
+
                 FileSharingResponse::Ok
             }
         }
