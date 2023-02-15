@@ -54,12 +54,11 @@ class File {
   }
 
   /**
-   * @param {CryptoKey} userPublicKey
+   * @param {ArrayBuffer} userPublicKey
    * @returns {Promise<ArrayBuffer>} the file's key encryped with the user's public key.
    */
   async getEncryptedFileKey(userPublicKey) {
     const key = await this._getFileKey();
-
     // Encrypt the exported key with the user's public key.
     return await crypto.encryptForUser(key, userPublicKey);
   }

@@ -3,7 +3,6 @@
 
   /**
    * @param {Number} file Contains the metadata of a file
-   * @param {String} file.name File name
    */
   export let file = {};
 </script>

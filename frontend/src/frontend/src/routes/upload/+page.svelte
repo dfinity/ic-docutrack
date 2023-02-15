@@ -48,15 +48,13 @@
     const fileSelector = document.getElementById("file-selector");
     const fileBytes = await fileSelector.files[0].arrayBuffer();
     let fileToEncrypt = File.fromUnencrypted(fileInfo.Ok.file_name, fileBytes);
-    console.log(fileInfo.Ok.user.public_key);
-    console.log(await crypto.importPublicKey(fileInfo.Ok.user.public_key));
     const encryptedFileKey = await fileToEncrypt.getEncryptedFileKey(
-      await crypto.importPublicKey(fileInfo.Ok.user.public_key)
+      fileInfo.Ok.user.public_key.buffer
     );
     const encFile = await fileToEncrypt.encrypt();
-
     // Upload file
     uploadingStatus = "Uploading...";
+    // TODO: change file key property name (owner_key)
     const res = await backend.upload_file({
       file_id: fileInfo.Ok.file_id,
       file_content: new Uint8Array(encFile),

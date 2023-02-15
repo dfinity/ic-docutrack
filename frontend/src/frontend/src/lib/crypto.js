@@ -44,15 +44,16 @@ async function getLocalUserPublicKey() {
 }
 
 /**
- * @param {Uint8Array} publicKey in 'spki' format
+ * @param {ArrayBuffer} publicKey in 'spki' format
  * @returns {Promise<CryptoKey>} CryptoKey object from the imported key.
  */
 async function importPublicKey(publicKey) {
   return await subtle.importKey(
-    "raw",
+    "spki",
     publicKey,
     {
-      name: "AES-GCM",
+      name: "RSA-OAEP",
+      hash: { name: "SHA-256" },
     },
     true,
     ["encrypt"]

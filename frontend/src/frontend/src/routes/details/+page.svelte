@@ -6,7 +6,7 @@
   import { onMount } from "svelte";
   import FilePreview from "$lib/components/FilePreview.svelte";
   import File from "$lib/file";
-  import { default as crypto } from "$lib/crypto";
+  import { Buffer } from "buffer";
   import { Alert } from "sveltestrap";
   import Details from "$lib/components/Details.svelte";
 
@@ -37,7 +37,6 @@
     actor.set(createActor(canisterId, { agentOptions: { host } }));
     if (isAuthenticated) {
       let downloadedFile = await actorValue.download_file(fileId);
-      console.log(downloadedFile);
       permissionError = downloadedFile.permission_error;
       if (!permissionError) {
         let files = await actorValue.get_requests();
@@ -50,8 +49,8 @@
         });
         let decryptedFile = await File.fromEncrypted(
           file.name,
-          new ArrayBuffer(downloadedFile.found_file.contents),
-          new ArrayBuffer(downloadedFile.found_file.file_key)
+          downloadedFile.found_file.contents.buffer,
+          downloadedFile.found_file.file_key.buffer
         );
         file.data = Buffer.from(decryptedFile.contents).toString("base64");
       }
@@ -66,7 +65,7 @@
 <section>
   <h1>Details</h1>
   {#if isAuthenticated && !permissionError}
-    <Details file={file.data} />
+    <Details {file} />
     {#if file && file.data}
       <h4>File Preview</h4>
       <FilePreview {file} />
