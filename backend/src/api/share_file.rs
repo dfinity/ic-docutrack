@@ -51,7 +51,26 @@ pub fn revoke_share(
             None => FileSharingResponse::PermissionError,
             Some(arr) => {
                 arr.retain(|&val| val != file_id);
-                FileSharingResponse::Ok
+                let file = state.file_data.get_mut(&file_id).unwrap();
+                match &file.content {
+                    FileContent::Pending { .. } => FileSharingResponse::PendingError,
+                    FileContent::Uploaded {
+                        shared_keys,
+                        contents,
+                        file_type,
+                        owner_key,
+                    } => {
+                        let mut sk = shared_keys.clone();
+                        sk.remove(&sharing_with);
+                        file.content = FileContent::Uploaded {
+                            contents: contents.clone(),
+                            file_type: file_type.clone(),
+                            owner_key: owner_key.clone(),
+                            shared_keys: sk,
+                        };
+                        FileSharingResponse::Ok
+                    }
+                }
             }
         }
     }
@@ -133,7 +152,7 @@ mod test {
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             0,
-            vec![1, 2, 3],
+            vec![1, 1, 1],
         );
         // Upload a file with file ID 2
         let _alias2 = upload_file(
@@ -149,7 +168,7 @@ mod test {
             Principal::anonymous(),
             Principal::from_slice(&[0, 1, 2]),
             2,
-            vec![1, 2, 3],
+            vec![2, 2, 2],
         );
 
         // check if both files are shared correctly
