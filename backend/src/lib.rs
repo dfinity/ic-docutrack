@@ -100,7 +100,7 @@ pub enum FileContent {
 pub struct FileData {
     contents: Vec<u8>,
     file_type: String,
-    user_key: Vec<u8>,
+    owner_key: Vec<u8>,
 }
 
 #[derive(CandidType, Serialize, Deserialize, PartialEq, Debug)]
