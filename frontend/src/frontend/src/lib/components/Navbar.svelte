@@ -82,12 +82,12 @@
 
   const handleLogout = async () => {
     await authClientValue.logout();
+    isAuthenticated.set(false);
     actor.set(null);
     firstName.set(null);
     lastName.set(null);
     // authClient.set(null);
-    authClient.set(authClientValue);
-    isAuthenticated.set(false);
+    authClient.set(await AuthClient.create());
   };
 </script>
 

@@ -3,7 +3,6 @@
   import {
     actor,
     isAuthenticated,
-    authClient,
   } from "$lib/shared/stores/auth.js";
   import ContentTable from "$lib/components/ContentTable.svelte";
 
