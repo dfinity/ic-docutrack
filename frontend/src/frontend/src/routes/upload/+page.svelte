@@ -54,7 +54,6 @@
     const encFile = await fileToEncrypt.encrypt();
     // Upload file
     uploadingStatus = "Uploading...";
-    // TODO: change file key property name (owner_key)
     const res = await backend.upload_file({
       file_id: fileInfo.Ok.file_id,
       file_content: new Uint8Array(encFile),

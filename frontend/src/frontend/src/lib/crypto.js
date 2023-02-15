@@ -44,23 +44,6 @@ async function getLocalUserPublicKey() {
 }
 
 /**
- * @param {ArrayBuffer} publicKey in 'spki' format
- * @returns {Promise<CryptoKey>} CryptoKey object from the imported key.
- */
-async function importPublicKey(publicKey) {
-  return await subtle.importKey(
-    "spki",
-    publicKey,
-    {
-      name: "RSA-OAEP",
-      hash: { name: "SHA-256" },
-    },
-    true,
-    ["encrypt"]
-  );
-}
-
-/**
  * @param {ArrayBuffer} plaintext
  * @param {ArrayBuffer} publicKey in 'spki' format
  * @returns {Promise<ArrayBuffer>} containing the encrypted version of the plaintext ArrayBuffer.
@@ -192,5 +175,4 @@ export default {
   generateFileKey,
   encryptFile,
   decryptFile,
-  importPublicKey,
 };
