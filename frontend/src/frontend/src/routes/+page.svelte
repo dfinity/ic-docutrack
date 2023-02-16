@@ -11,6 +11,7 @@
   let tableColumns = [
     { key: "name", label: "Name" },
     { key: "access", label: "Access" },
+    { key: "uploadedAt", label: "Uploaded At" },
   ];
   let actorValue;
   let isAuthenticatedValue;
@@ -28,13 +29,18 @@
       let newData = [];
       // Prepare data for page template
       for (let idx = 0; idx < fileData.length; ++idx) {
-        let detailsLink = new URL($page.url.origin + "/details");
-        detailsLink.searchParams.append("fileId", fileData[idx].file_id);
-        newData.push({
-          name: fileData[idx].file_name,
-          access: "Only You",
-          items: [{ url: detailsLink, text: "Open" }],
-        });
+        if (fileData[idx].file_status.uploaded) {
+          let detailsLink = new URL($page.url.origin + "/details");
+          detailsLink.searchParams.append("fileId", fileData[idx].file_id);
+          const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timezone: 'CET', hour12: false };
+          let uploadedAt = new Date(Math.floor(Number(fileData[idx].file_status.uploaded.uploaded_at) / 1000000));
+          newData.push({
+            name: fileData[idx].file_name,
+            access: "Only You",
+            uploadedAt: uploadedAt.toLocaleTimeString("en-CH", dateOptions),
+            items: [{ url: detailsLink, text: "Open" }],
+          });
+        }
       }
       // Assign `data` to itself for reactivity purposes
       data = newData;

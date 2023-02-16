@@ -16,6 +16,7 @@
   let actorValue;
   let isAuthenticatedValue;;
   let fileNotFound = false;
+  let download = "";
   let file = {
     name: "",
     dataType: "",
@@ -48,6 +49,7 @@
           );
           file.dataType = downloadedFile.found_file.file_type;
           file.data = Buffer.from(decryptedFile.contents).toString("base64");
+          download = `data:${file.dataType};base64,${file.data}`
         }
       }
     }
@@ -64,6 +66,8 @@
     <Details {file} />
     {#if file && file.data}
       <h4>File Preview</h4>
+      <a class="btn btn-primary" href={download} download={file.name}>Download</a>
+      <p></p>
       <FilePreview {file} />
     {/if}
   {:else if fileNotFound}
