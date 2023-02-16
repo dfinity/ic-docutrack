@@ -76,6 +76,10 @@ export interface _SERVICE {
     [Principal, file_id, Uint8Array],
     share_file_response
   >,
+  'share_file_with_users' : ActorMethod<
+    [Array<Principal>, file_id, Array<Uint8Array>],
+    share_file_response
+  >,
   'upload_file' : ActorMethod<[upload_file_request], upload_file_response>,
   'upload_file_atomic' : ActorMethod<[upload_file_atomic_request], undefined>,
   'who_am_i' : ActorMethod<[], who_am_i_response>,
