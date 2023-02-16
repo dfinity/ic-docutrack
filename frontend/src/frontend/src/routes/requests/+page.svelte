@@ -10,6 +10,8 @@
   let tableColumns = [
     { key: "name", label: "Name" },
     { key: "access", label: "Access" },
+    { key: "requestedAt", label: "Requested At" },
+    { key: "alias", label: "Alias" },
   ];
   let actorValue;
   let isAuthenticatedValue;
@@ -25,17 +27,22 @@
     if (backend) {
       const fileData = await backend.get_requests();
       let newData = [];
+      const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timezone: 'CET', hour12: false };
+
       // Prepare data for page template
       for (let idx = 0; idx < fileData.length; ++idx) {
-        let detailsLink = new URL($page.url.origin + "/details");
-        detailsLink.searchParams.append("fileId", fileData[idx].file_id);
-        newData.push({
-          name: fileData[idx].file_name,
-          access: "Only You",
-          items: [{ url: detailsLink, text: "Open" }],
-        });
+        if (fileData[idx].file_status.pending) {
+          let detailsLink = new URL($page.url.origin + "/details");
+          detailsLink.searchParams.append("fileId", fileData[idx].file_id);
+          let requestedAt = new Date(Math.floor(Number(fileData[idx].file_status.pending.requested_at) / 1000000));
+          newData.push({
+            name: fileData[idx].file_name,
+            access: "Only You",
+            requestedAt: requestedAt.toLocaleTimeString("en-CH", dateOptions),
+            alias: fileData[idx].file_status.pending.alias,
+          });
+        }
       }
-      // Assign `data` to itself for reactivity purposes
       data = newData;
     } else {
       data = [];

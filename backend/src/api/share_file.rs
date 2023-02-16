@@ -169,6 +169,7 @@ mod test {
                     file_name: "request".to_string(),
                     file_status: FileStatus::Uploaded {
                         uploaded_at: get_time(),
+                        document_key: vec![1, 2, 3],
                     },
                     shared_with: vec![User {
                         first_name: "John".to_string(),
@@ -180,7 +181,8 @@ mod test {
                     file_id: 2,
                     file_name: "request3".to_string(),
                     file_status: FileStatus::Uploaded {
-                        uploaded_at: get_time()
+                        uploaded_at: get_time(),
+                        document_key: vec![1, 2, 3],
                     },
                     shared_with: vec![User {
                         first_name: "John".to_string(),
@@ -302,7 +304,8 @@ mod test {
                 file_id: 2,
                 file_name: "request3".to_string(),
                 file_status: FileStatus::Uploaded {
-                    uploaded_at: get_time()
+                    uploaded_at: get_time(),
+                    document_key: vec![1, 2, 3],
                 },
                 shared_with: vec![User {
                     first_name: "John".to_string(),

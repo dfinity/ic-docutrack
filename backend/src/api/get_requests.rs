@@ -41,6 +41,7 @@ pub fn get_file_status(state: &State, file_id: u64) -> FileStatus {
         },
         FileContent::Uploaded { .. } => FileStatus::Uploaded {
             uploaded_at: file.metadata.uploaded_at.unwrap(),
+            document_key: file.metadata.user_public_key.clone(),
         },
     }
 }
