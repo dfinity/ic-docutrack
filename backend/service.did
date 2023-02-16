@@ -24,6 +24,7 @@ type user = record {
   first_name: text;
   last_name: text;
   public_key: blob;
+  ic_principal: principal;
 };
 
 type who_am_i_response = variant {
@@ -77,16 +78,9 @@ type share_file_response = variant {
   ok;
 };
 
-type user_data = record {
-  first_name: text;
-  last_name: text;
-  public_key: blob;
-  ic_principal: principal;
-};
-
 type get_users_response = variant {
   permission_error;
-  users: vec user_data;
+  users: vec user;
 };
 
 type upload_file_request = record {

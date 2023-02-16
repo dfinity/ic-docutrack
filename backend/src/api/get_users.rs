@@ -1,4 +1,4 @@
-use crate::{GetUsersResponse, State, UserData};
+use crate::{GetUsersResponse, State, PublicUser};
 use ic_cdk::export::candid::Principal;
 
 pub fn get_users(state: &State, caller: Principal) -> GetUsersResponse {
@@ -9,7 +9,7 @@ pub fn get_users(state: &State, caller: Principal) -> GetUsersResponse {
             state
                 .users
                 .iter()
-                .map(|val| UserData {
+                .map(|val| PublicUser {
                     first_name: val.1.first_name.clone(),
                     last_name: val.1.last_name.clone(),
                     public_key: val.1.public_key.clone(),

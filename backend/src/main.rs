@@ -13,7 +13,12 @@ fn set_user(user: User) {
 fn who_am_i() -> WhoamiResponse {
     with_state(|s| match s.users.get(&ic_cdk::api::caller()) {
         None => WhoamiResponse::UnknownUser,
-        Some(user) => WhoamiResponse::KnownUser(user.clone()),
+        Some(user) => WhoamiResponse::KnownUser(PublicUser {
+            first_name: user.first_name.clone(),
+            last_name: user.last_name.clone(),
+            public_key: user.public_key.clone(),
+            ic_principal: ic_cdk::api::caller(),
+        }),
     })
 }
 

@@ -1,4 +1,4 @@
-use crate::{FileContent, FileStatus, PublicFileMetadata, State, User};
+use crate::{FileContent, FileStatus, PublicFileMetadata, State, PublicUser};
 use ic_cdk::export::candid::Principal;
 
 pub fn get_requests(state: &State, caller: Principal) -> Vec<PublicFileMetadata> {
@@ -22,12 +22,20 @@ pub fn get_requests(state: &State, caller: Principal) -> Vec<PublicFileMetadata>
     }
 }
 
-pub fn get_allowed_users(state: &State, file_id: u64) -> Vec<User> {
+pub fn get_allowed_users(state: &State, file_id: u64) -> Vec<PublicUser> {
     state
         .file_shares
         .iter()
         .filter(|element| element.1.contains(&file_id))
-        .map(|(user_principal, _file_vector)| state.users.get(user_principal).unwrap().clone())
+        .map(|(user_principal, _file_vector)| {
+            let user = state.users.get(user_principal).unwrap().clone();
+            PublicUser {
+                first_name: user.first_name,
+                last_name: user.last_name,
+                public_key: user.public_key,
+                ic_principal: *user_principal,
+            }
+        })
         .collect()
 }
 
