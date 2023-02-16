@@ -67,7 +67,7 @@ pub enum GetAliasInfoError {
 pub struct AliasInfo {
     pub file_id: u64,
     pub file_name: String,
-    pub user: User,
+    pub user: PublicUser,
 }
 
 // A file is composed of its metadata and its content, which is a blob.
