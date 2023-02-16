@@ -13,6 +13,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const user = IDL.Record({
     'public_key' : IDL.Vec(IDL.Nat8),
+    'ic_principal' : IDL.Principal,
     'first_name' : IDL.Text,
     'last_name' : IDL.Text,
   });
@@ -37,15 +38,9 @@ export const idlFactory = ({ IDL }) => {
     'shared_with' : IDL.Vec(user),
     'file_id' : file_id,
   });
-  const user_data = IDL.Record({
-    'public_key' : IDL.Vec(IDL.Nat8),
-    'ic_principal' : IDL.Principal,
-    'first_name' : IDL.Text,
-    'last_name' : IDL.Text,
-  });
   const get_users_response = IDL.Variant({
     'permission_error' : IDL.Null,
-    'users' : IDL.Vec(user_data),
+    'users' : IDL.Vec(user),
   });
   const share_file_response = IDL.Variant({
     'ok' : IDL.Null,
