@@ -20,7 +20,10 @@
   >
   <DropdownMenu>
     {#each items as item}
-      <DropdownItem href={item.url}>{item.text}</DropdownItem>
+      <DropdownItem 
+      href={item.url ? item.url : ''}
+      on:click={item.onClick ? item.onClick : ''}
+      >{item.text}</DropdownItem>
     {/each}
   </DropdownMenu>
 </Dropdown>
