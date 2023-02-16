@@ -93,7 +93,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'share_file_with_users' : IDL.Func(
         [IDL.Vec(IDL.Principal), file_id, IDL.Vec(IDL.Vec(IDL.Nat8))],
-        [share_file_response],
+        [],
         [],
       ),
     'upload_file' : IDL.Func([upload_file_request], [upload_file_response], []),
