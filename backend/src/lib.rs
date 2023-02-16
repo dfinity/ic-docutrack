@@ -1,18 +1,12 @@
 mod aliases;
 pub mod api;
+mod upgrade;
 use crate::aliases::{AliasGenerator, Randomness};
 use ic_cdk::export::{candid::CandidType, Principal};
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
-
-fn get_randomness_seed() -> Vec<u8> {
-    // this is an array of u8 of length 8.
-    let time_seed = ic_cdk::api::time().to_be_bytes();
-    // we need to extend this to an array of size 32 by adding to it an array of size 24 full of 0s.
-    let zeroes_arr: [u8; 24] = [0; 24];
-    [&time_seed[..], &zeroes_arr[..]].concat()
-}
+pub use upgrade::{post_upgrade, pre_upgrade};
 
 thread_local! {
     /// Initialize the state randomness with the current time.
@@ -80,13 +74,13 @@ pub struct AliasInfo {
 }
 
 // A file is composed of its metadata and its content, which is a blob.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct File {
     pub metadata: FileMetadata,
     pub content: FileContent,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum FileContent {
     Pending {
         alias: String,
@@ -136,6 +130,7 @@ pub enum FileSharingResponse {
     Ok,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct State {
     // Keeps track of how many files have been requested so far
     // and is used to assign IDs to newly requested files.
@@ -157,6 +152,7 @@ pub struct State {
     pub file_shares: BTreeMap<Principal, Vec<u64>>,
 
     // Generates aliases for file requests.
+    #[serde(skip, default = "init_alias_generator")]
     alias_generator: AliasGenerator,
 }
 
@@ -244,4 +240,16 @@ pub fn get_time() -> u64 {
 pub fn get_time() -> u64 {
     // This is used only in tests and we need a fixed value we can test against.
     12345
+}
+
+fn get_randomness_seed() -> Vec<u8> {
+    // this is an array of u8 of length 8.
+    let time_seed = ic_cdk::api::time().to_be_bytes();
+    // we need to extend this to an array of size 32 by adding to it an array of size 24 full of 0s.
+    let zeroes_arr: [u8; 24] = [0; 24];
+    [&time_seed[..], &zeroes_arr[..]].concat()
+}
+
+fn init_alias_generator() -> AliasGenerator {
+    AliasGenerator::new(Randomness::try_from(get_randomness_seed().as_slice()).unwrap())
 }
