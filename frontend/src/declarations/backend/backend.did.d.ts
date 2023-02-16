@@ -19,7 +19,7 @@ export interface file_metadata {
 export type file_status = {
     'pending' : { 'alias' : string, 'requested_at' : bigint }
   } |
-  { 'uploaded' : { 'uploaded_at' : bigint } };
+  { 'uploaded' : { 'document_key' : Uint8Array, 'uploaded_at' : bigint } };
 export interface found_file {
   'contents' : Uint8Array,
   'owner_key' : Uint8Array,

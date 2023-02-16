@@ -7,10 +7,14 @@
 
   export let isOpen = false;
   export let fileData = {file_id: null, file_name: '', shared_with:[]};
-  let oldSharedWith = fileData.shared_with.slice();
+
+
   let shareWithPerson = null;
   let users = [];
-  const toggle = () => (isOpen = !isOpen);
+  let oldSharedWith = [];
+  const toggle = () => {
+    isOpen = !isOpen;
+  };
   let actorValue: object;
   actor.subscribe((value) => (actorValue = value));
 
@@ -60,6 +64,15 @@
     isOpen = false;
   }
 
+  function onOpen(isOpen) {
+    if(isOpen){
+    oldSharedWith = fileData.shared_with.slice();
+    }
+  }
+
+  // We want to ensure that `oldSharedWith` is only updated at the beginning of a new sharing
+  $: onOpen(isOpen);
+
   onMount(async () => {
     if(actorValue) {
       let res = await actorValue.get_users();
@@ -70,17 +83,13 @@
       }
     }
   });
-
-  async function setShareList() {
-
-  }
 </script>
 
 <div>
   <Modal {isOpen} {toggle}>
     <ModalHeader {toggle}>Share "{fileData.file_name}"</ModalHeader>
     <ModalBody>
-      <form class="form-floating" on:submit|preventDefault={setShareList}>
+      <form class="form-floating" on:submit|preventDefault={saveShare}>
         <p>
           Choose the people that have access to this file.
         </p>
@@ -96,10 +105,10 @@
           </select>
         </FormGroup>
         <FormGroup class="mb-4">
-          <Button on:click={addPersonToShare} color="secondary">Add</Button>
+          <Button type="button" on:click={addPersonToShare} color="secondary">Add</Button>
         </FormGroup>
         <FormGroup>
-          <Button on:click={saveShare} color="primary">Save Changes</Button>
+          <Button type="submit" color="primary">Save Changes</Button>
         </FormGroup>
       </form>
     </ModalBody>

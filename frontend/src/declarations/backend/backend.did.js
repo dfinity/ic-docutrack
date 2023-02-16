@@ -26,7 +26,10 @@ export const idlFactory = ({ IDL }) => {
   });
   const file_status = IDL.Variant({
     'pending' : IDL.Record({ 'alias' : IDL.Text, 'requested_at' : IDL.Nat64 }),
-    'uploaded' : IDL.Record({ 'uploaded_at' : IDL.Nat64 }),
+    'uploaded' : IDL.Record({
+      'document_key' : IDL.Vec(IDL.Nat8),
+      'uploaded_at' : IDL.Nat64,
+    }),
   });
   const file_metadata = IDL.Record({
     'file_status' : file_status,

@@ -51,7 +51,10 @@
             name: fileData[idx].file_name,
             access: "Only You",
             uploadedAt: uploadedAt.toLocaleTimeString("en-CH", dateOptions),
-            items: [{ url: detailsLink, text: "Open" }],
+            items: [
+              { url: detailsLink, text: "Open" },
+              { onClick: () => {openShareModal(fileData[idx].file_id)}, text: "Share" }
+          ],
           });
         }
       }
@@ -79,7 +82,7 @@
 </svelte:head>
 
 <section>
-<ShareModal isOpen={isOpenShareModal} fileData={shareFileData}/>
+<ShareModal bind:isOpen={isOpenShareModal} bind:fileData={shareFileData}/>
   {#if isAuthenticatedValue === null || data === null}
     <h3>Loading...</h3>
   {:else if isAuthenticatedValue}
