@@ -46,7 +46,7 @@
       for (let idx = 0; idx < fileData.length; ++idx) {
         if (!fileData[idx].file_status.pending) {
           // Determine the sharing status
-          let nShared = fileData.shared_with.length;
+          let nShared = fileData.shared_with ? fileData.shared_with.length : 0;
           let accessMessage = '';
           switch (nShared) {
             case 0:

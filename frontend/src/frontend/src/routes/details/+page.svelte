@@ -30,6 +30,7 @@
   onMount(async () => {
     if (isAuthenticatedValue) {
       let files = await actorValue.get_requests();
+      files = files.concat(await actorValue.get_shared_files());
       files.every((entry) => {
         if (entry.file_id == BigInt(fileId)) {
           file.name = entry.file_name;

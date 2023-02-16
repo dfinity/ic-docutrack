@@ -59,7 +59,7 @@
       if(actorValue) {
         const encryptedFileKey = await crypto.encryptForUser(documentKey, sharedUsers[i].public_key.buffer);
         // TODO: add expiration date to backend call
-        await actorValue.share_file(sharedUsers[i].ic_principal, fileData.file_id, encryptedFileKey);
+        await actorValue.share_file(sharedUsers[i].ic_principal, fileData.file_id, new Uint8Array(encryptedFileKey));
       }
     }
     // Go over all old entries and remove the ones that are no longer in the shared list
