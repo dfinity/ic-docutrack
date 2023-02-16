@@ -77,6 +77,19 @@ fn share_file(
     })
 }
 
+#[update]
+fn share_file_with_users(
+    user_id: Vec<Principal>,
+    file_id: u64,
+    file_key_encrypted_for_user: Vec<Vec<u8>>,
+) {
+    with_state_mut(|s| {
+        for (id, key) in user_id.iter().zip(file_key_encrypted_for_user.iter()) {
+            backend::api::share_file(s, caller(), *id, file_id, key.clone());
+        }
+    });
+}
+
 #[query]
 fn get_users() -> GetUsersResponse {
     with_state(|s| backend::api::get_users(s, caller()))

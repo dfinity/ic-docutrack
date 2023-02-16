@@ -123,6 +123,8 @@ service docutrack : {
 
   share_file: (user_id: principal, file_id: file_id, file_key_encrypted_for_user: blob) -> (share_file_response);
 
+  share_file_with_users: (user_id: vec principal, file_id: file_id, file_key_encrypted_for_user: vec blob) -> ();
+
   get_users: () -> (get_users_response);
 }
 
