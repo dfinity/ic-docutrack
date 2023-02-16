@@ -35,12 +35,12 @@
     loading = false;
   }
 
-  function copyText() {
+  async function copyText() {
     var copyText = "";
     if (requestLink) {
       copyText = requestLink;
     }
-    navigator.clipboard.writeText(copyText);
+    await navigator.clipboard.writeText(copyText);
     // Alert the copied text
     alert("Copied!");
   }
