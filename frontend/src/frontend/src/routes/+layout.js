@@ -34,10 +34,10 @@ export async function load() {
       first = record.known_user.first_name;
       last = record.known_user.last_name;
     }
+    actor.set(backend);
+    firstName.set(first);
+    lastName.set(last);
   }
   authClient.set(auth);
-  actor.set(backend);
-  firstName.set(first);
-  lastName.set(last);
   isAuthenticated.set(isAuth);
 }
