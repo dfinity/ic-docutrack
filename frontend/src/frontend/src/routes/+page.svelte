@@ -6,12 +6,16 @@
     isAuthenticated,
   } from "$lib/shared/stores/auth.js";
   import ContentTable from "$lib/components/ContentTable.svelte";
+  import ShareModal from "$lib/components/ShareModal.svelte";
 
   let data = null;
+  let fileData = null;
   let tableColumns = [
     { key: "name", label: "Name" },
     { key: "access", label: "Access" },
   ];
+  let isOpenShareModal = false;
+  let shareFileData = null;
   let actorValue;
   let isAuthenticatedValue;
 
@@ -22,9 +26,18 @@
     isAuthenticatedValue = value;
   });
 
+  async function openShareModal(file_id) {
+    if(fileData && fileData.length > 0){
+    shareFileData = fileData.find(obj => {return obj.file_id === file_id});
+    if(shareFileData) {
+      isOpenShareModal = true;
+    }
+  }
+  }
+
   async function syncBackend(backend) {
     if (backend) {
-      const fileData = await actorValue.get_requests();
+      fileData = await actorValue.get_requests();
       let newData = [];
       // Prepare data for page template
       for (let idx = 0; idx < fileData.length; ++idx) {
@@ -33,7 +46,10 @@
         newData.push({
           name: fileData[idx].file_name,
           access: "Only You",
-          items: [{ url: detailsLink, text: "Open" }],
+          items: [
+            { url: detailsLink, text: "Open" },
+            { onClick: () => {openShareModal(fileData[idx].file_id)}, text: "Share" },
+          ],
         });
       }
       // Assign `data` to itself for reactivity purposes
@@ -60,6 +76,7 @@
 </svelte:head>
 
 <section>
+<ShareModal isOpen={isOpenShareModal} fileData={shareFileData}/>
   {#if isAuthenticatedValue === null || data === null}
     <h3>Loading...</h3>
   {:else if isAuthenticatedValue}
