@@ -52,7 +52,10 @@ pub enum FileStatus {
     #[serde(rename = "pending")]
     Pending { alias: String, requested_at: u64 },
     #[serde(rename = "uploaded")]
-    Uploaded { uploaded_at: u64 },
+    Uploaded {
+        uploaded_at: u64,
+        document_key: Vec<u8>,
+    },
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]

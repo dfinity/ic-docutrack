@@ -12,6 +12,7 @@
   let actorValue: object;
   let requestLink: URL;
   let loading: boolean = false;
+  let requestName: string = "";
 
   actor.subscribe((value) => (actorValue = value));
 
