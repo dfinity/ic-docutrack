@@ -38,11 +38,13 @@
 
   async function syncBackend(backend) {
     if (backend) {
-      fileData = await actorValue.get_requests();
+      let requestData = await actorValue.get_requests();
+      let sharedData = await actorValue.get_shared_files();
+      fileData = requestData.concat(sharedData);
       let newData = [];
       // Prepare data for page template
       for (let idx = 0; idx < fileData.length; ++idx) {
-        if (fileData[idx].file_status.uploaded) {
+        if (!fileData[idx].file_status.pending) {
           let detailsLink = new URL($page.url.origin + "/details");
           detailsLink.searchParams.append("fileId", fileData[idx].file_id);
           const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timezone: 'CET', hour12: false };
