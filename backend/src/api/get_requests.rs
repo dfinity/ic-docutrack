@@ -39,9 +39,11 @@ pub fn get_file_status(state: &State, file_id: u64) -> FileStatus {
             alias: alias.clone(),
             requested_at: file.metadata.requested_at,
         },
-        FileContent::Uploaded { .. } => FileStatus::Uploaded {
+        FileContent::Uploaded {
+            owner_key: own_key, ..
+        } => FileStatus::Uploaded {
             uploaded_at: file.metadata.uploaded_at.unwrap(),
-            document_key: file.metadata.user_public_key.clone(),
+            document_key: own_key.clone(),
         },
     }
 }
