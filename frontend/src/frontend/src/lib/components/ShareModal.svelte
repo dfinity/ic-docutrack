@@ -12,6 +12,7 @@
   let expirationDate = null;
   let users = [];
   let oldSharedWith = [];
+  let newSharedWith = [];
   let hasExpirationDate = false;
   const toggle = () => {
     isOpen = !isOpen;
@@ -28,21 +29,23 @@
 }
 
   function addPersonToShare() {
+    if(shareWithPerson){
     let res = users.find(obj => {return obj.ic_principal === shareWithPerson});
 
-    if(res !== null && !fileData.shared_with.includes(res)) {
-      fileData.shared_with.push(res);
+    if(res !== null && !newSharedWith.includes(res)) {
+      newSharedWith.push(res);
       // Assign to itself for reactivity purposes
-      fileData = fileData;
+      newSharedWith = newSharedWith;
     }
+  }
   }
 
   function removePersonFromShare(principal) {
     let user = users.find(obj => {return obj.ic_principal === principal});
-    if(user !== null && fileData.shared_with.includes(user)) {
-      fileData.shared_with = removeItem(fileData.shared_with, user);
+    if(user !== null && newSharedWith.includes(user)) {
+      newSharedWith = removeItem(newSharedWith, user);
       // Assign to itself for reactivity purposes
-      fileData = fileData;
+      newSharedWith = newSharedWith;
     }
   }
 
@@ -53,28 +56,32 @@
     // The expiration date is saved as timestamp in nanoseconds, convert accordingly
     timestamp = Date.parse(expirationDate) * 1e6;
     }
-    let sharedUsers = fileData.shared_with;
     const documentKey = await crypto.decryptForUser(fileData.file_status.uploaded.document_key.buffer);
-    for(let i = 0; i < sharedUsers.length; i++) {
+    for(let i = 0; i < newSharedWith.length; i++) {
       if(actorValue) {
-        const encryptedFileKey = await crypto.encryptForUser(documentKey, sharedUsers[i].public_key.buffer);
+        const encryptedFileKey = await crypto.encryptForUser(documentKey, newSharedWith[i].public_key.buffer);
         // TODO: add expiration date to backend call
-        await actorValue.share_file(sharedUsers[i].ic_principal, fileData.file_id, new Uint8Array(encryptedFileKey));
+        await actorValue.share_file(newSharedWith[i].ic_principal, fileData.file_id, new Uint8Array(encryptedFileKey));
       }
     }
     // Go over all old entries and remove the ones that are no longer in the shared list
     for(let i = 0; i < oldSharedWith.length; i++) {
-      let res = fileData.shared_with.find(obj => {return obj.ic_principal === oldSharedWith[i].ic_principal});
+      let res = newSharedWith.find(obj => {return obj.ic_principal === oldSharedWith[i].ic_principal});
       if(!res) {
         await actorValue.revoke_share(oldSharedWith[i].ic_principal, fileData.file_id);
       }
     }
+    // Write back the new state, so the the UI updates
+    fileData.shared_with = newSharedWith.slice();
     isOpen = false;
   }
 
   function onOpen(isOpen) {
     if(isOpen){
-    oldSharedWith = fileData.shared_with.slice();
+      // Keep the old version of the shared users
+      oldSharedWith = fileData.shared_with.slice();
+      // Copy the array and modify this list with the UI
+      newSharedWith = fileData.shared_with.slice();
     }
   }
 
@@ -103,7 +110,7 @@
         </p>
         <FormGroup>
           <Label for="sharedWith">Shared with:</Label>
-          <SharedList {users} sharedWithList={fileData.shared_with} removeUser={removePersonFromShare} />
+          <SharedList {users} sharedWithList={newSharedWith} removeUser={removePersonFromShare} />
       </FormGroup>
         <FormGroup>
           <select bind:value={shareWithPerson} class="form-select">
