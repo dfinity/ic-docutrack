@@ -9,7 +9,7 @@
   import ShareModal from "$lib/components/ShareModal.svelte";
 
   let data = null;
-  let fileData = null;
+  let fileData = {file_id: null, file_name: '', shared_with:[]};
   let tableColumns = [
     { key: "name", label: "Name" },
     { key: "access", label: "Access" },

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Icon, Button, Modal, ModalBody, ModalHeader, FormGroup, Label } from "sveltestrap";
-  import { page } from "$app/stores";
+  import { Button, Modal, ModalBody, ModalHeader, FormGroup, Label } from "sveltestrap";
   import { actor } from "$lib/shared/stores/auth.js";
   import { onMount } from "svelte";
+  import {default as crypto} from "$lib/crypto";
   import SharedList from '$lib/components/SharedList.svelte'
 
   export let isOpen = false;
@@ -27,7 +27,8 @@
 
     if(res !== null && !fileData.shared_with.includes(res)) {
       fileData.shared_with.push(res);
-      fileData.shared_with = fileData.shared_with;
+      // Assign to itself for reactivity purposes
+      fileData = fileData;
     }
   }
 
@@ -42,10 +43,11 @@
 
   async function saveShare() {
     let sharedUsers = fileData.shared_with;
+    const documentKey = await crypto.decryptForUser(fileData.file_status.uploaded.document_key.buffer);
     for(let i = 0; i < sharedUsers.length; i++) {
       if(actorValue) {
-        // TODO: Add encryption to key
-        await actorValue.share_file(sharedUsers[i].ic_principal, fileData.file_id, sharedUsers[i].public_key);
+        const encryptedFileKey = await crypto.encryptForUser(documentKey, sharedUsers[i].public_key.buffer);
+        await actorValue.share_file(sharedUsers[i].ic_principal, fileData.file_id, encryptedFileKey);
       }
     }
     // Go over all old entries and remove the ones that are no longer in the shared list
