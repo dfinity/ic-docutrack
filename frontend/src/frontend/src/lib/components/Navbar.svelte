@@ -20,7 +20,6 @@
     lastName,
     isAuthenticated,
   } from "$lib/shared/stores/auth.js";
-  import { onMount } from "svelte";
 
   let isOpen = false;
   let isOpenRegistrationModal = false;
