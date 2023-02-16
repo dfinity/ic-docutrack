@@ -152,7 +152,7 @@ pub struct State {
     pub file_shares: BTreeMap<Principal, Vec<u64>>,
 
     // Generates aliases for file requests.
-    #[serde(skip, default="init_alias_generator")]
+    #[serde(skip, default = "init_alias_generator")]
     alias_generator: AliasGenerator,
 }
 
@@ -253,4 +253,3 @@ fn get_randomness_seed() -> Vec<u8> {
 fn init_alias_generator() -> AliasGenerator {
     AliasGenerator::new(Randomness::try_from(get_randomness_seed().as_slice()).unwrap())
 }
-
