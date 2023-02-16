@@ -43,7 +43,6 @@
           });
         }
       }
-      // Assign `data` to itself for reactivity purposes
       data = newData;
     } else {
       data = [];
