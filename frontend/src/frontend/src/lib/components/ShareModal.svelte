@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Modal, ModalBody, ModalHeader, FormGroup, Label } from "sveltestrap";
+  import { Button, Modal, ModalBody, ModalHeader, FormGroup, Label, Input } from "sveltestrap";
   import { actor } from "$lib/shared/stores/auth.js";
   import { onMount } from "svelte";
   import {default as crypto} from "$lib/crypto";
@@ -8,10 +8,11 @@
   export let isOpen = false;
   export let fileData = {file_id: null, file_name: '', shared_with:[]};
 
-
   let shareWithPerson = null;
+  let expirationDate = null;
   let users = [];
   let oldSharedWith = [];
+  let hasExpirationDate = false;
   const toggle = () => {
     isOpen = !isOpen;
   };
@@ -46,11 +47,18 @@
   }
 
   async function saveShare() {
+    // If no expiration date is used, set to -1
+    let timestamp = -1;
+    if(hasExpirationDate && expirationDate) {
+    // The expiration date is saved as timestamp in nanoseconds, convert accordingly
+    timestamp = Date.parse(expirationDate) * 1e6;
+    }
     let sharedUsers = fileData.shared_with;
     const documentKey = await crypto.decryptForUser(fileData.file_status.uploaded.document_key.buffer);
     for(let i = 0; i < sharedUsers.length; i++) {
       if(actorValue) {
         const encryptedFileKey = await crypto.encryptForUser(documentKey, sharedUsers[i].public_key.buffer);
+        // TODO: add expiration date to backend call
         await actorValue.share_file(sharedUsers[i].ic_principal, fileData.file_id, encryptedFileKey);
       }
     }
@@ -104,8 +112,12 @@
             {/each}
           </select>
         </FormGroup>
-        <FormGroup class="mb-4">
+        <FormGroup>
           <Button type="button" on:click={addPersonToShare} color="secondary">Add</Button>
+        </FormGroup>
+        <FormGroup class="mb-4">
+          <Input id="c1" type="switch" label="Set Expiration Date?" bind:checked={hasExpirationDate} />
+          <Input id="expirationDate" class="form-control" type="date"  bind:value={expirationDate} disabled={!hasExpirationDate} required={hasExpirationDate}/>
         </FormGroup>
         <FormGroup>
           <Button type="submit" color="primary">Save Changes</Button>
