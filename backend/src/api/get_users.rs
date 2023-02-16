@@ -1,4 +1,4 @@
-use crate::{GetUsersResponse, State, PublicUser};
+use crate::{GetUsersResponse, PublicUser, State};
 use ic_cdk::export::candid::Principal;
 
 pub fn get_users(state: &State, caller: Principal) -> GetUsersResponse {

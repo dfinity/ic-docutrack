@@ -1,4 +1,4 @@
-use crate::{FileContent, FileStatus, PublicFileMetadata, State, PublicUser};
+use crate::{FileContent, FileStatus, PublicFileMetadata, PublicUser, State};
 use ic_cdk::export::candid::Principal;
 
 pub fn get_requests(state: &State, caller: Principal) -> Vec<PublicFileMetadata> {
