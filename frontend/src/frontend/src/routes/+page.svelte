@@ -45,13 +45,26 @@
       // Prepare data for page template
       for (let idx = 0; idx < fileData.length; ++idx) {
         if (!fileData[idx].file_status.pending) {
+          // Determine the sharing status
+          let nShared = fileData.shared_with.length;
+          let accessMessage = '';
+          switch (nShared) {
+            case 0:
+              accessMessage = 'Only You';
+              break;
+            case 1:
+              accessMessage = '1 other Person';
+
+            default:
+              accessMessage = nShared + ' other People'
+          }
           let detailsLink = new URL($page.url.origin + "/details");
           detailsLink.searchParams.append("fileId", fileData[idx].file_id);
           const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timezone: 'CET', hour12: false };
           let uploadedAt = new Date(Math.floor(Number(fileData[idx].file_status.uploaded.uploaded_at) / 1000000));
           newData.push({
             name: fileData[idx].file_name,
-            access: "Only You",
+            access: accessMessage,
             uploadedAt: uploadedAt.toLocaleTimeString("en-CH", dateOptions),
             items: [
               { url: detailsLink, text: "Open" },
