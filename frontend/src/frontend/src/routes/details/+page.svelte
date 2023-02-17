@@ -31,14 +31,17 @@
     if (isAuthenticatedValue) {
       let files = await actorValue.get_requests();
       files = files.concat(await actorValue.get_shared_files());
+      console.log(files);
       files.every((entry) => {
         if (entry.file_id == BigInt(fileId)) {
+          fileNotFound = false;
           file.name = entry.file_name;
           return false;
         }
         fileNotFound = true;
         return true;
       });
+
       if (!fileNotFound){
         let downloadedFile = await actorValue.download_file(fileId);
         permissionError = downloadedFile.permission_error;
