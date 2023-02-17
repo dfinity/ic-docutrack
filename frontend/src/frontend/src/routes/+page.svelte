@@ -36,12 +36,9 @@
   }
   }
 
-  async function syncBackend(backend) {
-    if (backend) {
-      let requestData = await actorValue.get_requests();
-      let sharedData = await actorValue.get_shared_files();
-      fileData = requestData.concat(sharedData);
-      let newData = [];
+  function generateContent(fileData) {
+    if(fileData){
+    let newData = [];
       // Prepare data for page template
       for (let idx = 0; idx < fileData.length; ++idx) {
         if (!fileData[idx].file_status.pending) {
@@ -74,9 +71,17 @@
         }
       }
       // Assign `data` to itself for reactivity purposes
-      data = newData;
+      return newData;
     } else {
-      data = [];
+      return null;
+    }
+  }
+
+  async function syncBackend(backend) {
+    if (backend) {
+      let requestData = await actorValue.get_requests();
+      let sharedData = await actorValue.get_shared_files();
+      fileData = requestData.concat(sharedData);
     }
   }
 
@@ -89,6 +94,9 @@
   onMount(async () => {
     await syncBackend(actorValue);
   });
+
+  let wrapper = (fileData, dummyVar) => generateContent(fileData);
+  $: data = wrapper(fileData, shareFileData);
 </script>
 
 <svelte:head>
