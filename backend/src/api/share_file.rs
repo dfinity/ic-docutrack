@@ -91,7 +91,7 @@ mod test {
     use super::*;
     use crate::{
         api::{request_file, set_user_info, upload_file},
-        get_time, FileStatus, PublicFileMetadata, PublicUser, User,
+        get_time, FileStatus, PublicFileMetadata, PublicUser,
     };
     use ic_cdk::export::Principal;
 
@@ -101,20 +101,22 @@ mod test {
         set_user_info(
             &mut state,
             Principal::anonymous(),
-            User {
+            PublicUser {
                 first_name: "John".to_string(),
                 last_name: "Doe".to_string(),
                 public_key: vec![1, 2, 3],
+                ic_principal: Principal::anonymous(),
             },
         );
 
         set_user_info(
             &mut state,
             Principal::from_slice(&[0, 1, 2]),
-            User {
+            PublicUser {
                 first_name: "John".to_string(),
                 last_name: "Smith".to_string(),
                 public_key: vec![1, 2, 3],
+                ic_principal: Principal::from_slice(&[0, 1, 2]),
             },
         );
 
@@ -201,10 +203,11 @@ mod test {
         set_user_info(
             &mut state,
             Principal::anonymous(),
-            User {
+            PublicUser {
                 first_name: "John".to_string(),
                 last_name: "Doe".to_string(),
                 public_key: vec![1, 2, 3],
+                ic_principal: Principal::anonymous(),
             },
         );
 
@@ -232,20 +235,22 @@ mod test {
         set_user_info(
             &mut state,
             Principal::anonymous(),
-            User {
+            PublicUser {
                 first_name: "John".to_string(),
                 last_name: "Doe".to_string(),
                 public_key: vec![1, 2, 3],
+                ic_principal: Principal::anonymous(),
             },
         );
 
         set_user_info(
             &mut state,
             Principal::from_slice(&[0, 1, 2]),
-            User {
+            PublicUser {
                 first_name: "John".to_string(),
                 last_name: "Smith".to_string(),
                 public_key: vec![1, 2, 3],
+                ic_principal: Principal::from_slice(&[0, 1, 2]),
             },
         );
 
@@ -324,10 +329,11 @@ mod test {
         set_user_info(
             &mut state,
             Principal::anonymous(),
-            User {
+            PublicUser {
                 first_name: "John".to_string(),
                 last_name: "Doe".to_string(),
                 public_key: vec![1, 2, 3],
+                ic_principal: Principal::anonymous(),
             },
         );
 
@@ -353,10 +359,11 @@ mod test {
         set_user_info(
             &mut state,
             Principal::anonymous(),
-            User {
+            PublicUser {
                 first_name: "John".to_string(),
                 last_name: "Doe".to_string(),
                 public_key: vec![1, 2, 3],
+                ic_principal: Principal::anonymous(),
             },
         );
 

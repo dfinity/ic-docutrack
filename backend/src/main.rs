@@ -5,7 +5,7 @@ use ic_cdk::export::candid::Principal;
 use ic_cdk_macros::{post_upgrade, pre_upgrade, query, update};
 
 #[update]
-fn set_user(user: User) {
+fn set_user(user: PublicUser) {
     with_state_mut(|s| backend::api::set_user_info(s, caller(), user))
 }
 

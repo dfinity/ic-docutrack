@@ -1,25 +1,20 @@
 <script lang="ts">
-  import { Button, Modal, ModalBody, ModalHeader } from "sveltestrap";
-  import { page } from "$app/stores";
+  import { Modal, ModalBody, ModalHeader } from "sveltestrap";
+  import {
+    actor,
+    authClient,
+    firstName,
+    lastName,
+  } from "$lib/shared/stores/auth.js";
+  import { default as crypto } from "$lib/crypto";
 
   export let isOpen = false;
   const toggle = () => (isOpen = !isOpen);
-
-  import {
-    actor,
-    firstName,
-    lastName,
-    isAuthenticated,
-  } from "$lib/shared/stores/auth.js";
-  import { createActor } from "../../../../declarations/backend";
-  import { default as crypto } from "$lib/crypto";
-
   let actorValue: object;
-  let requestName: string;
-  let requestLink: URL;
-  let loading: boolean = false;
+  let authClientValue: object;
 
   actor.subscribe((value) => (actorValue = value));
+  authClient.subscribe((value) => (authClientValue = value));
 
   async function setUser(e) {
     const formData = new FormData(e.target);
@@ -32,6 +27,7 @@
       first_name: data.firstName,
       last_name: data.lastName,
       public_key: new Uint8Array(await crypto.getLocalUserPublicKey()),
+      ic_principal: authClientValue.getIdentity()._principal,
     });
     firstName.set(data.firstName);
     lastName.set(data.lastName);
