@@ -47,7 +47,7 @@
 </script>
 
 <div>
-  <Button color="primary" on:click={toggle}>Create new request</Button>
+  <Button color="primary" on:click={toggle}>Request File</Button>
   <Modal {isOpen} {toggle}>
     <ModalHeader {toggle}>Create Request</ModalHeader>
     <ModalBody>
