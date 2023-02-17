@@ -83,7 +83,7 @@ export const idlFactory = ({ IDL }) => {
     'get_shared_files' : IDL.Func([], [IDL.Vec(file_metadata)], ['query']),
     'get_users' : IDL.Func([], [get_users_response], ['query']),
     'hello_world' : IDL.Func([], [IDL.Text], []),
-    'request_file' : IDL.Func([IDL.Text], [IDL.Text], ['query']),
+    'request_file' : IDL.Func([IDL.Text], [IDL.Text], []),
     'revoke_share' : IDL.Func(
         [IDL.Principal, file_id],
         [share_file_response],
