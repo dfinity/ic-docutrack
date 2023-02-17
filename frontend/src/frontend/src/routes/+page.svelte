@@ -53,10 +53,10 @@
               accessMessage = 'Only You';
               break;
             case 1:
-              accessMessage = '1 other Person';
+              accessMessage = 'You & 1 other';
               break;
             default:
-              accessMessage = nShared + ' other People'
+              accessMessage = 'You & ' + nShared + ' others'
           }
           let detailsLink = new URL($page.url.origin + "/details");
           detailsLink.searchParams.append("fileId", fileData[idx].file_id);
