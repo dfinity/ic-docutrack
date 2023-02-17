@@ -23,6 +23,7 @@
     data: "",
   };
   let permissionError = false;
+  let loading = true;
 
   actor.subscribe((value) => (actorValue = value));
   isAuthenticated.subscribe((value) => (isAuthenticatedValue = value));
@@ -54,6 +55,7 @@
         }
       }
     }
+    loading = false;
   });
 </script>
 
@@ -62,21 +64,25 @@
   <meta name="description" content="DokuTrack" />
 </svelte:head>
 <section>
-  <h1>Details</h1>
-  {#if isAuthenticated && !permissionError && !fileNotFound}
-    <Details {file} />
-    {#if file && file.data}
-      <h4>File Preview</h4>
-      <a class="btn btn-primary" href={download} download={file.name}>Download</a>
-      <p></p>
-      <FilePreview {file} />
-    {/if}
-  {:else if fileNotFound}
-    <h4>File not found</h4>
+  {#if loading}
+    <h3>Loading...</h3>
   {:else}
-    <Alert color="warning">
-      <h4 class="alert-heading text-capitalize">warning</h4>
-      User must be authenticated and authorized.
-    </Alert>
+    <h1>Details</h1>
+    {#if isAuthenticated && !permissionError && !fileNotFound}
+      <Details {file} />
+      {#if file && file.data}
+        <h4>File Preview</h4>
+        <a class="btn btn-primary" href={download} download={file.name}>Download</a>
+        <p></p>
+        <FilePreview {file} />
+      {/if}
+    {:else if fileNotFound}
+      <h4>File not found</h4>
+    {:else}
+      <Alert color="warning">
+        <h4 class="alert-heading text-capitalize">warning</h4>
+        User must be authenticated and authorized.
+      </Alert>
+    {/if}
   {/if}
 </section>
