@@ -61,8 +61,8 @@
 </script>
 
 <svelte:head>
-  <title>DokuTrack: Details</title>
-  <meta name="description" content="DokuTrack" />
+  <title>DocuTrack: Details</title>
+  <meta name="description" content="DocuTrack" />
 </svelte:head>
 <section>
   <h1>Details</h1>
