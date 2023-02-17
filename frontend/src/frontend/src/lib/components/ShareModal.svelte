@@ -30,8 +30,10 @@
 
   function addPersonToShare() {
     if(shareWithPerson){
-    let res = users.find(obj => {return obj.ic_principal.compareTo(shareWithPerson)});
-    if(res !== null && !newSharedWith.find(obj => {return obj.ic_principal.compareTo(shareWithPerson)})) {
+    let res = users.find(obj => 
+      obj.ic_principal.compareTo(shareWithPerson) === 'eq'
+    );
+    if(res !== null && !newSharedWith.find(obj => obj.ic_principal.compareTo(shareWithPerson) === 'eq')) {
       newSharedWith.push(res);
       // Assign to itself for reactivity purposes
       newSharedWith = newSharedWith;
@@ -40,7 +42,7 @@
   }
 
   function removePersonFromShare(principal) {
-    let user = newSharedWith.find(obj => {return obj.ic_principal.compareTo(principal)});
+    let user = newSharedWith.find(obj => obj.ic_principal.compareTo(principal) === 'eq');
     if(user !== null) {
       newSharedWith = removeItem(newSharedWith, user);
       // Assign to itself for reactivity purposes
@@ -65,7 +67,7 @@
     }
     // Go over all old entries and remove the ones that are no longer in the shared list
     for(let i = 0; i < oldSharedWith.length; i++) {
-      let res = newSharedWith.find(obj => {return obj.ic_principal.compareTo(oldSharedWith[i].ic_principal)});
+      let res = newSharedWith.find(obj => obj.ic_principal.compareTo(oldSharedWith[i].ic_principal) === 'eq');
       if(!res) {
         await actorValue.revoke_share(oldSharedWith[i].ic_principal, fileData.file_id);
       }
