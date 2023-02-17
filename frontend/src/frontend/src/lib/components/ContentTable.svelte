@@ -5,33 +5,34 @@
   export let data; // list of objects where the properties match the keys in columns
 </script>
 
-{#if data.length > 0}
   <Table hover>
     <thead>
       <tr>
         {#each columns as col}
           <th>{col.label}</th>
         {/each}
-        {#if "items" in data[0]}
+        {#if data.length > 0 && "items" in data[0]}
           <th />
         {/if}
       </tr>
     </thead>
     <tbody>
-      {#each data as row}
-        <tr>
-          {#each columns as col}
-            <td>{row[col.key]}</td>
-          {/each}
-          <td>
-            {#if "items" in row}
-              <Submenu items={row.items} />
-            {/if}
-          </td>
-        </tr>
-      {/each}
+      {#if data.length > 0}
+        {#each data as row}
+          <tr>
+            {#each columns as col}
+              <td>{row[col.key]}</td>
+            {/each}
+            <td>
+              {#if "items" in row}
+                <Submenu items={row.items} />
+              {/if}
+            </td>
+          </tr>
+        {/each}
+      {/if}
     </tbody>
   </Table>
-{:else}
-  <h3>No data available at the moment</h3>
+{#if data.length == 0}
+  <p class="text-center">No data available at the moment</p>
 {/if}
