@@ -13,6 +13,7 @@ import { defineConfig, loadEnv } from "vite";
 // dfx deploy --network ic = ic
 const network = process.env.DFX_NETWORK ?? "local";
 const host = network === "local" ? "http://localhost:8000" : "https://ic0.app";
+const iiUrl = network === "local" ? "http://127.0.0.1:8000/?canisterId=r7inp-6aaaa-aaaaa-aaabq-cai" : "https://identity.ic0.app";
 
 const readCanisterIds = ({
   prefix,
@@ -72,6 +73,7 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
     ...readCanisterIds({ prefix: "VITE_" }),
     VITE_DFX_NETWORK: network,
     VITE_HOST: host,
+    VITE_II_URL: iiUrl,
   };
 
   return {
