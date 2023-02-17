@@ -5,6 +5,8 @@
    * @param {Number} file Contains the metadata of a file
    */
   export let file = {};
+  console.log(file);
+  debugger;
 </script>
 
 <Row>
@@ -14,10 +16,6 @@
         <tr>
           <th scope="row">File Name</th>
           <td>{file.name}</td>
-        </tr>
-        <tr>
-          <th scope="row">Owner</th>
-          <td> You </td>
         </tr>
       </tbody>
     </Table>
