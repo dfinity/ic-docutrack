@@ -73,13 +73,17 @@ export const idlFactory = ({ IDL }) => {
     'unknown_user' : IDL.Null,
   });
   return IDL.Service({
-    'download_file' : IDL.Func([file_id], [download_file_response], []),
-    'get_alias_info' : IDL.Func([IDL.Text], [get_alias_info_response], []),
-    'get_requests' : IDL.Func([], [IDL.Vec(file_metadata)], []),
-    'get_shared_files' : IDL.Func([], [IDL.Vec(file_metadata)], []),
-    'get_users' : IDL.Func([], [get_users_response], []),
+    'download_file' : IDL.Func([file_id], [download_file_response], ['query']),
+    'get_alias_info' : IDL.Func(
+        [IDL.Text],
+        [get_alias_info_response],
+        ['query'],
+      ),
+    'get_requests' : IDL.Func([], [IDL.Vec(file_metadata)], ['query']),
+    'get_shared_files' : IDL.Func([], [IDL.Vec(file_metadata)], ['query']),
+    'get_users' : IDL.Func([], [get_users_response], ['query']),
     'hello_world' : IDL.Func([], [IDL.Text], []),
-    'request_file' : IDL.Func([IDL.Text], [IDL.Text], []),
+    'request_file' : IDL.Func([IDL.Text], [IDL.Text], ['query']),
     'revoke_share' : IDL.Func(
         [IDL.Principal, file_id],
         [share_file_response],
@@ -98,7 +102,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'upload_file' : IDL.Func([upload_file_request], [upload_file_response], []),
     'upload_file_atomic' : IDL.Func([upload_file_atomic_request], [], []),
-    'who_am_i' : IDL.Func([], [who_am_i_response], []),
+    'who_am_i' : IDL.Func([], [who_am_i_response], ['query']),
   });
 };
 export const init = ({ IDL }) => { return []; };

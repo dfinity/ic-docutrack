@@ -95,23 +95,23 @@ service docutrack : {
 
   set_user: (first_name: text, last_name: text, public_key: blob) -> ();
 
-  who_am_i: () -> (who_am_i_response); 
+  who_am_i: () -> (who_am_i_response) query; 
 
   // Requests a file to be uploaded.
   // An alias is returned that can be used to create an upload link.
-  request_file: (request_name: text) -> (alias: text);
+  request_file: (request_name: text) -> (alias: text) query;
 
   // Based on the alias (or download link) of the file,
   // it returns the name and id of the file to be uploaded.
-  get_alias_info: (alias: text) -> (get_alias_info_response);
+  get_alias_info: (alias: text) -> (get_alias_info_response) query;
 
   upload_file: (upload_file_request) -> (upload_file_response) ;
 
-  download_file: (file_id) -> (download_file_response) ;
+  download_file: (file_id) -> (download_file_response) query;
 
-  get_requests: () -> (vec file_metadata);
+  get_requests: () -> (vec file_metadata) query;
 
-  get_shared_files: () -> (vec file_metadata);
+  get_shared_files: () -> (vec file_metadata) query;
 
   upload_file_atomic: (upload_file_atomic_request) -> ();
 
@@ -121,6 +121,6 @@ service docutrack : {
 
   revoke_share: (user_id: principal, file_id: file_id) -> (share_file_response);
   
-  get_users: () -> (get_users_response);
+  get_users: () -> (get_users_response) query;
 }
 
