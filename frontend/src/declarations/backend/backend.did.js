@@ -80,6 +80,11 @@ export const idlFactory = ({ IDL }) => {
     'get_users' : IDL.Func([], [get_users_response], []),
     'hello_world' : IDL.Func([], [IDL.Text], []),
     'request_file' : IDL.Func([IDL.Text], [IDL.Text], []),
+    'revoke_share' : IDL.Func(
+        [IDL.Principal, file_id],
+        [share_file_response],
+        [],
+      ),
     'set_user' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(IDL.Nat8)], [], []),
     'share_file' : IDL.Func(
         [IDL.Principal, file_id, IDL.Vec(IDL.Nat8)],
