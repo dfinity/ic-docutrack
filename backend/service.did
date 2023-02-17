@@ -93,7 +93,7 @@ type upload_file_request = record {
 service docutrack : {
   hello_world : () -> (text);
 
-  set_user: (user) -> ();
+  set_user: (first_name: text, last_name: text, public_key: blob) -> ();
 
   who_am_i: () -> (who_am_i_response); 
 

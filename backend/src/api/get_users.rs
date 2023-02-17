@@ -24,7 +24,7 @@ pub fn get_users(state: &State, caller: Principal) -> GetUsersResponse {
 mod test {
     use crate::{
         api::{get_users, set_user_info},
-        GetUsersResponse, PublicUser, State,
+        GetUsersResponse, State, User,
     };
     use candid::Principal;
 
@@ -35,33 +35,30 @@ mod test {
         set_user_info(
             &mut state,
             Principal::from_slice(&[0, 1, 2]),
-            PublicUser {
+            User {
                 first_name: "John".to_string(),
                 last_name: "Doe".to_string(),
                 public_key: vec![1, 2, 3],
-                ic_principal: Principal::from_slice(&[0, 1, 2]),
             },
         );
         // set 2nd user
         set_user_info(
             &mut state,
             Principal::from_slice(&[0, 1, 3]),
-            PublicUser {
+            User {
                 first_name: "John".to_string(),
                 last_name: "Smith".to_string(),
                 public_key: vec![3, 2, 3],
-                ic_principal: Principal::from_slice(&[0, 1, 3]),
             },
         );
         // set 3rd user
         set_user_info(
             &mut state,
             Principal::from_slice(&[0, 1, 4]),
-            PublicUser {
+            User {
                 first_name: "Mike".to_string(),
                 last_name: "Smith".to_string(),
                 public_key: vec![1, 6, 3],
-                ic_principal: Principal::from_slice(&[0, 1, 4]),
             },
         );
 
@@ -80,11 +77,10 @@ mod test {
         set_user_info(
             &mut state,
             Principal::from_slice(&[0, 1, 2]),
-            PublicUser {
+            User {
                 first_name: "John".to_string(),
                 last_name: "Doe".to_string(),
                 public_key: vec![1, 2, 3],
-                ic_principal: Principal::from_slice(&[0, 1, 2]),
             },
         );
         let users = get_users(&state, Principal::anonymous());

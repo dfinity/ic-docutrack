@@ -61,7 +61,7 @@ mod test {
     use super::*;
     use crate::{
         api::{request_file, set_user_info},
-        get_time,
+        get_time, User,
     };
     use ic_cdk::export::Principal;
 
@@ -71,11 +71,10 @@ mod test {
         set_user_info(
             &mut state,
             Principal::anonymous(),
-            PublicUser {
+            User {
                 first_name: "John".to_string(),
                 last_name: "Doe".to_string(),
                 public_key: vec![1, 2, 3],
-                ic_principal: Principal::anonymous(),
             },
         );
 
