@@ -95,6 +95,11 @@ fn share_file_with_users(
     });
 }
 
+#[update]
+fn revoke_share(user_id: Principal, file_id: u64) -> FileSharingResponse {
+    with_state_mut(|s| backend::api::revoke_share(s, caller(), user_id, file_id))
+}
+
 #[query]
 fn get_users() -> GetUsersResponse {
     with_state(|s| backend::api::get_users(s, caller()))
