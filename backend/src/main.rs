@@ -5,7 +5,13 @@ use ic_cdk::export::candid::Principal;
 use ic_cdk_macros::{post_upgrade, pre_upgrade, query, update};
 
 #[update]
-fn set_user(user: PublicUser) {
+fn set_user(first_name: String, last_name: String, public_key: Vec<u8>) {
+    let user = User {
+        first_name,
+        last_name,
+        public_key,
+    };
+
     with_state_mut(|s| backend::api::set_user_info(s, caller(), user))
 }
 

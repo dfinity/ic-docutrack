@@ -66,7 +66,7 @@ export interface _SERVICE {
   'get_users' : ActorMethod<[], get_users_response>,
   'hello_world' : ActorMethod<[], string>,
   'request_file' : ActorMethod<[string], string>,
-  'set_user' : ActorMethod<[user], undefined>,
+  'set_user' : ActorMethod<[string, string, Uint8Array], undefined>,
   'share_file' : ActorMethod<
     [Principal, file_id, Uint8Array],
     share_file_response

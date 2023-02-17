@@ -23,12 +23,11 @@
       const [key, value] = field;
       data[key] = value;
     }
-    await actorValue.set_user({
-      first_name: data.firstName,
-      last_name: data.lastName,
-      public_key: new Uint8Array(await crypto.getLocalUserPublicKey()),
-      ic_principal: authClientValue.getIdentity()._principal,
-    });
+    await actorValue.set_user(
+      data.firstName,
+      data.lastName,
+      new Uint8Array(await crypto.getLocalUserPublicKey()),
+    );
     firstName.set(data.firstName);
     lastName.set(data.lastName);
     isOpen = false;

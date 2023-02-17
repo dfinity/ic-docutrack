@@ -134,7 +134,7 @@ pub struct State {
     file_count: u64,
 
     /// Keeps track of usernames vs. their principals.
-    pub users: BTreeMap<Principal, PublicUser>,
+    pub users: BTreeMap<Principal, User>,
 
     /// Mapping between file IDs and file information.
     pub file_data: BTreeMap<u64, File>,
