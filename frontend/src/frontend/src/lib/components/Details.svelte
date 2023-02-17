@@ -5,8 +5,6 @@
    * @param {Number} file Contains the metadata of a file
    */
   export let file = {};
-  console.log(file);
-  debugger;
 </script>
 
 <Row>
