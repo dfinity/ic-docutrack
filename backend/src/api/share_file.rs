@@ -17,13 +17,15 @@ pub fn share_file(
         match &mut file.content {
             FileContent::Pending { .. } => FileSharingResponse::PendingError,
             FileContent::Uploaded { shared_keys, .. } => {
-                state
+                let file_shares = state
                     .file_shares
                     .entry(sharing_with)
-                    .or_insert_with(Vec::new)
-                    .push(file_id);
+                    .or_insert_with(Vec::new);
 
-                shared_keys.insert(sharing_with, file_key_encrypted_for_user);
+                if !file_shares.contains(&file_id) {
+                    file_shares.push(file_id);
+                    shared_keys.insert(sharing_with, file_key_encrypted_for_user);
+                }
 
                 FileSharingResponse::Ok
             }
