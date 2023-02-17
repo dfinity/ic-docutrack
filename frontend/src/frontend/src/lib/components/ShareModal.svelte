@@ -10,6 +10,7 @@
 
   let shareWithPerson = null;
   let expirationDate = null;
+  let loading: boolean = false;
   let users = [];
   let oldSharedWith = [];
   let newSharedWith = [];
@@ -21,12 +22,12 @@
   actor.subscribe((value) => (actorValue = value));
 
   function removeItem(arr, value) {
-  var index = arr.indexOf(value);
-  if (index > -1) {
-    arr.splice(index, 1);
+    var index = arr.indexOf(value);
+    if (index > -1) {
+      arr.splice(index, 1);
+    }
+    return arr;
   }
-  return arr;
-}
 
   function addPersonToShare() {
     if(shareWithPerson){
@@ -49,11 +50,12 @@
   }
 
   async function saveShare() {
+    loading = true;
     // If no expiration date is used, set to -1
     let timestamp = -1;
     if(hasExpirationDate && expirationDate) {
-    // The expiration date is saved as timestamp in nanoseconds, convert accordingly
-    timestamp = Date.parse(expirationDate) * 1e6;
+      // The expiration date is saved as timestamp in nanoseconds, convert accordingly
+      timestamp = Date.parse(expirationDate) * 1e6;
     }
     const documentKey = await crypto.decryptForUser(fileData.file_status.uploaded.document_key.buffer);
     for(let i = 0; i < newSharedWith.length; i++) {
@@ -73,6 +75,7 @@
     // Write back the new state, so the the UI updates
     fileData.shared_with = newSharedWith.slice();
     isOpen = false;
+    loading = false;
   }
 
   function onOpen(isOpen) {
@@ -126,7 +129,11 @@
           <Input id="expirationDate" class="form-control" type="date"  bind:value={expirationDate} disabled={!hasExpirationDate} required={hasExpirationDate}/>
         </FormGroup>
         <FormGroup>
-          <Button type="submit" color="primary">Save Changes</Button>
+          {#if loading}
+            <button type="submit" class="btn btn-primary" disabled>Loading</button>
+          {:else}
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          {/if}
         </FormGroup>
       </form>
     </ModalBody>

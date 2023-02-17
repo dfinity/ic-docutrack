@@ -13,6 +13,7 @@
   let file;
   let files;
   let actorValue;
+  let requestStatus = "";
   actor.subscribe(async (value) => {
     actorValue = value;
   });
@@ -45,6 +46,7 @@
   }
 
   const handleUpload = async () => {
+    requestStatus = "Loading";
     const fileSelector = document.getElementById("file-selector");
     const fileBytes = await fileSelector.files[0].arrayBuffer();
     let fileToEncrypt = File.fromUnencrypted(fileInfo.Ok.file_name, fileBytes);
@@ -63,8 +65,10 @@
 
     if ("Ok" in res) {
       uploadingStatus = "File uploaded successfully.";
+      requestStatus = "Uploaded!";
     } else {
       uploadingStatus = "An error occurred. Try again.";
+      requestStatus = "";
     }
   };
 </script>
@@ -86,7 +90,11 @@
       />
     </div>
     <div class="col-auto">
-      <button class="btn btn-primary" type="submit">Upload</button>
+      {#if requestStatus}
+        <button class="btn btn-primary" type="submit" disabled>{requestStatus}</button>
+      {:else}
+        <button class="btn btn-primary" type="submit">Upload</button>
+      {/if}
     </div>
   </form>
   <span>{uploadingStatus}</span>

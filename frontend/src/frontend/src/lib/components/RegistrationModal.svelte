@@ -12,11 +12,13 @@
   const toggle = () => (isOpen = !isOpen);
   let actorValue: object;
   let authClientValue: object;
+  let loading = false;
 
   actor.subscribe((value) => (actorValue = value));
   authClient.subscribe((value) => (authClientValue = value));
 
   async function setUser(e) {
+    loading = true;
     const formData = new FormData(e.target);
     const data: any = {};
     for (let field of formData) {
@@ -31,6 +33,7 @@
     firstName.set(data.firstName);
     lastName.set(data.lastName);
     isOpen = false;
+    loading = false;
   }
 </script>
 
@@ -66,7 +69,11 @@
           <label for="lastName">Last Name</label>
         </div>
         <div class="form-floating mb-3">
-          <button type="submit" class="btn btn-primary">Submit</button>
+          {#if loading}
+            <button type="submit" class="btn btn-primary" disabled>Loading</button>
+          {:else}
+            <button type="submit" class="btn btn-primary">Submit</button>
+          {/if}
         </div>
       </form>
     </ModalBody>
