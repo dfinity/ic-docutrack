@@ -76,6 +76,7 @@
     }
     // Write back the new state, so the the UI updates
     fileData.shared_with = newSharedWith.slice();
+    fileData = fileData;
     isOpen = false;
     loading = false;
   }
