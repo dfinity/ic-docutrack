@@ -41,7 +41,13 @@ pub fn download_file(s: &State, file_id: u64, caller: Principal) -> FileDownload
         // This is the case where the files is owned by this user.
         Some(files) => match files.contains(&file_id) {
             true => get_file_data(s, file_id),
-            false => FileDownloadResponse::PermissionError,
+            false => {
+                if is_file_shared_with_me(s, file_id, caller) {
+                    get_shared_file_data(s, file_id, caller)
+                } else {
+                    FileDownloadResponse::PermissionError
+                }
+            }
         },
         // But it could also be the case that the file is shared with this user.
         None => {

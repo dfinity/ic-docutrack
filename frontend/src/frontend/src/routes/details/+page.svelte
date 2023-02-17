@@ -45,6 +45,7 @@
 
       if (!fileNotFound){
         let downloadedFile = await actorValue.download_file(fileId);
+        console.log(downloadedFile);
         permissionError = downloadedFile.permission_error;
         if (!permissionError) {
           let decryptedFile = await File.fromEncrypted(
