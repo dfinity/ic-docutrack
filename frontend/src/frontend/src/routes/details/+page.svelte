@@ -32,14 +32,17 @@
     if (isAuthenticatedValue) {
       let files = await actorValue.get_requests();
       files = files.concat(await actorValue.get_shared_files());
+      console.log(files);
       files.every((entry) => {
         if (entry.file_id == BigInt(fileId)) {
+          fileNotFound = false;
           file.name = entry.file_name;
           return false;
         }
         fileNotFound = true;
         return true;
       });
+
       if (!fileNotFound){
         let downloadedFile = await actorValue.download_file(fileId);
         permissionError = downloadedFile.permission_error;
@@ -60,8 +63,8 @@
 </script>
 
 <svelte:head>
-  <title>DokuTrack: Details</title>
-  <meta name="description" content="DokuTrack" />
+  <title>DocuTrack: Details</title>
+  <meta name="description" content="DocuTrack" />
 </svelte:head>
 <section>
   {#if loading}
