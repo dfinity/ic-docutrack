@@ -47,8 +47,7 @@
       // We pass the host instead of using a proxy to support NodeJS >= v17 (ViteJS issue: https://github.com/vitejs/vite/issues/4794)
       const host = import.meta.env.VITE_HOST;
       // Find out which URL should be used for login.
-      const iiUrl =
-        "http://127.0.0.1:8000/?canisterId=r7inp-6aaaa-aaaaa-aaabq-cai";
+      const iiUrl = import.meta.env.VITE_II_URL;
       await new Promise((resolve, reject) => {
         authClientValue.login({
           identityProvider: iiUrl,
