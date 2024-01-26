@@ -10,8 +10,7 @@ pub fn get_users(state: &State, caller: Principal) -> GetUsersResponse {
                 .users
                 .iter()
                 .map(|val| PublicUser {
-                    first_name: val.1.first_name.clone(),
-                    last_name: val.1.last_name.clone(),
+                    username: val.1.username.clone(),
                     public_key: val.1.public_key.clone(),
                     ic_principal: *val.0,
                 })
@@ -36,8 +35,7 @@ mod test {
             &mut state,
             Principal::from_slice(&[0, 1, 2]),
             User {
-                first_name: "John".to_string(),
-                last_name: "Doe".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 3],
             },
         );
@@ -46,8 +44,7 @@ mod test {
             &mut state,
             Principal::from_slice(&[0, 1, 3]),
             User {
-                first_name: "John".to_string(),
-                last_name: "Smith".to_string(),
+                username: "John".to_string(),
                 public_key: vec![3, 2, 3],
             },
         );
@@ -56,8 +53,7 @@ mod test {
             &mut state,
             Principal::from_slice(&[0, 1, 4]),
             User {
-                first_name: "Mike".to_string(),
-                last_name: "Smith".to_string(),
+                username: "Mike".to_string(),
                 public_key: vec![1, 6, 3],
             },
         );
@@ -78,8 +74,7 @@ mod test {
             &mut state,
             Principal::from_slice(&[0, 1, 2]),
             User {
-                first_name: "John".to_string(),
-                last_name: "Doe".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 3],
             },
         );

@@ -64,13 +64,16 @@ export type upload_file_response = { 'Ok' : null } |
 export interface user {
   'public_key' : Uint8Array | number[],
   'ic_principal' : Principal,
-  'first_name' : string,
-  'last_name' : string,
+  'username' : string,
 }
 export type who_am_i_response = {
-    'known_user' : { 'first_name' : string, 'last_name' : string }
+    'known_user' : { 'username' : string,}
   } |
   { 'unknown_user' : null };
+export type set_user_response = {
+    'ok' : null;
+  } |
+  { 'username_exists' : null };
 export interface _SERVICE {
   'download_file' : ActorMethod<[file_id, bigint], download_file_response>,
   'get_alias_info' : ActorMethod<[string], get_alias_info_response>,
@@ -80,7 +83,7 @@ export interface _SERVICE {
   'hello_world' : ActorMethod<[], string>,
   'request_file' : ActorMethod<[string], string>,
   'revoke_share' : ActorMethod<[Principal, file_id], share_file_response>,
-  'set_user' : ActorMethod<[string, string, Uint8Array | number[]], undefined>,
+  'set_user' : ActorMethod<[string, Uint8Array | number[]], set_user_response>,
   'share_file' : ActorMethod<
     [Principal, file_id, Uint8Array | number[]],
     share_file_response
@@ -95,5 +98,6 @@ export interface _SERVICE {
     [upload_file_continue_request],
     undefined
   >,
+  'username_exists' : ActorMethod<[string],boolean>,
   'who_am_i' : ActorMethod<[], who_am_i_response>,
 }

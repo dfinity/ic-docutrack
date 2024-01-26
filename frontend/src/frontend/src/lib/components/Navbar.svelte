@@ -39,7 +39,7 @@
         <div
           class="bg-accent-100/10 p-2 rounded-lg rounded-bl-none text-accent-100 body-1"
         >
-          Hi, {$userStore.firstName}
+          Hi, {$userStore.username}
         </div>
       </div>
     {/if}
