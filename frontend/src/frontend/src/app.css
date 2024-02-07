@@ -1,0 +1,62 @@
+@font-face {
+  font-family: "Inter";
+  src: url("/inter-variable.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .title-1 {
+    @apply text-title-1-mobile md:text-title-1 font-medium;
+  }
+  .title-2 {
+    @apply text-title-2 font-medium;
+  }
+
+  .body-1 {
+    @apply text-body-1 font-book tracking-[-0.02em];
+  }
+  .body-2 {
+    @apply text-body-2 font-book tracking-[0.15px];
+  }
+
+  .panel {
+    @apply bg-background-100 rounded-2xl;
+  }
+
+  .btn {
+    @apply rounded-full font-sans inline-flex items-center gap-3 justify-center transition-all disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-ghost {
+    @apply hover:bg-background-100 hover:text-accent-100 h-12 px-4;
+  }
+
+  .btn-ghost-active {
+    @apply bg-background-100 text-accent-100;
+  }
+
+  .btn-icon {
+    @apply text-accent-100 hover:bg-background-100 hover:text-accent-100 h-10 w-10;
+  }
+
+  .btn-accent {
+    @apply bg-accent-100 h-12 px-4 text-background-100 border-1.5 border-accent-100 hover:bg-background-100 hover:text-accent-100 hover:border-accent-100;
+  }
+
+  .btn-full {
+    @apply w-full;
+  }
+
+  .input {
+    @apply px-3 py-4 rounded-md border-silver border-solid border-1.5 p-2 w-full text-body-1 placeholder:text-text-200 active:border-accent-100;
+  }
+
+  .input-label {
+    @apply text-text-200 text-body-1 mb-2 block;
+  }
+}

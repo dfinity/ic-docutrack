@@ -1,0 +1,42 @@
+{
+  "dfx": "0.15.0",
+  "canisters": {
+    "backend": {
+      "type": "rust",
+      "package": "backend",
+      "candid": "./backend/service.did",
+      "declarations": {
+        "node_compatibility": true
+      }
+    },
+    "frontend": {
+      "build": "pnpm run build",
+      "dependencies": ["backend"],
+      "frontend": {
+        "entrypoint": "frontend/build/index.html"
+      },
+      "source": ["frontend/build/"],
+      "declarations": {
+        "node_compatibility": true
+      },
+      "type": "assets"
+    },
+
+    "internet_identity": {
+        "type": "pull",
+        "id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": ""
+    }
+  },
+  "networks": {
+     "local": {
+        "bind": "127.0.0.1:8000",
+          "type": "ephemeral"
+     }
+  },
+  "version": 1
+}

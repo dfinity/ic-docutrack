@@ -1,0 +1,21 @@
+[package]
+name = "backend"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ic-cdk = "0.6.1"
+ic-cdk-macros = "0.6.1"
+ic-stable-structures = "0.6.0"
+candid = "0.8.4"
+# NOTE: A specific commit of ciborium is used that includes efficient serializion/deserialization of
+#       blobs. At the time of this writing, a new version including this commit hasn't yet been released.
+ciborium = { git = "https://github.com/enarx/ciborium", rev = "e719537c99b564c3674a56defe53713c702c6f46" }
+rand = "0.7.3"
+rand_chacha = "0.2.2"
+serde = "1.0.152"
+
+[dev-dependencies]
+maplit = "1.0.2"

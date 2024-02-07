@@ -1,0 +1,139 @@
+type file_id = nat64;
+
+type file_status = variant {
+  pending: record { alias: text; requested_at: nat64; }; 
+  partially_uploaded;
+  uploaded: record { uploaded_at: nat64; document_key: blob; };
+};
+
+type file_metadata = record {
+  file_id: file_id;
+  file_name : text;
+  file_status: file_status;
+  shared_with: vec user;
+};
+
+// A file's contents + its metadata.
+type file = record {
+  metadata : file_metadata;
+
+  // The contents of the file are available if it has been uploaded.
+  contents : opt blob;
+};
+
+type user = record {
+  first_name: text;
+  last_name: text;
+  public_key: blob;
+  ic_principal: principal;
+};
+
+type who_am_i_response = variant {
+  known_user: record { first_name: text; last_name: text };
+  unknown_user;
+};
+
+type get_alias_info_response = variant {
+  Err: variant { not_found };
+  Ok: record {
+    file_id: file_id;
+    file_name: text;
+    user: user;
+  }
+};
+
+type found_file = record {
+  contents: blob;
+  file_type: text;
+  owner_key: blob;
+  num_chunks: nat64;
+};
+
+type download_file_response = variant {
+  not_found_file;
+  not_uploaded_file;
+  permission_error;
+  found_file: found_file;
+};
+
+type upload_file_response = variant {
+  Ok;
+  Err: upload_file_error;
+};
+
+type upload_file_error = variant {
+  // File was already uploaded.
+  already_uploaded;
+
+  // No such file is requested.
+  not_requested;
+};
+
+type upload_file_atomic_request = record {
+  name: text;
+  content: blob;
+  file_type: text;
+  owner_key: blob;
+  num_chunks: nat64;
+};
+
+type upload_file_continue_request = record {
+  file_id: file_id;
+  chunk_id: nat64;
+  contents: blob;
+};
+
+type share_file_response = variant {
+  permission_error;
+  ok;
+};
+
+type get_users_response = variant {
+  permission_error;
+  users: vec user;
+};
+
+type upload_file_request = record {
+  file_id: file_id;
+  file_content: blob;
+  file_type: text;
+  owner_key: blob;
+  num_chunks: nat64;
+};
+
+service docutrack : {
+  hello_world : () -> (text);
+
+  set_user: (first_name: text, last_name: text, public_key: blob) -> ();
+
+  who_am_i: () -> (who_am_i_response) query; 
+
+  // Requests a file to be uploaded.
+  // An alias is returned that can be used to create an upload link.
+  request_file: (request_name: text) -> (alias: text);
+
+  // Based on the alias (or download link) of the file,
+  // it returns the name and id of the file to be uploaded.
+  get_alias_info: (alias: text) -> (get_alias_info_response) query;
+
+  upload_file: (upload_file_request) -> (upload_file_response) ;
+
+  download_file: (file_id, chunk_id: nat64) -> (download_file_response) query;
+
+  get_requests: () -> (vec file_metadata) query;
+
+  get_shared_files: () -> (vec file_metadata) query;
+
+  upload_file_atomic: (upload_file_atomic_request) -> (file_id);
+
+  upload_file_continue: (upload_file_continue_request) -> ();
+
+  share_file: (user_id: principal, file_id: file_id, file_key_encrypted_for_user: blob) -> (share_file_response);
+
+  share_file_with_users: (user_id: vec principal, file_id: file_id, file_key_encrypted_for_user: vec blob) -> ();
+
+  revoke_share: (user_id: principal, file_id: file_id) -> (share_file_response);
+  
+  get_users: () -> (get_users_response) query;
+}
+
