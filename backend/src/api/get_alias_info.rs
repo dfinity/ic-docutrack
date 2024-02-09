@@ -17,8 +17,7 @@ pub fn get_alias_info(state: &State, alias: String) -> Result<AliasInfo, GetAlia
                 file_id: *file_id,
                 file_name: file_metadata.file_name.clone(),
                 user: PublicUser {
-                    first_name: user.first_name,
-                    last_name: user.last_name,
+                    username: user.username,
                     public_key: user.public_key,
                     ic_principal: file_metadata.requester_principal,
                 },

@@ -5,14 +5,22 @@ use ic_cdk::export::candid::Principal;
 use ic_cdk_macros::{post_upgrade, pre_upgrade, query, update};
 
 #[update]
-fn set_user(first_name: String, last_name: String, public_key: Vec<u8>) {
-    let user = User {
-        first_name,
-        last_name,
-        public_key,
-    };
+fn set_user(username: String, public_key: Vec<u8>) -> SetUserResponse {
+    if with_state(|s| backend::api::username_exists(s, username.clone())) {
+        SetUserResponse::UsernameExists
+    } else {
+        let user = User {
+            username,
+            public_key,
+        };
+        with_state_mut(|s| backend::api::set_user_info(s, caller(), user));
+        SetUserResponse::Ok
+    }
+}
 
-    with_state_mut(|s| backend::api::set_user_info(s, caller(), user))
+#[query]
+fn username_exists(username: String) -> bool {
+    with_state(|s| backend::api::username_exists(s, username))
 }
 
 #[query]
@@ -20,8 +28,7 @@ fn who_am_i() -> WhoamiResponse {
     with_state(|s| match s.users.get(&ic_cdk::api::caller()) {
         None => WhoamiResponse::UnknownUser,
         Some(user) => WhoamiResponse::KnownUser(PublicUser {
-            first_name: user.first_name.clone(),
-            last_name: user.last_name.clone(),
+            username: user.username.clone(),
             public_key: user.public_key.clone(),
             ic_principal: ic_cdk::api::caller(),
         }),

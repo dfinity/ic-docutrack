@@ -18,6 +18,7 @@ pub use share_file::{get_shared_files, revoke_share, share_file};
 pub use upload_file::upload_file;
 pub use upload_file_atomic::{upload_file_atomic, UploadFileAtomicRequest};
 pub use user_info::set_user_info;
+pub use user_info::username_exists;
 
 pub fn upload_file_continue(request: UploadFileContinueRequest, state: &mut State) {
     // Update the file's contents.
@@ -92,8 +93,7 @@ mod test {
             &mut state,
             Principal::anonymous(),
             User {
-                first_name: "John".to_string(),
-                last_name: "Doe".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 3],
             },
         );

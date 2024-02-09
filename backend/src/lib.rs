@@ -22,9 +22,16 @@ type ChunkId = u64;
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct User {
-    pub first_name: String,
-    pub last_name: String,
+    pub username: String,
     pub public_key: Vec<u8>,
+}
+
+#[derive(CandidType, Serialize, Deserialize)]
+pub enum SetUserResponse {
+    #[serde(rename = "ok")]
+    Ok,
+    #[serde(rename = "username_exists")]
+    UsernameExists,
 }
 
 #[derive(CandidType, Serialize, Deserialize)]
@@ -230,8 +237,7 @@ pub fn generate_alias() -> String {
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct PublicUser {
-    pub first_name: String,
-    pub last_name: String,
+    pub username: String,
     pub public_key: Vec<u8>,
     pub ic_principal: Principal,
 }

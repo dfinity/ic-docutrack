@@ -22,14 +22,18 @@ type file = record {
 };
 
 type user = record {
-  first_name: text;
-  last_name: text;
+  username: text;
   public_key: blob;
   ic_principal: principal;
 };
 
+type set_user_response = variant {
+  ok;
+  username_exists;
+};
+
 type who_am_i_response = variant {
-  known_user: record { first_name: text; last_name: text };
+  known_user: record { username: text;};
   unknown_user;
 };
 
@@ -104,7 +108,9 @@ type upload_file_request = record {
 service docutrack : {
   hello_world : () -> (text);
 
-  set_user: (first_name: text, last_name: text, public_key: blob) -> ();
+  set_user: (username: text, public_key: blob) -> (set_user_response);
+
+  username_exists: (username: text) -> (bool) query;
 
   who_am_i: () -> (who_am_i_response) query; 
 
