@@ -1,0 +1,41 @@
+---
+interface Props {
+	el?: string;
+  href?: string;
+  isCentered?: boolean;
+  hasStack?: boolean;
+}
+
+const { el = "a", href = '#', isCentered = false, hasStack = false } = Astro.props;
+
+const Element = el;
+const elProps = { href, class: ['button', isCentered ? 'button--centered' : '', hasStack ? 'button--stack': ''].join(' ') };
+---
+<Element {...elProps}><slot/></Element>
+
+<style>
+  .button {
+    display: block;
+    width: max-content; 
+
+    --bg: var(--rc-gradient-brand);
+    --color: var(--rc-onInteraction);
+
+    background: var(--bg);
+    color: var(--color);
+
+    text-decoration: none;
+
+    padding: var(--rs-button-y) var(--rs-button-wide-x);
+
+    border-radius: 10em;
+  }
+
+  .button--centered {
+    margin: 0 auto;
+  }
+
+  .button--stack {
+    margin-top: var(--rs-button-stack);
+   }
+</style>

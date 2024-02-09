@@ -1,5 +1,5 @@
 {
-  "dfx": "0.15.0",
+  "dfx": "0.15.3",
   "canisters": {
     "backend": {
       "type": "rust",
@@ -10,21 +10,28 @@
       }
     },
     "frontend": {
-      "build": "pnpm run build",
-      "dependencies": ["backend"],
-      "frontend": {
-        "entrypoint": "frontend/build/index.html"
-      },
-      "source": ["frontend/build/"],
-      "declarations": {
-        "node_compatibility": true
-      },
+      "build": "pnpm --filter frontend run build",
+      "dependencies": [
+        "backend"
+      ],
+      "source": [
+        "frontend/build/"
+      ],
       "type": "assets"
     },
-
+    "marketing": {
+      "build": "pnpm --filter landing-page run build",
+      "dependencies": [
+        "frontend"
+      ],
+      "source": [
+        "landing-page/dist/"
+      ],
+      "type": "assets"
+    },
     "internet_identity": {
-        "type": "pull",
-        "id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+      "type": "pull",
+      "id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
     }
   },
   "defaults": {
@@ -33,10 +40,10 @@
     }
   },
   "networks": {
-     "local": {
-        "bind": "127.0.0.1:8000",
-          "type": "ephemeral"
-     }
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
   },
   "version": 1
 }

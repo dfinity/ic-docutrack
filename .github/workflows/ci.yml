@@ -154,4 +154,4 @@ jobs:
           dfx deps deploy
           npm install -g pnpm
           pnpm install
-          pnpm run build
+          pnpm recursive run build

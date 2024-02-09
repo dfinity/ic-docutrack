@@ -1,0 +1,132 @@
+---
+import Button from '../components/Button.astro';
+import AppIcon from '../components/AppIcon.astro';
+import Card from '../components/Card.astro';
+---
+<section class="section section--howto" data-section="howto">
+  <div class="section__inner">
+    <div class="section__slideintro">
+      <div class="section__slideintroinner">
+        <h2 class="h1">
+          How can I use it?
+        </h2>
+        <p class="p">
+          We’ll walk through the example of requesting a passport picture from an unregistered person and then sharing it with other users.
+        </p>
+      </div>
+    </div>
+    <div class="section__cards">
+      <Card class="section__log">
+        <h3 class="h3">Login with Internet Identity</h3>
+        <p class="p">
+          Click on Login and uses your <a href="https://identity.ic0.app/" target="_blank" rel="nofollow">Internet Identity</a> to authenticate yourself to the dapp.
+        </p>
+        <img class="section__keyboardimg" src="/illu-keyboard.png" alt="keypoard with a fingerprint reader on the top right" />
+      </Card>
+      <Card class="section__notif">
+        <div>
+          <h3 class="h3">Request file</h3>
+          <p class="p">
+            Enter a description of the file you're interested in and then send the request link to the person to upload the file.
+          </p>
+        </div>
+        <img class="section__notifimg" src="/illu-notif.png" alt="browser notifications showing that a file was shared with the user" />
+      </Card>
+      <Card class="section__upload">
+        <div>
+          <h3 class="h3">Upload file</h3>
+          <p class="p">
+           Whoever receives a request link and opens it, can upload a file. No login is necessary!
+          </p>
+        </div>
+        <img class="section__uploadimg" src="/illu-upload.png" alt="files beeing draged over an upload field" />
+      </Card>
+
+      <Card class="section__dl">
+        <div>
+          <h3 class="h3">Download or share</h3>
+          <p class="p">
+           Uploaded files can be downloaded or shared with other users.
+          </p>
+        </div>
+        <img class="section__dlimg" src="/illu-dl.png" alt="files of popular applications grouped around a download button" />
+      </Card>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section--howto {
+    text-align: left;
+    margin-top: var(--rs-section-stack);
+  }
+  .section--howto .section__inner {
+    display: flex;
+    max-width: 100%;
+    gap: 10rem; 
+  }
+  .section__slideintro {
+    flex: 0 0 40%;
+  }
+
+  @media (max-width: 500px) {
+    .section--howto .section__inner {
+      flex-direction: column;
+    }
+    .section__slideintro {
+      flex: 0 0 100%;
+    }
+    
+  }
+  .section__slideintroinner {
+    position: sticky;
+    top: var(--rs-section-stack);
+  }
+  .section__cards {
+    flex-grow: 1;
+  }
+  .section__log,
+  .section__upload {
+    overflow: hidden;
+  }
+  .section__keyboardimg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 90%;
+  }
+
+  .section__uploadimg {
+    width: 100%;
+    margin: var(--rs-card-y) auto 0;
+  }
+
+  .section__log::after,
+  .section__upload::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, var(--bg));
+    height: 20%;
+    z-index: 2;
+  }
+
+  .section__notif {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 30rem;
+  }
+
+  .section__notifimg {
+    position: relative;
+  }
+
+  .section__dlimg {
+    width: 100%;
+    margin: var(--rs-card-y) auto calc(-1 * var(--rs-card-y));
+  }
+
+</style>

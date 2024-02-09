@@ -1,10 +1,7 @@
 {
   "private": true,
   "workspaces": [
-    "frontend"
-  ],
-  "scripts": {
-    "dev": "cd frontend; pnpm run dev",
-    "build": "cd frontend; pnpm run build"
-  }
+    "frontend",
+    "landing-page"
+  ]
 }

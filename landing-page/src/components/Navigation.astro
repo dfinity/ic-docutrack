@@ -1,0 +1,28 @@
+---
+---
+<nav class="nav">
+  <a class="nav__item is-active" href="#intro" data-nav>About</a>
+  <a class="nav__item" href="#howto" data-nav>How it works</a>
+  <a class="nav__item" href="#sec" data-nav>Cryptography</a>
+</nav>
+
+<style>
+  .nav {
+    display: flex;
+    --color: var(--rc-navigation-link);
+    gap: var(--rs-button-inline);
+  }
+  .nav__item {
+    color: var(--color);
+    padding: var(--rs-button-x) var(--rs-button-y);
+  }
+  .nav__item.is-active {
+    font-weight: bold;
+  }
+
+  @media (max-width: 600px) {
+    .nav {
+      display: none;
+    }
+  }
+</style>
