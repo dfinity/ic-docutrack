@@ -47,7 +47,7 @@ const apps = [{
       Request, share, and manage documents
     </h2>
     <p class="section__intro p">You can upload documents and authorize people to access them with a few mouse clicks</p>
-    <div class="section__button">
+    <div class="section__button" data-maincta>
       <Button el="a" href={DAPP_URL} isCentered={true}>Try it, it's free!</Button>
     </div>
     <div class="intro-icons">
@@ -114,11 +114,27 @@ const apps = [{
   }
 
   .intro-image {
+    position: relative;
     margin-top: var(--rs-section-stack);
+    --radius: 2.3rem;
+  }
+
+  .intro-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--rc-shadow);
+    border-radius: var(--radius);
+    filter: blur(10rem);
+    transform: translateY(5%) scale(.8);
+    opacity: .7;
+    z-index: -1;
   }
   .section__image {
     display: block;
     box-shadow: 0 0 6rem rgba(0,0,0,.08);
+    border-radius: var(--radius);
+    box-shadow: 0 0 0 1px #00000020;
   }
   .section__image--overlay {
     width: calc(var(--design-wdith) * .67);
@@ -160,3 +176,23 @@ const apps = [{
   }
 
 </style>
+
+
+<script>
+  const $mainCTA = document.querySelector('[data-maincta]');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      console.log(entry)
+      if (entry.isIntersecting) {
+        document.body.classList.add('maincta-visible');
+      } else {
+        document.body.classList.remove('maincta-visible');
+      }
+    });
+  });
+
+  if ($mainCTA) {
+    observer.observe($mainCTA);
+  }
+</script>

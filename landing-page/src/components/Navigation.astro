@@ -1,12 +1,15 @@
 ---
+import Button from '../components/Button.astro';
+import { DAPP_URL } from '../config/config';
 ---
 <nav class="nav">
   <a class="nav__item is-active" href="#intro" data-nav>About</a>
   <a class="nav__item" href="#howto" data-nav>How it works</a>
   <a class="nav__item" href="#sec" data-nav>Cryptography</a>
+  <Button class="nav__item nav__item--login" el="a" href={DAPP_URL}>Sign In</Button>
 </nav>
 
-<style>
+<style is:global>
   .nav {
     display: flex;
     --color: var(--rc-navigation-link);
@@ -19,6 +22,51 @@
   .nav__item.is-active {
     font-weight: bold;
   }
+
+  .maincta-visible .nav__item--login {
+    --bg: var(--rc-interaction--inverted);
+    --color: var(--rc-onInteraction--inverted);
+    box-shadow: inset 0 0 0 1px var(--color);
+    transition: 100ms color linear, 100ms background-color linear;
+
+  }
+
+  .maincta-visible .nav__item--login:hover {
+    --bg: var(--rc-onInteraction--inverted);
+    --color: var(--rc-interaction--inverted);
+  }
+
+
+  .nav__item--login {
+    position: relative;
+    padding: var(--rs-button-x) calc(var(--rs-button-y) * 2);
+    box-shadow: none;
+  }
+
+  .nav__item--login::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--rc-onInteraction--inverted);
+    border-radius: 9999px;
+    filter: blur(1rem);
+    z-index: -1;
+
+    animation: 7s pulse ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(.9);
+      opacity: .3;
+    }
+    50% {
+      transform: scale(1);
+      opacity: .6;
+    }
+  }
+  
 
   @media (max-width: 600px) {
     .nav {

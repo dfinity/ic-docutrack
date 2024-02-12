@@ -1,4 +1,6 @@
 ---
+import { SEO } from "astro-seo";
+
 interface Props {
 	title: string;
 }
@@ -10,13 +12,29 @@ import Sprites from '../components/Sprites.astro';
 
 <!doctype html>
 <html lang="en">
+		
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
+		<SEO
+			title=`${title} — Request, share, and manage documents`
+			description="Effortlessly manage document sharing with our secure platform. Request, share, and control access to files with a simple click. No login needed for file uploads. Experience encryption at its best – asymmetric and symmetric cryptography in your browser. Your data stays private, and our code is transparent. Start now for free!"
+			openGraph={{
+				basic: {
+					title: `${title} — Request, share, and manage documents`,
+					type: 'website',
+					image: "/social.jpg"
+				}
+			}}
+			extend={{
+        link: [{ 
+					rel: "icon", 
+					type: "image/png",
+					href: "/favicon-32x32.png" 
+				}],
+			}}
+		></SEO>
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/png" href="/favicon-32x32.png" />
 		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
 	</head>
 	<body>
 		<div class="design">
@@ -94,7 +112,7 @@ import Sprites from '../components/Sprites.astro';
 		--rc-text: var(--vc-raven);
 		--rc-text--inverted: var(--vc-snow);
 		--rc-text--highlight: var(--rc-brand);
-
+		--rc-shadow: var(--vc-concrete);
 		--rc-text-secondary: var(--vc-concrete);
 
 		--rc-ui-background: var(--vc-silver-bullet);
@@ -106,7 +124,10 @@ import Sprites from '../components/Sprites.astro';
 		--rc-interaction: var(--vc-orange-soda);
 		--rc-onInteraction: var(--vc-snow);
 
-		--rc-gradient-brand: linear-gradient(color-mix(in lch, var(--rc-text--highlight) 70%, #fff), var(--rc-text--highlight));
+		--rc-interaction--inverted: var(--vc-snow);
+		--rc-onInteraction--inverted: var(--vc-orange-soda);
+
+		--rc-gradient-brand: linear-gradient(color-mix(in lch, var(--rc-text--highlight) 70%, #fff) 25%, var(--rc-text--highlight) 50%);
 
 		--rc-navigation-link: var(--vc-raven);
 

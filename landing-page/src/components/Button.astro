@@ -4,16 +4,31 @@ interface Props {
   href?: string;
   isCentered?: boolean;
   hasStack?: boolean;
+  class?: string;
 }
 
-const { el = "a", href = '#', isCentered = false, hasStack = false } = Astro.props;
+const { 
+  el = "a", 
+  href = '#', 
+  isCentered = false, 
+  hasStack = false, 
+  class: cssClass = '',
+} = Astro.props;
 
 const Element = el;
-const elProps = { href, class: ['button', isCentered ? 'button--centered' : '', hasStack ? 'button--stack': ''].join(' ') };
+const elProps = { 
+  href, 
+  class: [
+    'button', isCentered ? 'button--centered' : '', 
+    hasStack ? 'button--stack': '', 
+    cssClass,
+].join(' ') };
+// extent css classes with the ones passed in the class prop
+ 
 ---
 <Element {...elProps}><slot/></Element>
 
-<style>
+<style is:global>
   .button {
     display: block;
     width: max-content; 
@@ -22,6 +37,8 @@ const elProps = { href, class: ['button', isCentered ? 'button--centered' : '', 
     --color: var(--rc-onInteraction);
 
     background: var(--bg);
+    background-position: 0 0;
+    background-size: 100% 200%;
     color: var(--color);
 
     text-decoration: none;
@@ -29,6 +46,7 @@ const elProps = { href, class: ['button', isCentered ? 'button--centered' : '', 
     padding: var(--rs-button-y) var(--rs-button-wide-x);
 
     border-radius: 10em;
+    transition: background-position 200ms cubic-bezier(.3, .7, 0 ,1);
   }
 
   .button--centered {
@@ -37,5 +55,9 @@ const elProps = { href, class: ['button', isCentered ? 'button--centered' : '', 
 
   .button--stack {
     margin-top: var(--rs-button-stack);
+   }
+
+   .button:hover {
+      background-position: 0 100%;
    }
 </style>

@@ -11,5 +11,8 @@
   },
   "dependencies": {
     "astro": "^3.5.5"
+  },
+  "devDependencies": {
+    "astro-seo": "^0.8.0"
   }
 }
