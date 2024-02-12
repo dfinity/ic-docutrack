@@ -39,11 +39,11 @@ import { DAPP_URL } from '../config/config';
 
   .nav__item--login {
     position: relative;
-    padding: var(--rs-button-x) calc(var(--rs-button-y) * 2);
+    padding: var(--rs-button-x) calc(var(--rs-button-y) * 2) var(--rs-button-x) calc(var(--rs-button-y) * 3.5);
     box-shadow: none;
   }
 
-  .nav__item--login::before {
+  .nav__item--login::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -54,6 +54,15 @@ import { DAPP_URL } from '../config/config';
     z-index: -1;
 
     animation: 7s pulse ease-in-out infinite alternate-reverse;
+  }
+
+  .nav__item--login::before {
+    position: absolute;
+    content: '∞';
+    left: 2rem;
+    font-size: 1.4em;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   @keyframes pulse {
