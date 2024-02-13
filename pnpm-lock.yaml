@@ -116,6 +116,10 @@ importers:
       astro:
         specifier: ^3.5.5
         version: 3.6.4
+    devDependencies:
+      astro-seo:
+        specifier: ^0.8.0
+        version: 0.8.0
 
 packages:
 
@@ -1476,6 +1480,10 @@ packages:
       pvtsutils: 1.3.5
       pvutils: 1.1.3
       tslib: 2.6.2
+
+  /astro-seo@0.8.0:
+    resolution: {integrity: sha512-7gq6lhibCM8FuzZIJlbLLWP5EJ9KL2/4XqeFrAg9O6ZK2xMFxJ5ubKf+a0VJwwTu8W8Xr421CmpiXu6Hq7n/7Q==}
+    dev: true
 
   /astro@3.6.4:
     resolution: {integrity: sha512-YatUyWEQ9GUC79Wc2zbovy6D6bXPW9++Z6PYs4GDamEDspUSnnzL/INB7WJqgFI0xAFk9jcUr+MZYjkdWqXYTw==}
