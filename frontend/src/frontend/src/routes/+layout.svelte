@@ -5,6 +5,7 @@
   import { userStore } from "$lib/services/user";
   import { onMount } from "svelte";
   import "../app.css";
+  import Disclaimer from "$lib/components/Disclaimer.svelte";
 
   const title = "DocuTrack – Encrypted document sharing and requesting";
   const description =
@@ -46,7 +47,8 @@
 
 <div class="pb-20">
   <Navbar />
-  <div class="max-w-5xl px-4 mx-auto pt-8 md:pt-16">
+  <Disclaimer />
+  <div class="max-w-5xl px-4 mx-auto pt-6">
     <slot />
   </div>
 </div>
