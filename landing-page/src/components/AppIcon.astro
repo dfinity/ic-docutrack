@@ -1,0 +1,47 @@
+---
+interface Props {
+  name: string;
+  color: string;
+}
+
+const color = Astro.props.color || 'black';
+const iconString = `/icon--${Astro.props.name}.png`;
+---
+<span class="appicon" style>
+  <img src={ iconString } alt={ Astro.props.name } />
+</span>
+
+<style define:vars={{ color }}>
+  .appicon {
+    position: relative;
+    display: block;
+    width: 7rem;
+    height: 7rem;
+    vertical-align: middle;
+    overflow: hidden;
+    border-radius: 1em;
+    background: var(--color);
+  }
+  .appicon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: var(--color);
+    border-radius: 100%;
+    transform: translate(-50%, -50%);
+
+    filter: blur(5px) contrast(1.1);
+  }
+  .appicon img {
+    position: absolute;
+    height: 70%;
+    width: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>

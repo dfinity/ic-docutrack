@@ -1,0 +1,194 @@
+---
+import Button from '../components/Button.astro';
+import Card from '../components/Card.astro';
+import { DAPP_URL }  from '../config/config'
+---
+<section class="section section--security" data-section="sec">
+  <div class="section__inner">
+    <h2 class="h1">
+      How does the encryption and sharing work?
+    </h2>
+    <p class="section__intro p">Encryption and sharing is enabled by a combination of asymmetric and symmetric cryptography run by the frontend in the browser. No plaintext data is stored on the backend. Frontend and backend code can be audited and verified.</p>
+  </div>
+  <div class="security-features">
+    <Card class="security-features__item" isFancy={true}>
+      <img src="/illu-registration.png" alt="Abstract image containing a lock" />
+      <div class="security-features--crypto__header">
+        <h3 class="h3">User registration</h3>
+        <p class="p">After registration a public key pair is created for the user in the frontend. The public key is stored in the backend for each registered user, together with their name.</p>
+      </div>
+    </Card>
+    <Card class="security-features__item" isFancy={true}>
+      <img src="/illu-pass.png" alt="Illustration of a passwordfield" />
+      <div class="security-features--crypto__header">
+        <h3 class="h3">Document Upload</h3>
+        <p class="p">When you upload a document, the frontend creates a symmetric secret key in the browser. This symmetric key is then encrypted with the public key of the user who requested the document.</p>
+      </div>
+    </Card>
+    <Card class="security-features__item security-features__item--fill security-features--access" isFancy={true}>
+      <img src="/illu-access.png" alt="door kind of logo"/>
+      <div class="security-features--crypto__header">
+        <h3 class="h3">Document Access</h3>
+        <p class="p">The frontend of a registered user can get the encrypted file together with the encrypted key from the backend canister. Using the private key stored in the browser, the frontend can decrypt the document and process it.</p>
+      </div>
+    </Card>
+    <Card class="security-features__item security-features__item--fill security-features--crypto security-features--crypto--leftright">
+      <div class="security-features--crypto__header">
+        <h3 class="h1">Protected by Cryptography</h3>
+        <p class="p">Standard browser cryptography libraries are used for key generation, encryption and decryption. Your private key remains on your device, only encrypted data is stored in the backend.</p>
+      </div>
+      <img src="/illu-code.png" alt="Screeshot of meaningless source-code" />
+    </Card>
+
+    <Card class="security-features__item security-features__item--fill security-features--start">
+      <img src="/icon--app.png" alt="DocuTrack App icon" />
+      <div class="security-features--crypto__header">
+        <h3 class="h1">Start sharing and managing documents with others</h3>
+        <p class="p">Request documents and track access control rights.</p>
+      </div>
+      <Button el="a" href={DAPP_URL} isCentered={true} hasStack={true}>Launch app</Button>
+    </Card>
+  </div>
+</section>
+
+<style is:global>
+  .section--security {
+    padding-top: 20rem;
+  }
+  .security-features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 5rem;
+    gap: var(--rs-card-y);
+    align-items: stretch;
+  }
+
+  @media (max-width: 500px) {
+    .security-features {
+      display: block;
+    }
+  }
+  .security-features__item {
+    text-align: center;
+    flex: 0 0 calc(50% - var(--rs-card-y) / 2);
+  }
+  .security-features__item + .security-features__item {
+    margin-top: 0;
+  }
+
+  @media (max-width: 500px) {
+    .security-features__item + .security-features__item {
+      margin-top: var(--rs-card-y);
+    }
+  }
+  .security-features__item--fill {
+    flex: 0 0 100%;
+  }
+
+  .security-features--crypto__header {
+    max-width: 50rem;
+    margin: 0 auto;
+  }
+
+
+  .security-features--crypto__header .h1 {
+    margin-bottom: 0.65em;
+  }
+
+  .security-features--crypto--leftright {
+    display: flex;
+    text-align: left;
+    gap: var(--rs-card-x);
+  }
+
+  @media (max-width: 500px) {
+    .security-features--crypto--leftright {
+      display: block;
+      text-align: center;
+    }
+  }
+
+  .security-features--crypto--leftright img {
+    flex: 0 0 65%;
+    width: 65%;
+    margin-right: 2rem;
+  }
+
+  @media (max-width: 500px) {
+    .security-features--crypto--leftright img {
+      margin-right: 0;
+      width: 100%;
+      margin-top: 2rem;
+    }
+  }
+
+  .security-features--start {
+    background: linear-gradient(128deg, var(--rc-cardDecoration) -30%, var(--rc-card) 50%);
+  }
+
+  .security-features--access img {
+    width: 45rem;
+    margin: 0 auto 4rem;
+  }
+
+
+  @media (max-width: 500px) { 
+    .security-features--access img {
+      width: 100%;
+    }
+  }
+
+
+
+  .security-features--start img {
+    width: 6.58rem;
+    margin: 4rem auto 2rem;
+  }
+
+</style>
+
+
+<script>
+  const secs = document.querySelectorAll('[data-section]');
+  const navItems = document.querySelectorAll('[data-nav]');
+  const doc = document.documentElement;
+
+  // add an intersection observer to the section
+  const observer = new IntersectionObserver((entries) => {
+
+    const top = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+    entries.forEach((entry) => {
+      if (entry.isIntersecting && entry.target.matches('[data-section="sec"]')) {
+        document.body.classList.add('is-dark');
+      } else if (entry.target.matches('[data-section="sec"]')){
+        document.body.classList.remove('is-dark');
+      }
+      
+      navItems.forEach((navItem) => {
+        if (
+          navItem.getAttribute('href') === `#${entry.target.dataset.section}` 
+          && entry.isIntersecting
+          && top > 100) {
+          navItems.forEach((navItem) => navItem.classList.remove('is-active'));
+          navItem.classList.add('is-active');
+        } 
+      });
+    });
+  }, {
+    threshold: 0.25,
+  });
+
+  secs.forEach(($sec) => {
+    observer.observe($sec);
+  });
+
+  navItems.forEach(($navItem) => {
+    $navItem.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = e.target.getAttribute('href');
+      const $target = document.querySelector(`[data-section="${target.replace('#', '')}"]`);
+      $target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>

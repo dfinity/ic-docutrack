@@ -1,0 +1,43 @@
+---
+
+import Navigation from './Navigation.astro';
+import Logo from './Logo.astro';
+---
+<div class="navbar">
+  <div class="design-width navbar__inner">
+    <a href="/" class="navbar__logo">
+      <Logo />
+    </a>
+    <Navigation />
+  </div>
+</div>
+
+<style>
+  .navbar {
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    --bg: var(--rc-ui-background);
+    --color: var(--rc-on-ui-background);
+
+    background: var(--bg);
+    color: var(--color);
+
+    transition: 100ms background linear, 100ms color linear;
+  }
+  .navbar a {
+    color: var(--color);
+  }
+  .navbar__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 4rem;
+  }
+  .navbar__logo {
+    flex: 0 0 14.8rem;
+    display: block;
+  }
+</style>

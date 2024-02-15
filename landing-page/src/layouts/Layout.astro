@@ -1,0 +1,338 @@
+---
+import { SEO } from "astro-seo";
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+import Logo from '../components/Logo.astro';
+import Sprites from '../components/Sprites.astro';
+---
+
+<!doctype html>
+<html lang="en">
+		
+	<head>
+		<meta charset="UTF-8" />
+		<SEO
+			title=`${title} — Request, share, and manage documents`
+			description="Effortlessly manage document sharing with our secure platform. Request, share, and control access to files with a simple click. No login needed for file uploads. Experience encryption at its best – asymmetric and symmetric cryptography in your browser. Your data stays private, and our code is transparent. Start now for free!"
+			openGraph={{
+				basic: {
+					title: `${title} — Request, share, and manage documents`,
+					type: 'website',
+					image: "/social.jpg"
+				}
+			}}
+			extend={{
+        link: [{ 
+					rel: "icon", 
+					type: "image/png",
+					href: "/favicon-32x32.png" 
+				}],
+			}}
+		></SEO>
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+	</head>
+	<body>
+		<div class="design">
+			<slot />
+		</div>
+		<aside class="footer">
+			<div class="design-width footer__inner">
+				<Logo />
+				<div class="footer__nav">
+					<a href="https://github.com/dfinity/ic-docutrack"><img src="/icon--star.png" alt=""> Star us on GitHub</a>
+				</div>
+			</div>
+		</aside>
+		<Sprites />
+	</body>
+</html>
+<style is:global>
+	@font-face {
+		font-family: "Circular";
+		src: url("/CircularXXWeb-Regular.woff2") format("woff2");
+		font-style: normal;
+		font-weight: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Circular";
+		src: url("/CircularXXWeb-Medium.woff2") format("woff2");
+		font-style: normal;
+		font-weight: 500;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Circular";
+		src: url("/CircularXXWeb-Bold.woff2") format("woff2");
+		font-style: normal;
+		font-weight: 600;
+		font-display: swap;
+	}
+
+	:root {
+		/** 
+			value tokens
+
+			Only use these tokens to define colors and reference 
+			them with the reference tokens.
+		*/
+
+		/**
+			Colors
+			vc = value color
+		*/
+		--vc-black: #000;
+		--vc-raven: #272031;
+		--vc-concrete: #9398A9; 
+		--vc-silver-bullet: #F7F5FA;
+		--vc-snow: #fff;
+		--vc-white-frost: #E1E4F0;
+
+		--vc-orange-soda: #fe4f32;
+
+
+		/** 
+			reference tokens 
+			Tokens with a semantic name that reference the value tokens.
+			to be used in components.
+		*/
+
+		/**
+			Colors
+			rc = reference color
+		*/
+		--rc-brand: var(--vc-orange-soda);
+		--rc-text: var(--vc-raven);
+		--rc-text--inverted: var(--vc-snow);
+		--rc-text--highlight: var(--rc-brand);
+		--rc-shadow: var(--vc-concrete);
+		--rc-text-secondary: var(--vc-concrete);
+
+		--rc-ui-background: var(--vc-silver-bullet);
+		--rc-on-ui-background: var(--vc-concrete);
+		
+		--rc-background: var(--vc-snow);
+		--rc-background--inverted: var(--vc-black);
+
+		--rc-interaction: var(--vc-orange-soda);
+		--rc-onInteraction: var(--vc-snow);
+
+		--rc-interaction--inverted: var(--vc-snow);
+		--rc-onInteraction--inverted: var(--vc-orange-soda);
+
+		--rc-gradient-brand: linear-gradient(color-mix(in lch, var(--rc-text--highlight) 70%, #fff) 25%, var(--rc-text--highlight) 50%);
+
+		--rc-navigation-link: var(--vc-raven);
+
+		--rc-card: var(--vc-white-frost);
+		--rc-onCard: var(--vc-raven);
+		--rc-cardDecoration: var(--vc-orange-soda);
+
+		/**
+			Sizes
+			rs = reference size
+		*/
+
+		--rs-button-x: 1.2rem;
+		--rs-button-wide-x: 4.8rem;
+		--rs-button-y: 1.3rem;
+		--rs-button-inline: 2.4rem;
+		--rs-card-x: 3.2rem;
+		--rs-card-y: 3.4rem;
+
+		--rs-button-stack: 2.4rem;
+
+		--rs-paragraph-stack: 0.8rem;
+
+		--rs-section-stack: 10rem;
+
+		/** helper vars */
+		--percent-10px: 62.5%;
+		--screenWidthPercent: 0.08;
+		--design-wdith: 108rem;
+		--scroll-y-percent: 0;
+	}
+
+	.is-dark {
+		--rc-ui-background: #191e23;
+		--rc-on-ui-background: #ffffff;
+		--rc-card: #191e23;
+
+		--rc-navigation-link: #ffffff;
+
+		background: var(--rc-background--inverted);
+		color: var(--rc-text--inverted);
+
+		--rc-logo: #ffffff;
+	}
+	
+	/**
+		Reset
+	*/
+	* {
+		margin: 0;
+		padding: 0;
+	}
+
+	img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	button {
+		background: none;
+		border: none;
+		font: inherit;
+	}
+
+	a {
+		text-decoration: none;
+	}
+
+	/**
+		Basics
+	*/
+	html {
+  	font-family: "Circular", system-ui, sans-serif;
+		background: var(--rc-background);
+		font-size: var(--percent-10px);
+		font-weight: 350;
+  	letter-spacing: -0.005em;
+
+		/*
+		font-size: clamp(
+			calc(var(--percent-10px) * 0.8),	
+			calc(var(--percent-10px) * (1 - var(--screenWidthPercent)) + 10vw * var(--screenWidthPercent)),
+			calc(var(--percent-10px) * 1.6)
+		);*/
+
+		line-height: 1.42;
+	}
+
+	body {
+		font-size: 1.4rem;
+    transition: 100ms background linear, 100ms color linear;
+	}
+
+	.design {
+		position: relative;
+		min-height: 100%;
+	}
+
+	.h1 {
+		font-size: 4rem;
+		font-weight: 700;
+		line-height: 1.05;
+	}
+
+	@media (max-width: 500px) {
+		.h1 {
+			font-size: 2.4rem;
+		}
+	}
+
+	.h3 {
+		font-size: 2.4rem;
+		font-weight: 600;
+		line-height: 1.05;
+	}
+
+	.p {
+		color: var(--rc-text-secondary);
+		margin-top: var(--rs-paragraph-stack);
+	}
+
+	.hightlight {
+  	background: var(--rc-gradient-brand);
+  	-webkit-background-clip: text;
+  	-webkit-text-fill-color: transparent;
+	}
+	.design-width {
+		max-width: var(--design-wdith); /* 1080px */
+		margin: 0 auto;
+		padding: 0 4rem;
+	}
+
+	.section {
+		position: relative;
+    text-align: center;
+  }
+
+	.section__inner {
+    margin: 0 auto;
+    max-width: 53rem;
+		position: relative;
+	}
+
+  .section__intro {
+    max-width: 36rem;
+    margin-left: auto;
+    margin-right: auto;
+		position: relative;
+  }
+
+  .section__button {
+    margin-top: var(--rs-button-stack);
+  }
+	.footer {
+		margin-top: var(--rs-section-stack);
+		padding: 0 0 4rem;
+		color: var(--rc-text--inverted);
+	}
+	.footer a {
+		position: relative;
+		color: var(--rc-text-secondary);
+	}
+	.footer a img {
+		height: 1em;
+		width: auto;
+		display: inline-block;
+		margin-top: .5em;
+	}
+	.footer a:hover {
+		color: var(--rc-text--inverted);
+	}
+	.footer svg {
+		width: 10.9rem
+	}
+	.footer svg [fill="#202331"] {
+		fill: var(--rc-text--inverted);
+	}
+
+	.footer__inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.footer__nav {
+		display: flex;
+		align-items: center;
+		gap: 2.4rem;
+	}
+</style>
+
+
+<script>
+	let lastKnownScrollPosition = 0;
+	let ticking = false;
+	
+	document.addEventListener("scroll", (event) => {
+		lastKnownScrollPosition = window.scrollY;
+		if (!ticking) {
+			window.requestAnimationFrame(() => {
+				document.documentElement.style.setProperty('--scroll-y', `${lastKnownScrollPosition}px`);
+				document.documentElement.style.setProperty('--scroll-y-percent', `${lastKnownScrollPosition / window.innerHeight}`);
+				ticking = false;
+			});
+			ticking = true;
+		}
+	});
+</script>

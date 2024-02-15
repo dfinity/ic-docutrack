@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+
+import IntroSection from '../sections/intro.astro';
+import HowToSection from '../sections/howto.astro';
+import SecuritySection from '../sections/security.astro';
+
+import Navbar from '../components/Navbar.astro';
+---
+
+<Layout title="DocuTrack.">
+	<Navbar />
+	<main class="design-width">
+		<IntroSection />
+		<HowToSection />
+		<SecuritySection />
+	</main>
+</Layout>

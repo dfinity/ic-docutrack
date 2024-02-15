@@ -1,0 +1,103 @@
+---
+interface Props {
+	class: string;
+	isFancy: boolean;
+}
+
+const svgW = 640;
+const svgH = 220;
+const dotGap = 30;
+const amountOfDots = Math.ceil(svgW / dotGap) * Math.ceil(svgH / dotGap);
+
+const { class: className, isFancy, ...rest } = Astro.props;
+---
+<article class:list={['card', isFancy ? 'card--fancy' : '', className]} {...rest}>
+	<slot /> 
+	{
+		isFancy && (
+			<svg viewBox={`0 0 ${svgW} ${svgH}`} class="card__bg">
+				
+				{Array.from({ length: amountOfDots }).map((_, i) => (
+					<circle
+						class="card__dot"
+						cx={dotGap * (i % Math.ceil(svgW / dotGap))}
+						cy={dotGap * Math.floor(i / Math.ceil(svgW / dotGap))}
+						r={2.5}
+						style={`--rnd: ${Math.random()};`}
+						fill="var(--rc-cardDecoration, orange)"
+					/>
+				))}
+			</svg>
+		)
+	}
+</article>
+
+<style is:global>
+	.card {
+		position: relative;
+		--bg: var(--rc-card);
+		--color: var(--rc-onCard);
+
+		background: var(--bg);
+		color: var(--rc-color);
+
+		border-radius: 2rem;
+		min-height: 35rem;
+		padding: var(--rs-card-y) var(--rs-card-x);
+		box-sizing: border-box;
+
+    transition: 100ms background linear;
+	}
+	
+  @media (max-width: 500px) {
+		.card {
+			min-height: 30rem;
+		}
+	}
+	.card + .card {
+		margin-top: var(--rs-card-y);
+	}
+
+	.card--fancy {
+		box-shadow: inset 0 0 0 .15rem rgba(255,255,255,.05);
+		overflow: hidden;
+	}
+
+	.card--fancy .h3 {
+		margin-top: 1em;
+		margin-bottom: 0.8em;
+	}
+
+	.card__dot {
+		animation: fade 2s ease-in-out infinite alternate;
+		animation-delay: calc(var(--rnd) * -4s);
+		transform: scale(calc(.1 + var(--rnd) * .9));
+		transform-origin: center;
+		transform-box: fill-box;
+	}
+
+	.card__bg {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 200%;
+		height: 100%;
+		object-fit: cover;
+		pointer-events: none;
+	}
+
+	.security-features__item--fill .card__bg {
+		width: 100%;
+	}
+
+	@keyframes fade {
+		0%, 100% {
+			opacity: 0;
+			transform: scale(calc(.1 + var(--rnd) * .9));
+		}
+		50% {
+			opacity: .9;
+			transform: scale(calc(.1 + var(--rnd) * .1));
+		}
+	}
+</style>

@@ -1,0 +1,198 @@
+---
+import Button from '../components/Button.astro';
+import AppIcon from '../components/AppIcon.astro';
+import { DAPP_URL } from '../config/config';
+
+interface Props {
+	noIcons?: boolean;
+}
+
+const { noIcons } = Astro.props;
+
+const apps = [{
+  name: 'excel',
+  color: '#d8ece2',
+  position: [-.6,-.2],
+  rnd: Math.random(),
+  rnd2: Math.random(),
+}, {
+  name: 'word',
+  color: '#dbe8f7',
+  position: [.35,.35],
+  rnd: Math.random(),
+  rnd2: Math.random(),
+}, {
+  name: 'jpg',
+  color: '#e5ebf5',
+  position: [-.7,.35],
+  rnd: Math.random(),
+  rnd2: Math.random(),
+}, {
+  name: 'pdf',
+  color: '#fbeeee',
+  position: [-.4, .3],
+  rnd: Math.random(),
+  rnd2: Math.random(),
+}, {
+  name: 'mp3',
+  color: '#f8e8e6',
+  position: [.6,-.1],
+  rnd: Math.random(),
+  rnd2: Math.random(),
+}];
+---
+<section class="section section--intro" data-section="intro">
+  <div class="section__inner">
+    <h2 class="h1">
+      Request, share, and manage documents
+    </h2>
+    <p class="section__intro p">You can upload documents and authorize people to access them with a few mouse clicks</p>
+    <div class="section__button" data-maincta>
+      <Button el="a" href={DAPP_URL} isCentered={true}>Launch app</Button>
+    </div>
+    <div class="intro-icons">
+      {!noIcons && apps.map(app => (
+        <i class="intro-icons__icon" style={{'--x': app.position[0], '--y': app.position[1], '--rnd': app.rnd, '--rnd2': app.rnd2, '--direction': Math.sign(app.position[0]) }}>
+          <AppIcon name={app.name} color={app.color} />
+        </i>
+      ))}
+    </div>
+
+  </div>
+  <div class="intro-image">
+    <img src="/screenshot--main-bg.png" alt="Hero" class="section__image" />
+    <img src="/screenshot--main-fg.png" alt="Hero" class="section__image section__image--overlay" />
+  </div>
+</section>
+
+<style>
+  .section--intro {
+    padding-top: 10rem;
+  }
+
+  /*
+  .section--intro .section__inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }*/
+
+  .section--intro .section__inner {
+    padding-top: var(--rs-section-stack);
+  }
+
+  .intro-icons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .intro-icons__icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) 
+               translateX(calc(var(--x) * 50vw)) 
+               translateY(calc(-1rem + var(--y) * 60rem))
+               translateY(calc(-1 * 20%)) scale(calc(var(--rnd) * .25 + .75)) 
+               rotate(calc(-20deg + var(--rnd) *  40deg));
+
+    animation: float 2s infinite alternate ease-in-out;
+    animation-delay: calc(var(--rnd) * -2s);
+    will-change: transform;
+  }
+
+  @media (max-width: 500px) {
+    .intro-icons__icon {
+      animation: float-mobile 2s infinite alternate ease-in-out;
+      animation-delay: calc(var(--rnd) * -2s);
+    }
+  }
+
+  .intro-image {
+    position: relative;
+    margin-top: var(--rs-section-stack);
+    --radius: 2.3rem;
+  }
+
+  .intro-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--rc-shadow);
+    border-radius: var(--radius);
+    filter: blur(10rem);
+    transform: translateY(5%) scale(.8);
+    opacity: .7;
+    z-index: -1;
+  }
+  .section__image {
+    display: block;
+    box-shadow: 0 0 6rem rgba(0,0,0,.08);
+    border-radius: var(--radius);
+    box-shadow: 0 0 0 1px #00000020;
+  }
+  .section__image--overlay {
+    width: calc(var(--design-wdith) * .67);
+    display: none;
+  }
+  @keyframes float {
+    0% {
+      transform: translate(-50%, -50%) 
+            translateX(calc(var(--x) * 50vw)) 
+            translateY(calc(-1rem + var(--y) * 60rem))
+            translateY(calc(-1 * 20%)) scale(calc(var(--rnd) * .25 + .75)) 
+            rotate(calc(-20deg + var(--rnd) *  40deg));
+    }
+    100% {
+      transform: translate(-50%, -50%) 
+            translateX(calc(var(--x) * 50vw)) 
+            translateY(calc(-1rem + var(--y) * 60rem))
+            translateY(calc(1 * 20%)) scale(calc(var(--rnd) * .25 + .75)) 
+            rotate(calc(-20deg + var(--rnd) *  40deg));
+    }
+  }
+
+
+  @keyframes float-mobile {
+    0% {
+      transform: translate(-50%, -50%) 
+            translateX(calc(var(--x) * 70vw)) 
+            translateY(calc(0vh + var(--y) * 60vh))
+            translateY(calc(-1 * 20%)) scale(calc(var(--rnd) * .25 + .75)) 
+            rotate(calc(-20deg + var(--rnd) *  40deg));
+    }
+    100% {
+      transform: translate(-50%, -50%) 
+            translateX(calc(var(--x) * 70vw)) 
+            translateY(calc(0vh + var(--y) * 60vh))
+            translateY(calc(1 * 20%)) scale(calc(var(--rnd) * .25 + .75)) 
+            rotate(calc(-20deg + var(--rnd) *  40deg));
+    }
+  }
+
+</style>
+
+
+<script>
+  const $mainCTA = document.querySelector('[data-maincta]');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      console.log(entry)
+      if (entry.isIntersecting) {
+        document.body.classList.add('maincta-visible');
+      } else {
+        document.body.classList.remove('maincta-visible');
+      }
+    });
+  });
+
+  if ($mainCTA) {
+    observer.observe($mainCTA);
+  }
+</script>
