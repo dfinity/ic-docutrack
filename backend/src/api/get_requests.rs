@@ -30,8 +30,7 @@ pub fn get_allowed_users(state: &State, file_id: u64) -> Vec<PublicUser> {
         .map(|(user_principal, _file_vector)| {
             let user = state.users.get(user_principal).unwrap().clone();
             PublicUser {
-                first_name: user.first_name,
-                last_name: user.last_name,
+                username: user.username,
                 public_key: user.public_key,
                 ic_principal: *user_principal,
             }
@@ -73,8 +72,7 @@ mod test {
             &mut state,
             Principal::anonymous(),
             User {
-                first_name: "John".to_string(),
-                last_name: "Doe".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 3],
             },
         );

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { default as crypto } from "$lib/crypto";
   import { enumIs } from "$lib/shared/enums";
-  import { Principal } from "@dfinity/principal";
+  import type { Principal } from "@dfinity/principal";
   import { createEventDispatcher, onMount } from "svelte";
   import type {
     file_metadata,
@@ -11,6 +11,7 @@
   import CloseIcon from "./icons/CloseIcon.svelte";
   import type { AuthStateAuthenticated } from "$lib/services/auth";
   import ErrorMessage from "./ErrorMessage.svelte";
+  import ComboBox from "./ComboBox.svelte";
 
   export let auth: AuthStateAuthenticated;
 
@@ -26,7 +27,6 @@
   let users: user[] = [];
   let oldSharedWith: user[] = [];
   let newSharedWith: user[] = [];
-  let selectEl: HTMLSelectElement;
   let error: string = "";
 
   function reset() {
@@ -43,27 +43,18 @@
     return arr;
   }
 
-  function addPersonToShare() {
-    if (selectEl.value) {
-      const principal = Principal.fromText(selectEl.value);
+  function addPersonToShare(user: { label: string; value: Principal }) {
+    const maybeUser = users.find(
+      (obj) => obj.ic_principal.compareTo(user.value) === "eq",
+    );
 
-      if (principal === selfPrincipal) {
-        return;
-      }
+    const principalNotYetAdded = !newSharedWith.find(
+      (obj) => obj.ic_principal.compareTo(user.value) === "eq",
+    );
 
-      const maybeUser = users.find(
-        (obj) => obj.ic_principal.compareTo(principal) === "eq",
-      );
-
-      const principalNotYetAdded = !newSharedWith.find(
-        (obj) => obj.ic_principal.compareTo(principal) === "eq",
-      );
-      if (!!maybeUser && principalNotYetAdded) {
-        newSharedWith = [...newSharedWith, maybeUser];
-      }
+    if (!!maybeUser && principalNotYetAdded) {
+      newSharedWith = [...newSharedWith, maybeUser];
     }
-
-    selectEl.value = "";
   }
 
   function removePersonFromShare(principal) {
@@ -74,7 +65,6 @@
       newSharedWith = removeItem(newSharedWith, user);
       // Assign to itself for reactivity purposes
       newSharedWith = newSharedWith;
-      selectEl.value = "";
     }
   }
 
@@ -116,7 +106,7 @@
           new Uint8Array(encryptedFileKey),
         );
       } catch {
-        error = `Error: could not share file with ${newSharedWith[i].first_name} ${newSharedWith[i].last_name}.`;
+        error = `Error: could not share file with ${newSharedWith[i].username}`;
         loading = false;
         return;
       }
@@ -135,7 +125,7 @@
           );
         }
       } catch {
-        error = `Error: could not revoke share with ${oldSharedWith[i].first_name} ${oldSharedWith[i].last_name}.`;
+        error = `Error: could not revoke share with ${oldSharedWith[i].username}.`;
         loading = false;
         return;
       }
@@ -202,8 +192,7 @@
               type="button"
               on:click={() => removePersonFromShare(user.ic_principal)}
               class="rounded-full bg-silver py-1 pl-2 pr-1 flex gap-2 text-body-1 text-text-200"
-              >{user.first_name}
-              {user.last_name}
+              >{user.username}
 
               <span
                 class="bg-silver-700 rounded-full text-white w-4 h-4 flex items-center justify-center"
@@ -217,26 +206,19 @@
 
       <div class="">
         <label for="shareWith" class="input-label">Share with</label>
-        <select
-          class="input disabled:bg-background-300 appearance-none"
-          value=""
+        <ComboBox
+          notFoundMessage="No such user"
+          on:select={(e) => addPersonToShare(e.detail)}
           id="shareWith"
-          bind:this={selectEl}
-          on:change={addPersonToShare}
-          placeholder="Select a user..."
+          items={availableUsers?.map((a) => ({
+            label: a.username,
+            value: a.ic_principal,
+          })) || []}
           disabled={availableUsers && availableUsers.length === 0}
-        >
-          {#if availableUsers && availableUsers.length > 0}
-            <option value="" selected disabled>Select a user...</option>
-            {#each availableUsers as user}
-              <option value={user.ic_principal}
-                >{user.first_name} {user.last_name}</option
-              >
-            {/each}
-          {:else if availableUsers && availableUsers.length === 0}
-            <option value="" disabled selected>No users to share with</option>
-          {/if}
-        </select>
+          placeholder={availableUsers?.length === 0
+            ? "No users to share with"
+            : "Select a user..."}
+        ></ComboBox>
       </div>
 
       <div>

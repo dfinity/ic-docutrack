@@ -15,8 +15,7 @@ export const idlFactory = ({ IDL }) => {
   const user = IDL.Record({
     'public_key' : IDL.Vec(IDL.Nat8),
     'ic_principal' : IDL.Principal,
-    'first_name' : IDL.Text,
-    'last_name' : IDL.Text,
+    'username' : IDL.Text,
   });
   const get_alias_info_response = IDL.Variant({
     'Ok' : IDL.Record({
@@ -77,11 +76,14 @@ export const idlFactory = ({ IDL }) => {
   });
   const who_am_i_response = IDL.Variant({
     'known_user' : IDL.Record({
-      'first_name' : IDL.Text,
-      'last_name' : IDL.Text,
+      'username' : IDL.Text,
     }),
     'unknown_user' : IDL.Null,
   });
+  const set_user_response = IDL.Variant({
+      'ok' : IDL.Null,
+      'username_exists' : IDL.Null,
+  }); 
   return IDL.Service({
     'download_file' : IDL.Func(
         [file_id, IDL.Nat64],
@@ -103,7 +105,7 @@ export const idlFactory = ({ IDL }) => {
         [share_file_response],
         [],
       ),
-    'set_user' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(IDL.Nat8)], [], []),
+    'set_user' : IDL.Func([IDL.Text, IDL.Vec(IDL.Nat8)], [set_user_response], []),
     'share_file' : IDL.Func(
         [IDL.Principal, file_id, IDL.Vec(IDL.Nat8)],
         [share_file_response],
@@ -121,6 +123,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'upload_file_continue' : IDL.Func([upload_file_continue_request], [], []),
+    'username_exists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'who_am_i' : IDL.Func([], [who_am_i_response], ['query']),
   });
 };

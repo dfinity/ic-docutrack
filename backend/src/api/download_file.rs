@@ -101,8 +101,7 @@ mod test {
             &mut state,
             Principal::anonymous(),
             User {
-                first_name: "John".to_string(),
-                last_name: "Doe".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 3],
             },
         );
@@ -122,8 +121,7 @@ mod test {
             &mut state,
             Principal::anonymous(),
             User {
-                first_name: "John".to_string(),
-                last_name: "Doe".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 3],
             },
         );
@@ -132,8 +130,7 @@ mod test {
             &mut state,
             Principal::from_slice(&[0, 1, 2]),
             User {
-                first_name: "John".to_string(),
-                last_name: "Test".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 4],
             },
         );
@@ -160,8 +157,7 @@ mod test {
             &mut state,
             Principal::anonymous(),
             User {
-                first_name: "John".to_string(),
-                last_name: "Doe".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 3],
             },
         );
@@ -182,8 +178,7 @@ mod test {
             &mut state,
             Principal::anonymous(),
             User {
-                first_name: "John".to_string(),
-                last_name: "Doe".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 3],
             },
         );
@@ -221,8 +216,7 @@ mod test {
             &mut state,
             Principal::anonymous(),
             User {
-                first_name: "John".to_string(),
-                last_name: "Doe".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 3],
             },
         );
@@ -231,8 +225,7 @@ mod test {
             &mut state,
             Principal::from_slice(&[0, 1, 2]),
             User {
-                first_name: "John".to_string(),
-                last_name: "Test".to_string(),
+                username: "John".to_string(),
                 public_key: vec![1, 2, 4],
             },
         );

@@ -14,13 +14,23 @@ type UserState =
     }
   | {
       state: "registered";
-      firstName: string;
-      lastName: string;
+      username: string;
     }
   | {
       state: "unregistered";
-      registrationState: "idle" | "registering" | "error";
+      registrationState:
+        | { state: "idle" }
+        | { state: "registering" }
+        | {
+            state: "error";
+            errorMessage: string;
+          };
     };
+
+type RegistrationState = Extract<
+  UserState,
+  { state: "unregistered" }
+>["registrationState"];
 
 function createUserStore() {
   const { subscribe, set } = writable<UserState>({
@@ -31,20 +41,21 @@ function createUserStore() {
     subscribe,
     set,
 
-    register: (firstName: string, lastName: string) => {
+    register: (username: string) => {
       set({
         state: "registered",
-        firstName,
-        lastName,
+        username,
       });
     },
-    setUnregistered: (registrationState: "idle" | "registering" | "error") => {
+    setUnregistered: (registrationState: RegistrationState) => {
       set({
         state: "unregistered",
         registrationState,
       });
     },
     setError: (error: string) => {
+      console.log("User store error", error);
+
       set({
         state: "error",
         error,
@@ -63,12 +74,9 @@ export class UserService {
     try {
       const response = await this.actor.who_am_i();
       if (enumIs(response, "known_user")) {
-        userStore.register(
-          response.known_user.first_name,
-          response.known_user.last_name
-        );
+        userStore.register(response.known_user.username);
       } else if (enumIs(response, "unknown_user")) {
-        userStore.setUnregistered("idle");
+        userStore.setUnregistered({ state: "idle" });
       } else {
         unreachable(response);
       }
@@ -77,19 +85,36 @@ export class UserService {
     }
   }
 
-  async register(firstName: string, lastName: string) {
+  async register(username: string) {
     try {
-      userStore.setUnregistered("registering");
+      userStore.setUnregistered({ state: "registering" });
 
-      await this.actor.set_user(
-        firstName,
-        lastName,
+      const response = await this.actor.set_user(
+        username,
         new Uint8Array(await crypto.getLocalUserPublicKey())
       );
 
-      userStore.register(firstName, lastName);
-    } catch (e) {
-      userStore.setUnregistered("error");
+      if (enumIs(response, "username_exists")) {
+        userStore.setUnregistered({
+          state: "error",
+          errorMessage: "Username already exists",
+        });
+        return;
+      }
+
+      userStore.register(username);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        userStore.setUnregistered({
+          state: "error",
+          errorMessage: e.toString(),
+        });
+      } else {
+        userStore.setUnregistered({
+          state: "error",
+          errorMessage: "Unknown error",
+        });
+      }
     }
   }
 
