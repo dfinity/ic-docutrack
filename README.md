@@ -9,9 +9,9 @@ In more detail, DocuTrack demonstrates how a user Alice who created an account w
 This feature makes it very easy and secure for service providers (e.g., a client advisor or wealth manager) to request documents of any type (e.g., house deeds, passport pictures or log files) from clients or other third parties.
 Other document sharing apps require users to exchange public keys or other cryptographic material with which people typically struggle a lot.
 
-You can try out DocuTrack on [https://s5wza-ziaaa-aaaam-abxba-cai.icp0.io/](https://s5wza-ziaaa-aaaam-abxba-cai.icp0.io/)
+You can try out DocuTrack on [https://s5wza-ziaaa-aaaam-abxba-cai.icp0.io/](https://s5wza-ziaaa-aaaam-abxba-cai.icp0.io/).
 
-The dapp is explained in more detail [here](./documentation.pdf)
+The dapp is explained in more detail [here](./documentation.pdf).
 
 ## Disclaimer: please read carefully
 
