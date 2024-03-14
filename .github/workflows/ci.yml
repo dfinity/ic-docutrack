@@ -2,7 +2,6 @@ name: CI Checks
 
 env:
   RUST_VERSION: 1.67.0
-  DFX_VERSION: 0.15.0
 
 on:
   push:
@@ -134,13 +133,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install DFX
-        run: |
-          wget --output-document install-dfx.sh "https://internetcomputer.org/install.sh"
-          bash install-dfx.sh < <(yes Y)
-          rm install-dfx.sh
-          dfx cache install
-          echo "$HOME/bin" >> $GITHUB_PATH
+      - name: Install dfx
+        uses: dfinity/setup-dfx@main
+        with: 
+          dfx-version: "0.17.0"
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
