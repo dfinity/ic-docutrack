@@ -201,6 +201,7 @@
         <h1 class="title-1">File Upload</h1>
       {/if}
     </div>
+    2MB chunks, up to 5 in parallel
 
     {#if state === "initialized" || state === "uploading" || (state === "error" && !fatalError)}
       <form
