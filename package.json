@@ -3,5 +3,8 @@
   "workspaces": [
     "frontend",
     "landing-page"
-  ]
+  ],
+  "dependencies": {
+      "@dfinity/agent": "2.1.3"
+  }
 }
