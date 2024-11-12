@@ -6,7 +6,7 @@ import pLimit from "p-limit";
 import { writable } from "svelte/store";
 import type { get_alias_info_response } from "../../../../declarations/backend/backend.did";
 
-export const CHUNK_SIZE = 2_000_000;
+export const CHUNK_SIZE = 1_900_000;
 
 export const uploadInProgress = writable(false);
 
@@ -133,7 +133,7 @@ export class UploadService {
     const numChunks = Math.ceil(content.length / CHUNK_SIZE);
 
     // Create upload pool, supporting upto 5 parallel uploads.
-    const uploadPool = pLimit(5);
+    const uploadPool = pLimit(20);
 
     // Prepare upload requests.
     const uploadRequests = Array.from(
