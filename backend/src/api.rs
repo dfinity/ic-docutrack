@@ -20,7 +20,12 @@ pub use upload_file_atomic::{upload_file_atomic, UploadFileAtomicRequest};
 pub use user_info::set_user_info;
 pub use user_info::username_exists;
 
+const WORK: bool = true;
+
 pub fn upload_file_continue(request: UploadFileContinueRequest, state: &mut State) {
+    if !WORK {
+        return;
+    }
     // Update the file's contents.
     let file_id = request.file_id;
     let chunk_id = request.chunk_id;
