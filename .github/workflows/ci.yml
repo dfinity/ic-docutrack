@@ -17,8 +17,8 @@ jobs:
         os: [ubuntu-22.04]
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3.5.0
         with:
           path: |
             ~/.cargo/registry
@@ -47,8 +47,8 @@ jobs:
         os: [ubuntu-22.04]
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3.5.0
         with:
           path: |
             ~/.cargo/registry
@@ -72,8 +72,8 @@ jobs:
   cargo-clippy:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3.5.0
         with:
           path: |
             ~/.cargo/registry
@@ -88,7 +88,7 @@ jobs:
           rustup target add wasm32-unknown-unknown
           rustup component add clippy
 
-      - uses: actions-rs/clippy-check@v1
+      - uses: actions-rs/clippy-check@b5b5f21f4797c02da247df37026fcd0a5024aa4d # v1.0.7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-targets -- -D warnings
@@ -96,7 +96,7 @@ jobs:
   rustfmt:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Install Rust + Clippy
         run: |
           rustup update $RUST_VERSION --no-self-update
@@ -108,7 +108,7 @@ jobs:
           rustup default $RUST_VERSION
           rustup component add rustfmt
 
-      - uses: actions-rs/cargo@v1
+      - uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505 # v1.0.3
         with:
           command: fmt
           args: --all -- --check
@@ -117,9 +117,9 @@ jobs:
     name: ShellCheck
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@master
+        uses: ludeeus/action-shellcheck@00b27aa7cb85167568cb48a3838b75f4265f2bca # master
         env:
           SHELLCHECK_OPTS: -e SC1090 -e SC2119 -e SC1091
 
@@ -131,15 +131,15 @@ jobs:
         node-version: [19.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - name: Install dfx
-        uses: dfinity/setup-dfx@main
+        uses: dfinity/setup-dfx@e50c04f104ee4285ec010f10609483cf41e4d365 # main
         with: 
           dfx-version: "0.17.0"
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: ${{ matrix.node-version }}
       - name: Build frontend
